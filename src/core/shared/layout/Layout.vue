@@ -57,18 +57,31 @@
       </header>
 
       <!-- Main Content -->
-      <main class="flex-1 overflow-y-auto bg-transparent">
+      <main class="flex-1 overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <div class="px-4 sm:px-6 lg:px-8 py-8">
-          <!-- Content Slot -->
-          <slot>
-            <!-- Default content if no slot provided -->
-            <div class="bg-white rounded-2xl shadow-lg p-8">
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">Bienvenido a AudioCafe</h2>
-              <p class="text-gray-600">
-                Tu espacio de salud auditiva con el ambiente cálido de una cafetería.
-              </p>
+          <nav class="mb-8 bg-white/80 backdrop-blur-sm rounded-2xl border border-blue-100 shadow-sm p-6">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <RouterLink to="/research" class="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-indigo-700 transition-all shadow-sm hover:shadow-md">
+                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              </svg>
+              <span>Investigaciones sobre la salud auditiva</span>
+              </RouterLink>
+              <RouterLink to="/questionnaire" class="flex items-center gap-2 px-4 py-3 bg-white border-2 border-blue-200 text-gray-700 rounded-xl font-medium hover:bg-blue-50 hover:border-blue-300 transition-all">
+                 <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <span>Cuestionarios sobre Tinnitus</span>
+              </RouterLink>
+            <RouterLink to="/hearing" class="flex items-center gap-2 px-4 py-3 bg-white border-2 border-blue-200 text-gray-700 rounded-xl font-medium hover:bg-blue-50 hover:border-blue-300 transition-all">
+               <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+          <span>Evaluación de la Audición</span>
+            </RouterLink>
             </div>
-          </slot>
+          </nav>
+          <RouterView></RouterView>
         </div>
       </main>
 
