@@ -259,6 +259,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import axios  from 'axios';
 
 // Form Data
 const formData = ref({
@@ -329,6 +330,10 @@ const handleSubmit = async () => {
   await new Promise(resolve => setTimeout(resolve, 1500));
   
   console.log('Investigación guardada:', formData.value);
+
+
+  // Enviar a API
+  await axios.post('http://localhost:3000/api/v1/research', formData.value);
   
   isSubmitting.value = false;
   showSuccessModal.value = true;
