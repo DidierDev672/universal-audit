@@ -46,45 +46,6 @@
 
       <!-- Questionnaire List -->
       <div v-else key="list" class="space-y-6">
-        <!-- Info Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-white rounded-2xl shadow-lg p-6 border border-purple-100">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
-              </div>
-            </div>
-            <p class="text-sm text-gray-600 mb-1">Total Cuestionarios</p>
-            <p class="text-3xl font-bold text-gray-800">{{ questionnaires.length }}</p>
-          </div>
-
-          <div class="bg-white rounded-2xl shadow-lg p-6 border border-green-100">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </div>
-            </div>
-            <p class="text-sm text-gray-600 mb-1">Activos</p>
-            <p class="text-3xl font-bold text-gray-800">3</p>
-          </div>
-
-          <div class="bg-white rounded-2xl shadow-lg p-6 border border-blue-100">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-              </div>
-            </div>
-            <p class="text-sm text-gray-600 mb-1">Respuestas</p>
-            <p class="text-3xl font-bold text-gray-800">127</p>
-          </div>
-        </div>
-
         <!-- Search -->
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-purple-100">
           <div class="relative">
@@ -118,42 +79,22 @@
                   <h3 class="font-bold text-gray-800 group-hover:text-purple-600 transition-colors">
                     {{ questionnaire.title }}
                   </h3>
-                  <p class="text-xs text-gray-500 mt-1">{{ questionnaire.questions }} preguntas</p>
+                  <p class="text-xs text-gray-500 mt-1">{{ questionnaire?.questions?.length || 0 }} preguntas</p>
                 </div>
               </div>
-              <span :class="[
-                'px-3 py-1 rounded-full text-xs font-semibold',
-                questionnaire.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
-              ]">
-                {{ questionnaire.active ? 'Activo' : 'Inactivo' }}
-              </span>
+              
             </div>
-
             <p class="text-sm text-gray-600 mb-4 line-clamp-2">
               {{ questionnaire.description }}
             </p>
 
             <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-              <div class="flex items-center gap-4 text-xs text-gray-500">
-                <span class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                  {{ questionnaire.duration }}
-                </span>
-                <span class="flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                  </svg>
-                  {{ questionnaire.responses }} respuestas
-                </span>
-              </div>
-              <button class="text-purple-600 hover:text-purple-700 font-medium text-sm flex items-center gap-1">
+              <RouterLink :to="`/detail-tinnitus-questionnaire/${questionnaire.id}`" class="text-purple-600 hover:text-purple-700 font-medium text-sm flex items-center gap-1">
                 Ver detalles
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
-              </button>
+              </RouterLink>
             </div>
           </div>
         </div>
@@ -180,6 +121,7 @@
 </template>
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import axios from 'axios';
 import TinnutusQuestionnaireForm from './TinnitusQuestionnaireForm.vue';
 
 
@@ -192,28 +134,16 @@ const questionnaires= ref([
     id: 1,
     title: 'Evaluación de Severidad de Tinnitus (TSS)',
     description: 'Cuestionario estandarizado para medir la intensidad y el impacto del tinnitus en la vida diaria del paciente.',
-    questions: 12,
-    duration: '5-7 min',
-    responses: 45,
-    active: true,
   },
   {
     id: 2,
     title: 'Cuestionario de Impacto Emocional del Tinnitus',
     description: 'Evaluación del efecto emocional y psicológico del tinnitus, incluyendo ansiedad, depresión y calidad del sueño.',
-    questions: 15,
-    duration: '8-10 min',
-    responses: 38,
-    active: true,
   },
   {
     id: 3,
     title: 'Frecuencia y Características del Tinnitus',
     description: 'Registro detallado de la frecuencia, tipo de sonido, volumen percibido y momentos del día en que se presenta el tinnitus.',
-    questions: 8,
-    duration: '3-5 min',
-    responses: 44,
-    active: true,
   },
 ]);
 
@@ -230,6 +160,18 @@ const filteredQuestionnaires = computed(() => {
 const handleQuestionnaireSaved = () => {
   showBuilder.value = false;
 };
+
+const fetchQuestionnaires = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/v1/questionnaires');
+    questionnaires.value = response.data;
+  } catch (error) {
+    console.error('Error fetching questionnaires:', error);
+  }
+};
+
+fetchQuestionnaires();
+
 </script>
 
 

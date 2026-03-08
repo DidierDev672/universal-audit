@@ -401,6 +401,7 @@
 
 <script setup lang="ts">
 import { ref, computed, h } from 'vue';
+import axios from 'axios';
 
 interface Question {
   id: string;
@@ -533,18 +534,36 @@ const handleSubmit = async () => {
   
   isSubmitting.value = true;
   
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  const data = {
-    ...questionnaire.value,
-    questions: questions.value,
-    createdAt: new Date(),
-  };
-  
-  console.log('Cuestionario guardado:', data);
-  
-  isSubmitting.value = false;
-  showSuccessModal.value = true;
+  try {
+    // Transformar las preguntas al formato esperado por la API
+    const transformedQuestions = questions.value.map((question, index) => ({
+      id: `q${index + 1}_${question.text.toLowerCase().replace(/\s+/g, '_').substring(0, 20)}`,
+      title: question.text,
+      description: `Descripción de la pregunta ${index + 1}`,
+      optionsAnswer: question.options.map((option, optIndex) => ({
+        id: `q${index + 1}_op${optIndex + 1}`,
+        text: option,
+        value: optIndex
+      }))
+    }));
+
+    const data = {
+      title: questionnaire.value.title,
+      description: questionnaire.value.description,
+      questions: transformedQuestions
+    };
+
+    const response = await axios.post('http://localhost:3000/api/v1/questionnaires', data);
+    console.log('Cuestionario guardado:', response.data);
+    
+    // Mostrar modal de éxito
+    showSuccessModal.value = true;
+    
+  } catch (error) {
+    console.error('Error al guardar el cuestionario:', error);
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
 const resetForm = () => {

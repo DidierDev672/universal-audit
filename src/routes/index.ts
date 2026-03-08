@@ -4,6 +4,8 @@ import DashBoardResearch from "../pages/Research/DashBoardResearch.vue";
 import TinnitusDashboard from "../pages/questionnaire/TinnitusDashboard.vue";
 import HearingDashboard from "../pages/Hearing/ScreeningDashboard.vue";
 import Tinnitusquestionnairebuilder from "../pages/questionnaire/Tinnitusquestionnairebuilder.vue";
+import Tinnitusquestionnaire from "../pages/questionnaire/Tinnitusquestionnaire.vue";
+import DetailQuestionnaire from "../pages/questionnaire/DetailQuestionnaire.vue";
 import Researchform from "../pages/Research/Researchform.vue";
 import Research from "../pages/Research/Research.vue";
 import DetailtResearch from "../pages/Research/DetailtResearch.vue";
@@ -18,7 +20,10 @@ const routes = [
   
   // ? Tinnitus Questionnaire
   { path: "/tinnitus-questionnaire", name: "tinnitus-questionnaire", component: Tinnitusquestionnairebuilder },
+  { path: "/list-tinnitus-questionnaire", name: "list-tinnitus-questionnaire", component: Tinnitusquestionnaire },
+  { path: "/detail-tinnitus-questionnaire/:id", name: "detail-tinnitus-questionnaire", component: DetailQuestionnaire },
   
+
   // ? Research Form
   { path: "/research-form", name: "research-form", component: Researchform },
   { path: "/research-list", name: "research list", component: Research },

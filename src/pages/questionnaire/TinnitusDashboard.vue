@@ -50,36 +50,6 @@
 
           <!-- Contenido -->
           <div class="p-6">
-            <!-- Estadísticas rápidas -->
-            <div class="grid grid-cols-2 gap-4 mb-6">
-              <div class="bg-purple-50 rounded-xl p-4 border border-purple-100">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="text-2xl font-bold text-gray-800">12</p>
-                    <p class="text-xs text-gray-500">Cuestionarios</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-pink-50 rounded-xl p-4 border border-pink-100">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-pink-500 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="text-2xl font-bold text-gray-800">234</p>
-                    <p class="text-xs text-gray-500">Respuestas</p>
-                  </div>
-                </div>
-              </div>
-            </div>
 
             <!-- Acciones principales -->
             <div class="space-y-3">
@@ -92,8 +62,7 @@
                     </svg>
                   </div>
                   <div class="text-left">
-                    <p class="font-semibold text-sm">Crear Cuestionario</p>
-                    <p class="text-xs text-white/80">Nuevo cuestionario de tinnitus</p>
+                    <RouterLink to="/tinnitus-questionnaire" class="font-semibold text-sm">Crear Cuestionario  </RouterLink>
                   </div>
                 </div>
                 <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -110,8 +79,7 @@
                     </svg>
                   </div>
                   <div class="text-left">
-                    <p class="font-semibold text-sm">Lista de Cuestionarios</p>
-                    <p class="text-xs text-gray-500">Ver todos los cuestionarios</p>
+                    <RouterLink to="/list-tinnitus-questionnaire" class="font-semibold text-sm">Lista de Cuestionarios</RouterLink>
                   </div>
                 </div>
                 <svg class="w-5 h-5 text-purple-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
