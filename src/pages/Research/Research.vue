@@ -60,13 +60,6 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
             </div>
-            <select class="px-4 py-3 border-2 border-indigo-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all">
-              <option>Todas las categorías</option>
-              <option>Tinnitus</option>
-              <option>Audífonos</option>
-              <option>Implantes</option>
-              <option>Prevención</option>
-            </select>
           </div>
         </div>
 
@@ -88,15 +81,8 @@
                   <h3 class="font-bold text-gray-800 mb-1 group-hover:text-indigo-600 transition-colors">
                     {{ research.name }}
                   </h3>
-                  <p class="text-xs text-gray-500">{{ research.date }}</p>
                 </div>
               </div>
-              <span :class="[
-                'px-3 py-1 rounded-full text-xs font-semibold',
-                research.status === 'Activo' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
-              ]">
-                {{ research.status }}
-              </span>
             </div>
 
             <p class="text-sm text-gray-600 mb-4 line-clamp-3">
@@ -104,18 +90,12 @@
             </p>
 
             <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-              <div class="flex items-center gap-2 text-xs text-gray-500">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-                {{ research.author }}
-              </div>
-              <button class="text-indigo-600 hover:text-indigo-700 font-medium text-sm flex items-center gap-1">
-                Ver más
+              <RouterLink :to="`/research-detail/${research.id}`" class="text-indigo-600 hover:text-indigo-700 font-medium text-sm flex items-center gap-1">
+                Ver detalles
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                 </svg>
-              </button>
+              </RouterLink>
             </div>
           </div>
         </div>
@@ -141,7 +121,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed }  from 'vue';
+import { ref, computed, onMounted }  from 'vue';
+import axios from 'axios';
 import Researchform from './Researchform.vue';
 
 
@@ -179,6 +160,21 @@ const researches = ref([
     category: 'Prevención'
   },
 ]);
+
+// API call
+const getResearches = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/v1/research');
+    researches.value = response.data;
+  } catch (error) {
+    console.error('Error fetching researches:', error);
+  }
+};
+
+// Call API on mount
+onMounted(() => {
+  getResearches();
+});
 
 // Computed
 const filteredResearches = computed(() => {
