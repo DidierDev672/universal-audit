@@ -152,6 +152,47 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
               </svg>
             </RouterLink>
+            <RouterLink
+              to="/add-sound"
+              :class="[
+                'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
+                activeItem === 'crear-tamizaje'
+                  ? 'bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+                  : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
+              ]"
+            >
+              <div :class="[
+                'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
+                activeItem === 'crear-tamizaje'
+                  ? 'bg-white/20 backdrop-blur-sm'
+                  : 'bg-linear-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
+              ]">
+                <svg :class="[
+                      'w-6 h-6 transition-transform',
+                      activeItem === 'crear-tamizaje' ? 'text-white scale-110' : 'text-emerald-600'
+                    ]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                </svg>
+              </div>
+              <div class="flex-1 text-left">
+                <span class="font-semibold">Agregar sonidos</span>
+                <p :class="[
+                      'text-xs mt-0.5',
+                      activeItem === 'crear-tamizaje' ? 'text-white/80' : 'text-gray-500'
+                    ]">
+                  Agregar sonidos
+                </p>
+              </div>
+              <svg
+                v-if="activeItem === 'crear-tamizaje'"
+                class="w-5 h-5 text-white animate-pulse"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </RouterLink>
 
             <!-- Crear Registro Paciente -->
             <RouterLink 

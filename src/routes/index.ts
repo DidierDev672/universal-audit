@@ -12,6 +12,8 @@ import DetailtResearch from "../pages/Research/DetailtResearch.vue";
 import HearingScreeningForm from "../pages/Hearing/HearingScreeningForm.vue";
 import PatientRegistrationForm from "../pages/Patient/PatientRegistrationForm.vue";
 
+import AddSoundForm from "../pages/sound/AddSoundForm.vue";
+
 
 const routes = [
   {  path: "/research", name: "home", component: DashBoardResearch },
@@ -34,6 +36,9 @@ const routes = [
   { path: "/hearing-screening-form", name: "hearing-screening-form", component: HearingScreeningForm },
   // ? Patient Registration Form
   { path: "/patient-registration-form", name: "patient-registration-form", component: PatientRegistrationForm },
+
+  // ? Sound Management
+  { path: "/add-sound", name: "add-sound", component: AddSoundForm },
 ];
 
 export const router = createRouter({
