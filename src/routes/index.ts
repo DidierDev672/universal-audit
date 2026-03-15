@@ -13,6 +13,7 @@ import HearingScreeningForm from "../pages/Hearing/HearingScreeningForm.vue";
 import PatientRegistrationForm from "../pages/Patient/PatientRegistrationForm.vue";
 
 import AddSoundForm from "../pages/sound/AddSoundForm.vue";
+import AudioLibraryPage from "../pages/sound/AudioLibraryPage.vue";
 
 
 const routes = [
@@ -39,6 +40,7 @@ const routes = [
 
   // ? Sound Management
   { path: "/add-sound", name: "add-sound", component: AddSoundForm },
+  { path: "/audio-library", name: "audio-library", component: AudioLibraryPage },
 ];
 
 export const router = createRouter({
