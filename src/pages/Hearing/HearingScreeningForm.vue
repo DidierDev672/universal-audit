@@ -32,6 +32,7 @@
       </div>
 
       <!-- Form -->
+      
       <form @submit.prevent="handleSubmit" class="p-8 space-y-8">
         
         <!-- Nombre de la Categoría -->
@@ -101,6 +102,27 @@
             </svg>
             <span>Categoría del tipo de sonido que se evaluará (frecuencias, tonos, palabras, etc.)</span>
           </p>
+        </div>
+
+          <!-- Descripción -->
+        <div class="space-y-2">
+          <label for="description" class="flex items-center gap-2 text-sm font-semibold text-gray-800">
+            Descripción
+            <span class="text-red-500">*</span>
+          </label>
+          <textarea
+            id="description"
+            v-model="formData.description"
+            required
+            placeholder="Escribe una descripción aquí..."
+            :class="[
+              'w-full px-4 py-4 border-2 rounded-2xl transition-all duration-200',
+              'focus:outline-none focus:ring-4',
+              errors.description
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-100'
+                : 'border-blue-200 focus:border-blue-500 focus:ring-blue-100',
+            ]"
+          ></textarea>
         </div>
 
         <!-- Agregar Sonido -->
@@ -448,6 +470,9 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import { supabaseClientVue  } from '../../supabase';
 
 interface ResponseOption {
   id: string;
@@ -458,6 +483,7 @@ interface ResponseOption {
 // Form Data
 const formData = ref({
   categoryName: '',
+  description: '',
 });
 
 const audioFile = ref<File | null>(null);
@@ -616,19 +642,36 @@ const handleSubmit = async () => {
   
   isSubmitting.value = true;
   
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  try{
+    await new Promise(resolve => setTimeout(resolve, 2000));
   
+  await  uploadFileToSupabase();
   const data = {
-    categoryName: formData.value.categoryName,
-    audioFile: audioFile.value,
-    responseOptions: responseOptions.value.filter(opt => opt.text),
-    createdAt: new Date(),
+    title: formData.value.categoryName,
+    description: formData.value.description,
+    sound: audioURL.value,
+    optionsAnswer: responseOptions.value.map(opt => ({
+      id: uuidv4(),
+      text: opt.text,
+      value: opt.isCorrect == true ? 1 : 0,
+    })),
   };
-  
-  console.log('Tamizaje guardado:', data);
-  
+
+  console.log('Data: ', data);
+  axios.post('http://localhost:3000/api/v1/screenings', data)
+    .then(response => {
+      console.log('Tamizaje guardado en el servidor:', response.data);
+    })
+    .catch(error => {
+      console.error('Error al guardar el tamizaje:', error);
+    });
   isSubmitting.value = false;
   showSuccessModal.value = true;
+  } catch(error: any){
+    console.error('Error en el proceso de guardado:', error);
+  }finally {
+    isSubmitting.value = false;
+  }
 };
 
 const resetForm = () => {
@@ -647,6 +690,27 @@ const resetForm = () => {
     options: '',
   };
 };
+
+const uploadFileToSupabase = async () =>{
+  try{
+    const { data, error } = await supabaseClientVue.storage
+    .from('audio-tamizaje')
+    .upload(`public/${audioFile.value?.name}`, audioFile.value as File, {
+      cacheControl: '3600',
+      upsert: false,
+    });
+
+    if(error){
+      throw error;
+    }
+
+    console.log('Archivo subido con éxito:', data);
+    audioURL.value = data.fullPath;
+    return data;
+  } catch(error: any){
+    console.error('Error al subir el archivo:', error.message || error);
+  }
+}
 </script>
 
 <style scoped>
