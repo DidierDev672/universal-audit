@@ -15,8 +15,12 @@ import PatientRegistrationForm from "../pages/Patient/PatientRegistrationForm.vu
 import AddSoundForm from "../pages/sound/AddSoundForm.vue";
 import AudioLibraryPage from "../pages/sound/AudioLibraryPage.vue";
 
+import CreateScreeningPage from "../presentation/pages/screening/CreateScreeningPage.vue";
+import ResourceNoteBookPage from "../pages/notebook/ResourceNoteBookPage.vue";
+
 
 const routes = [
+  { path: '/', redirect: '/research' },
   {  path: "/research", name: "home", component: DashBoardResearch },
   { path: "/questionnaire", name: "questionnaire", component: TinnitusDashboard },
   { path: "/hearing", name: "hearing", component: HearingDashboard },
@@ -41,6 +45,10 @@ const routes = [
   // ? Sound Management
   { path: "/add-sound", name: "add-sound", component: AddSoundForm },
   { path: "/audio-library", name: "audio-library", component: AudioLibraryPage },
+
+  // ? Screening Management
+  { path: "/create-screening", name: "create-screening", component: CreateScreeningPage },
+  { path: "/notebook", name: "note book", component: ResourceNoteBookPage }
 ];
 
 export const router = createRouter({

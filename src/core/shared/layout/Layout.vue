@@ -3,6 +3,7 @@
     <!-- Sidebar -->
     <Sidebar
       :is-open="isSidebarOpen"
+      :active-item="activeItem"
       @toggle="toggleSidebar"
       @navigate="handleNavigate"
     />
@@ -85,6 +86,21 @@
               </svg>
               <span>Lista de sonidos</span>
               </RouterLink>
+             <RouterLink 
+  to="/create-screening"
+  class="flex items-center gap-2 px-4 py-3 bg-white border-2 border-blue-200 text-gray-700 rounded-xl font-medium hover:bg-blue-50 hover:border-blue-300 transition-all"
+>
+  <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+      stroke-width="2" 
+      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543-.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543-.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"
+    />
+  </svg>
+
+  <span>Crear examen de tamizaje</span>
+</RouterLink>
             </div>
           </nav>
           <RouterView></RouterView>
@@ -104,6 +120,7 @@
 
 <script  setup lang="ts">
   import { ref, computed } from 'vue';
+  import { useRoute } from 'vue-router';
   import Sidebar from '../sidebar/Sidebar.vue';
   import Footer from '../footer/Footer.vue';
 
@@ -121,6 +138,7 @@ const props = withDefaults(defineProps<Props>(), {
   pageSubtitle: 'Resumen de actividades',
 });
 
+const route = useRoute();
 const isSidebarOpen = ref(false);
 const currentPage = ref('dashboard');
 
@@ -132,6 +150,15 @@ const userInitials = computed(() => {
 
 const currentPageTitle = computed(() => props.pageTitle);
 const currentPageSubtitle = computed(() => props.pageSubtitle);
+
+const activeItem = computed(() => {
+  const path = route.path;
+  if (path === '/research-form') return 'crear-investigacion-auditiva';
+  if (path === '/tinnitus-questionnaire') return 'crear-cuestionarios-tinnitus';
+  if (path === '/hearing-screening-form' || path === '/create-screening') return 'crear-tamizaje';
+  if (path === '/patient-registration-form') return 'crear-registro-paciente';
+  return '';
+});
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
