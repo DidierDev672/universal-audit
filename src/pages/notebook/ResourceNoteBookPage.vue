@@ -583,8 +583,57 @@
                 </div>
 
                 <!-- Descripción de la Nota -->
-                <div class="prose prose-sm max-w-none">
+                <div class="prose prose-sm max-w-none mb-4">
                   <p class="text-gray-700 whitespace-pre-wrap">{{ note.description }}</p>
+                </div>
+
+                <!-- Botón Analizar con IA -->
+                <div v-if="note.description?.trim()" class="mb-4">
+                  <button
+                    @click="analyzeNoteWithAI(note)"
+                    :disabled="isAnalyzingNote[note.id]"
+                    class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg font-medium hover:from-emerald-600 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg v-if="!isAnalyzingNote[note.id]" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                    <svg v-else class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    {{ isAnalyzingNote[note.id] ? 'Analizando...' : 'Analizar con IA' }}
+                  </button>
+                </div>
+
+                <!-- Resultados del Análisis IA -->
+                <div v-if="note.aiAnalysis" class="mt-4 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl">
+                  <div class="flex items-center gap-2 mb-3">
+                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    <h4 class="font-semibold text-purple-800">Orientación Clínica (IA)</h4>
+                    <span class="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
+                      {{ formatDate(note.aiAnalysis.analyzedAt) }}
+                    </span>
+                  </div>
+                  
+                  <div class="space-y-2">
+                    <div
+                      v-for="(suggestion, index) in note.aiAnalysis.suggestions"
+                      :key="index"
+                      class="flex items-start gap-3 p-3 bg-white/70 rounded-lg"
+                    >
+                      <span class="w-6 h-6 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-xs font-semibold shrink-0">
+                        {{ index + 1 }}
+                      </span>
+                      <p class="text-sm text-gray-700">{{ suggestion }}</p>
+                    </div>
+                  </div>
+
+                  <div class="mt-3 pt-3 border-t border-purple-200">
+                    <p class="text-xs text-purple-600 italic">
+                      ⚠️ Estas son sugerencias orientativas, no constituyen diagnóstico médico. Consulte con un profesional de salud.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1038,6 +1087,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
 import Tesseract from 'tesseract.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { LMStudioClient } from '@lmstudio/sdk';
 import {
   initDatabase,
   saveResource,
@@ -1063,8 +1113,28 @@ if (typeof window !== 'undefined') {
 }
 
 // Configurar Gemini AI
-const GEMINI_API_KEY = 'AIzaSyDNP0r2CAaKvjf0sT4DQMvir1b-zTxMVho';
+const GEMINI_API_KEY = 'AIzaSyDWorLQO9nxyF_cZ4KsGT4z1XzHSKAiYVg';
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
+/**
+ * Función para enviar chat a LMStudio (ejecutar solo cuando LMStudio esté corriendo)
+ */
+const sendNoteChat = async (prompt: string = "Hello, how are you?") => {
+  try {
+    const client = new LMStudioClient();
+    const model = await client.llm.model("google/gemma-3-4b");
+    const result = await model.respond(prompt);
+    console.log('LMStudio response:', result.content);
+    return result.content;
+  } catch (error) {
+    console.error('Error al conectar con LMStudio:', error);
+    console.log('Asegúrate de que LMStudio esté corriendo en http://localhost:1234');
+    return null;
+  }
+};
+
+// NOTA: Descomentar solo cuando LMStudio esté corriendo y el SDK esté estable
+// sendNoteChat();
 
 interface Resource {
   id: number;
@@ -1097,6 +1167,12 @@ interface Highlight {
   noteId?: string;
 }
 
+interface AIAnalysis {
+  suggestions: string[];
+  analyzedAt: Date;
+  promptSent: string;
+}
+
 interface ClinicalNote {
   id: string;
   highlightId: string;
@@ -1107,6 +1183,7 @@ interface ClinicalNote {
   description: string;
   createdAt: Date;
   updatedAt?: Date;
+  aiAnalysis?: AIAnalysis;
 }
 
 // Variables reactivas
@@ -1137,6 +1214,9 @@ const noteForm = ref({
 });
 const isTextSelected = ref(false);
 const selectionRange = ref<{ start: number; end: number; text: string } | null>(null);
+
+// Variables para análisis de IA en notas clínicas
+const isAnalyzingNote = ref<Record<string, boolean>>({});
 
 // Variables para tooltip flotante de subrayado
 const showHighlightTooltip = ref(false);
@@ -1644,6 +1724,70 @@ const deleteHighlightWithNote = async (highlightId: string) => {
 };
 
 /**
+ * Analiza una nota clínica con IA y genera propuestas orientativas
+ */
+const analyzeNoteWithAI = async (note: ClinicalNote) => {
+  if (!note.description?.trim()) {
+    alert('La nota debe tener contenido para analizar');
+    return;
+  }
+
+  // Marcar como analizando
+  isAnalyzingNote.value[note.id] = true;
+
+  try {
+    // Construir el prompt para la IA
+    const prompt = `Actúa como un asistente de orientación clínica (no médico). 
+
+Analiza la siguiente nota clínica y proporciona 3-5 sugerencias orientativas, NO diagnósticos. Las sugerencias deben ser:
+- Claras y comprensibles
+- Responsables y prudentes
+- No deterministas (evita conclusiones definitivas)
+- Orientadas a recomendar consultar con profesionales cuando sea apropiado
+
+NOTA CLÍNICA:
+Título: ${note.title}
+Descripción: ${note.description}
+Texto subrayado: ${note.highlightText}
+
+Proporciona las sugerencias numeradas, una por línea, sin introducción ni conclusión.`;
+
+    // Llamar al servicio de IA (usando Gemini)
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    const text = response.text();
+
+    // Procesar la respuesta para extraer sugerencias
+    const suggestions = text
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0 && !line.match(/^\d+\./)) // Remove number prefixes
+      .map(line => line.replace(/^\d+\.\s*/, '')) // Clean up any remaining numbers
+      .slice(0, 5); // Máximo 5 sugerencias
+
+    // Si no se extrajeron sugerencias, usar el texto completo dividido en oraciones
+    const finalSuggestions = suggestions.length > 0 
+      ? suggestions 
+      : text.split('.').filter(s => s.trim().length > 20).slice(0, 5);
+
+    // Guardar el análisis en la nota
+    note.aiAnalysis = {
+      suggestions: finalSuggestions,
+      analyzedAt: new Date(),
+      promptSent: prompt
+    };
+
+    console.log(`✅ Nota ${note.id} analizada con IA:`, finalSuggestions);
+  } catch (error) {
+    console.error('Error al analizar nota con IA:', error);
+    alert('Error al analizar la nota. Por favor intenta de nuevo.');
+  } finally {
+    isAnalyzingNote.value[note.id] = false;
+  }
+};
+
+/**
  * Confirmar y limpiar todos los highlights
  */
 const clearAllHighlightsConfirm = async () => {
@@ -2074,7 +2218,7 @@ const chatWithAI = async () => {
     ).join('\n\n');
 
     // Llamar a Gemini AI
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
     
     const prompt = `Eres un asistente experto especializado en análisis de documentos académicos. Tu tarea es responder preguntas específicas basándote únicamente en el contenido completo de los recursos transcritos.
 
