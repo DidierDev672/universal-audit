@@ -156,162 +156,440 @@
       </div>
     </aside>
 
-    <!-- Panel Central - Chat -->
+    <!-- Panel Central - Chat con Tabs -->
     <main class="flex-1 flex flex-col">
-      <!-- Resumen de Recursos Seleccionados -->
+      <!-- Tabs Navigation -->
       <div class="bg-white border-b border-blue-100 shadow-sm">
-        <div class="p-6">
-          <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-            </svg>
-            Contexto de Conversación
-          </h2>
-
-          <div v-if="selectedResources.length === 0" class="bg-gray-50 rounded-xl p-6 text-center border-2 border-dashed border-gray-200">
-            <p class="text-sm text-gray-500">No hay recursos seleccionados. Selecciona recursos del panel izquierdo para comenzar.</p>
-          </div>
-
-          <div v-else class="flex flex-wrap gap-2">
-            <div
-              v-for="resourceId in selectedResources"
-              :key="resourceId"
-              :class="[
-                'px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2',
-                getResourceColor(getResourceById(resourceId)?.type || '').badge
-              ]"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex">
+          <button
+            @click="activeTab = 'chat'"
+            :class="[
+              'flex-1 px-6 py-4 font-medium transition-all border-b-2',
+              activeTab === 'chat'
+                ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+            ]"
+          >
+            <div class="flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+              </svg>
+              Chat
+            </div>
+          </button>
+          <button
+            @click="activeTab = 'tree'"
+            :class="[
+              'flex-1 px-6 py-4 font-medium transition-all border-b-2',
+              activeTab === 'tree'
+                ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+            ]"
+          >
+            <div class="flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+              </svg>
+              Árbol de Recursos
+            </div>
+          </button>
+          <button
+            @click="activeTab = 'notes'"
+            :class="[
+              'flex-1 px-6 py-4 font-medium transition-all border-b-2',
+              activeTab === 'notes'
+                ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+            ]"
+          >
+            <div class="flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
-              {{ getResourceById(resourceId)?.name }}
-              <button
-                @click="toggleResourceSelection(resourceId)"
-                class="ml-1 hover:bg-white/30 rounded-full p-0.5"
-              >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-              </button>
+              Notas Clínicas
+              <span v-if="clinicalNotes.length > 0" class="ml-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs rounded-full">
+                {{ clinicalNotes.length }}
+              </span>
             </div>
-          </div>
+          </button>
         </div>
       </div>
 
-      <!-- Área de Chat -->
-      <div class="flex-1 overflow-y-auto p-6 space-y-4" ref="chatContainer">
-        <!-- Mensaje de bienvenida -->
-        <div v-if="messages.length === 0" class="flex items-center justify-center h-full">
-          <div class="text-center max-w-md">
-            <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Asistente de Recursos</h3>
-            <p class="text-gray-600 mb-6">Selecciona recursos, transcríbelos y haz preguntas sobre su contenido</p>
-            <div class="bg-indigo-50 rounded-xl p-4 text-left">
-              <p class="text-sm font-semibold text-indigo-900 mb-2">Ejemplos de preguntas:</p>
-              <ul class="text-sm text-indigo-700 space-y-1">
-                <li>• ¿Qué dicen estos documentos sobre tinnitus?</li>
-                <li>• Resume los puntos principales</li>
-                <li>• ¿Hay información sobre tratamientos?</li>
-              </ul>
+      <!-- Tab Content -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Chat Tab -->
+        <div v-if="activeTab === 'chat'" class="flex-1 flex flex-col">
+          <!-- Resumen de Recursos Seleccionados -->
+          <div class="bg-white border-b border-blue-100 shadow-sm">
+            <div class="p-6">
+              <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+                Contexto de Conversación
+              </h2>
+
+              <div v-if="selectedResources.length === 0" class="bg-gray-50 rounded-xl p-6 text-center border-2 border-dashed border-gray-200">
+                <p class="text-sm text-gray-500">No hay recursos seleccionados. Selecciona recursos del panel izquierdo para comenzar.</p>
+              </div>
+
+              <div v-else class="flex flex-wrap gap-2">
+                <div
+                  v-for="resourceId in selectedResources"
+                  :key="resourceId"
+                  :class="[
+                    'px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2',
+                    getResourceColor(getResourceById(resourceId)?.type || '').badge
+                  ]"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  {{ getResourceById(resourceId)?.name }}
+                  <button
+                    @click="toggleResourceSelection(resourceId)"
+                    class="ml-1 hover:bg-white/30 rounded-full p-0.5"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Mensajes del Chat -->
-        <div
-          v-for="message in messages"
-          :key="message.id"
-          :class="[
-            'flex',
-            message.role === 'user' ? 'justify-end' : 'justify-start'
-          ]"
-        >
-          <div :class="[
-            'max-w-3xl rounded-2xl px-6 py-4',
-            message.role === 'user'
-              ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
-              : 'bg-white border border-gray-200 text-gray-800'
-          ]">
-            <div class="flex items-start gap-3">
-              <div v-if="message.role === 'assistant'" class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                </svg>
+          <!-- Área de Chat -->
+          <div class="flex-1 overflow-y-auto p-6 space-y-4" ref="chatContainer">
+            <!-- Mensaje de bienvenida -->
+            <div v-if="messages.length === 0" class="flex items-center justify-center h-full">
+              <div class="text-center max-w-md">
+                <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Asistente de Recursos</h3>
+                <p class="text-gray-600 mb-6">Selecciona recursos, transcríbelos y haz preguntas sobre su contenido</p>
+                <div class="bg-indigo-50 rounded-xl p-4 text-left">
+                  <p class="text-sm font-semibold text-indigo-900 mb-2">Ejemplos de preguntas:</p>
+                  <ul class="text-sm text-indigo-700 space-y-1">
+                    <li>• ¿Qué dicen estos documentos sobre tinnitus?</li>
+                    <li>• Resume los puntos principales</li>
+                    <li>• ¿Hay información sobre tratamientos?</li>
+                  </ul>
+                </div>
               </div>
-              
-              <div class="flex-1">
-                <p class="text-sm whitespace-pre-wrap">{{ message.content }}</p>
-                
-                <!-- Recursos citados -->
-                <div v-if="message.resources && message.resources.length > 0" class="mt-3 pt-3 border-t border-white/20">
-                  <p class="text-xs opacity-70 mb-2">Basado en:</p>
-                  <div class="flex flex-wrap gap-1">
-                    <span
-                      v-for="resourceId in message.resources"
-                      :key="resourceId"
-                      class="text-xs px-2 py-1 bg-white/20 rounded-lg"
-                    >
-                      {{ getResourceById(resourceId)?.name }}
-                    </span>
+            </div>
+
+            <!-- Mensajes del Chat -->
+            <div
+              v-for="message in messages"
+              :key="message.id"
+              :class="[
+                'flex',
+                message.role === 'user' ? 'justify-end' : 'justify-start'
+              ]"
+            >
+              <div :class="[
+                'max-w-3xl rounded-2xl px-6 py-4',
+                message.role === 'user'
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white'
+                  : 'bg-white border border-gray-200 text-gray-800'
+              ]">
+                <div class="flex items-start gap-3">
+                  <div v-if="message.role === 'assistant'" class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                  </div>
+                  
+                  <div class="flex-1">
+                    <p class="text-sm whitespace-pre-wrap">{{ message.content }}</p>
+                    
+                    <!-- Recursos citados -->
+                    <div v-if="message.resources && message.resources.length > 0" class="mt-3 pt-3 border-t border-white/20">
+                      <p class="text-xs opacity-70 mb-2">Basado en:</p>
+                      <div class="flex flex-wrap gap-1">
+                        <span
+                          v-for="resourceId in message.resources"
+                          :key="resourceId"
+                          class="text-xs px-2 py-1 bg-white/20 rounded-lg"
+                        >
+                          {{ getResourceById(resourceId)?.name }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="message.role === 'user'" class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div v-if="message.role === 'user'" class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+            <!-- Loading indicator -->
+            <div v-if="isThinking" class="flex justify-start">
+              <div class="max-w-3xl bg-white border border-gray-200 rounded-2xl px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-indigo-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                  </div>
+                  <p class="text-sm text-gray-600">Analizando recursos...</p>
+                </div>
+              </div>
+            </div>
+
+            <div ref="messagesEnd"></div>
+          </div>
+
+          <!-- Input de Chat -->
+          <div class="border-t border-gray-200 bg-white p-6">
+            <form @submit.prevent="chatWithAI" class="flex gap-3">
+              <input
+                v-model="userInput"
+                type="text"
+                placeholder="Pregunta sobre los recursos seleccionados..."
+                :disabled="selectedResources.length === 0 || isThinking"
+                class="flex-1 px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all disabled:bg-gray-50 disabled:cursor-not-allowed"
+              />
+              <button
+                type="submit"
+                :disabled="!userInput.trim() || selectedResources.length === 0 || isThinking"
+                class="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                 </svg>
+              </button>
+            </form>
+            <p class="text-xs text-gray-500 mt-2">
+              {{ selectedResources.length > 0 
+                ? `Consultando ${selectedResources.length} recurso(s) seleccionado(s)` 
+                : 'Selecciona al menos un recurso para comenzar' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Tree Tab -->
+        <div v-if="activeTab === 'tree'" class="flex-1 flex flex-col">
+          <!-- Header del Árbol -->
+          <div class="bg-white border-b border-blue-100 shadow-sm p-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+              </svg>
+              Flujo de Transcripciones
+            </h2>
+            <p class="text-sm text-gray-600">Visualización jerárquica de recursos y sus transcripciones</p>
+          </div>
+
+          <!-- Árbol de Recursos -->
+          <div class="flex-1 overflow-y-auto p-6">
+            <div v-if="resources.length === 0" class="text-center py-12">
+              <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+              </div>
+              <p class="text-sm text-gray-500">No hay recursos para mostrar en el árbol</p>
+            </div>
+
+            <!-- Árbol con Recursos -->
+            <div v-else class="space-y-4">
+              <div
+                v-for="resource in resources"
+                :key="resource.id"
+                class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
+              >
+                <!-- Header del Recurso -->
+                <div class="bg-gradient-to-r from-gray-50 to-blue-50 px-4 py-3 border-b border-gray-200">
+                  <div class="flex items-center gap-3">
+                    <div :class="[
+                      'w-8 h-8 rounded-lg flex items-center justify-center',
+                      getResourceColor(resource.type).bg
+                    ]">
+                      <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <h3 class="text-sm font-semibold text-gray-800">{{ resource.name }}</h3>
+                      <p class="text-xs text-gray-500">{{ resource.type }} • {{ formatDate(resource.createdAt) }}</p>
+                    </div>
+                    <div :class="[
+                      'px-2 py-1 rounded-lg text-xs font-medium',
+                      resource.transcriptionStatus === 'completed' ? 'bg-green-100 text-green-700' :
+                      resource.transcriptionStatus === 'processing' ? 'bg-yellow-100 text-yellow-700' :
+                      resource.transcriptionStatus === 'error' ? 'bg-red-100 text-red-700' :
+                      'bg-gray-100 text-gray-600'
+                    ]">
+                      {{ resource.transcriptionStatus === 'completed' ? 'Transcrito' :
+                         resource.transcriptionStatus === 'processing' ? 'Procesando...' :
+                         resource.transcriptionStatus === 'error' ? 'Error' :
+                         'No transcrito' }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contenido del Recurso (Transcripción) -->
+                <div class="p-4">
+                  <!-- Si no hay transcripción -->
+                  <div v-if="!resource.transcription" class="text-center py-6">
+                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                      </svg>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-3">Este recurso aún no ha sido transcrito</p>
+                    <button
+                      @click="toggleResourceSelection(resource.id); transcribeSelectedResources();"
+                      class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm font-medium"
+                    >
+                      Transcribir Ahora
+                    </button>
+                  </div>
+
+                  <!-- Si hay transcripción -->
+                  <div v-else class="space-y-3">
+                    <!-- Estadísticas de la Transcripción -->
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                      <div class="bg-gray-50 rounded-lg p-3 text-center">
+                        <p class="text-xs text-gray-500 mb-1">Palabras</p>
+                        <p class="text-lg font-bold text-gray-800">{{ countWords(resource.transcription) }}</p>
+                      </div>
+                      <div class="bg-gray-50 rounded-lg p-3 text-center">
+                        <p class="text-xs text-gray-500 mb-1">Caracteres</p>
+                        <p class="text-lg font-bold text-gray-800">{{ resource.transcription?.length || 0 }}</p>
+                      </div>
+                      <div class="bg-gray-50 rounded-lg p-3 text-center">
+                        <p class="text-xs text-gray-500 mb-1">Líneas</p>
+                        <p class="text-lg font-bold text-gray-800">{{ countLines(resource.transcription) }}</p>
+                      </div>
+                    </div>
+
+                    <!-- Preview de la Transcripción -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                      <div class="flex items-center justify-between mb-2">
+                        <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                          <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                          </svg>
+                          Vista Previa
+                        </h4>
+                        <div class="flex gap-2">
+                          <button
+                            @click="viewTranscription(resource)"
+                            class="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition-colors"
+                          >
+                            Ver Completo
+                          </button>
+                          <button
+                            @click="copyTranscriptionText(resource.transcription)"
+                            class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                          >
+                            Copiar
+                          </button>
+                        </div>
+                      </div>
+                      <div class="text-sm text-gray-600 line-clamp-3 whitespace-pre-wrap">
+                        {{ resource.transcription }}
+                      </div>
+                    </div>
+
+                    <!-- Palabras Clave (Simulado) -->
+                    <div class="bg-blue-50 rounded-lg p-3">
+                      <h5 class="text-xs font-semibold text-blue-800 mb-2">Palabras Clave Detectadas</h5>
+                      <div class="flex flex-wrap gap-1">
+                        <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">tinnitus</span>
+                        <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">auditivo</span>
+                        <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">tratamiento</span>
+                        <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">síntomas</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Loading indicator -->
-        <div v-if="isThinking" class="flex justify-start">
-          <div class="max-w-3xl bg-white border border-gray-200 rounded-2xl px-6 py-4">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                <svg class="w-5 h-5 text-indigo-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        <!-- Notas Clínicas Tab -->
+        <div v-if="activeTab === 'notes'" class="flex-1 flex flex-col">
+          <!-- Header de Notas Clínicas -->
+          <div class="bg-white border-b border-blue-100 shadow-sm p-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Notas Clínicas
+            </h2>
+            <p class="text-sm text-gray-600">
+              Notas creadas desde textos subrayados en las transcripciones.
+              Haz doble clic en cualquier subrayado para agregar o editar una nota.
+            </p>
+          </div>
+
+          <!-- Lista de Notas Clínicas -->
+          <div class="flex-1 overflow-y-auto p-6">
+            <div v-if="clinicalNotes.length === 0" class="text-center py-12">
+              <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
               </div>
-              <p class="text-sm text-gray-600">Analizando recursos...</p>
+              <h3 class="text-lg font-medium text-gray-800 mb-2">No hay notas clínicas</h3>
+              <p class="text-sm text-gray-500 max-w-md mx-auto">
+                Abre una transcripción, selecciona texto y subrayalo con los colores disponibles.
+                Luego haz doble clic en el subrayado para crear una nota clínica.
+              </p>
+            </div>
+
+            <div v-else class="space-y-4">
+              <div
+                v-for="note in clinicalNotes"
+                :key="note.id"
+                class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all"
+              >
+                <!-- Header de la Nota -->
+                <div class="flex items-start justify-between mb-3">
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ note.title }}</h3>
+                    <p class="text-xs text-gray-500 flex items-center gap-2">
+                      <span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded">{{ note.resourceName }}</span>
+                      <span>•</span>
+                      <span>{{ formatDate(note.createdAt) }}</span>
+                    </p>
+                  </div>
+                  <button
+                    @click="deleteClinicalNote(note.id); clinicalNotes = clinicalNotes.filter(n => n.id !== note.id)"
+                    class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Texto Subrayado -->
+                <div class="mb-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+                  <p class="text-xs text-yellow-800 font-medium mb-1">Texto subrayado:</p>
+                  <p class="text-sm text-gray-700 italic line-clamp-2">"{{ note.highlightText }}"</p>
+                </div>
+
+                <!-- Descripción de la Nota -->
+                <div class="prose prose-sm max-w-none">
+                  <p class="text-gray-700 whitespace-pre-wrap">{{ note.description }}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        <div ref="messagesEnd"></div>
-      </div>
-
-      <!-- Input de Chat -->
-      <div class="border-t border-gray-200 bg-white p-6">
-        <form @submit.prevent="chatWithAI" class="flex gap-3">
-          <input
-            v-model="userInput"
-            type="text"
-            placeholder="Pregunta sobre los recursos seleccionados..."
-            :disabled="selectedResources.length === 0 || isThinking"
-            class="flex-1 px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all disabled:bg-gray-50 disabled:cursor-not-allowed"
-          />
-          <button
-            type="submit"
-            :disabled="!userInput.trim() || selectedResources.length === 0 || isThinking"
-            class="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-            </svg>
-          </button>
-        </form>
-        <p class="text-xs text-gray-500 mt-2">
-          {{ selectedResources.length > 0 
-            ? `Consultando ${selectedResources.length} recurso(s) seleccionado(s)` 
-            : 'Selecciona al menos un recurso para comenzar' }}
-        </p>
       </div>
     </main>
 
@@ -356,7 +634,58 @@
                 </div>
               </div>
 
-              <!-- Transcription Text -->
+              <!-- Toolbar de Subrayado Mejorado -->
+              <div class="mb-4 p-4 bg-white rounded-xl shadow-sm border border-gray-200">
+                <div class="flex items-center gap-3 mb-3">
+                  <span class="text-sm font-semibold text-gray-700">Selecciona texto y elige un color para subrayar:</span>
+                </div>
+                
+                <!-- Botones de color que crean highlight directamente -->
+                <div class="flex items-center gap-2 flex-wrap">
+                  <button
+                    v-for="color in highlightColors"
+                    :key="color"
+                    @click="selectedHighlightColor = color; if (isTextSelected) createHighlightFromTooltip(color)"
+                    :class="[
+                      'px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2',
+                      selectedHighlightColor === color 
+                        ? 'ring-2 ring-offset-2 ring-gray-800 scale-105' 
+                        : 'hover:scale-105',
+                      color === 'yellow' && 'bg-yellow-200 text-yellow-800 hover:bg-yellow-300',
+                      color === 'green' && 'bg-green-200 text-green-800 hover:bg-green-300',
+                      color === 'red' && 'bg-red-200 text-red-800 hover:bg-red-300',
+                      color === 'purple' && 'bg-purple-200 text-purple-800 hover:bg-purple-300',
+                      color === 'orange' && 'bg-orange-200 text-orange-800 hover:bg-orange-300'
+                    ]"
+                    :disabled="!isTextSelected"
+                  >
+                    <div :class="[
+                      'w-3 h-3 rounded-full',
+                      color === 'yellow' && 'bg-yellow-500',
+                      color === 'green' && 'bg-green-500',
+                      color === 'red' && 'bg-red-500',
+                      color === 'purple' && 'bg-purple-500',
+                      color === 'orange' && 'bg-orange-500'
+                    ]" />
+                    {{ color === 'yellow' ? 'Amarillo' : color === 'green' ? 'Verde' : color === 'red' ? 'Rojo' : color === 'purple' ? 'Púrpura' : 'Naranja' }}
+                  </button>
+                </div>
+                
+                <!-- Mensaje de ayuda -->
+                <div class="mt-3 text-xs text-gray-500 flex items-center gap-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <span v-if="isTextSelected">
+                    ✅ Texto seleccionado. Haz clic en un color para subrayar.
+                  </span>
+                  <span v-else>
+                    1. Selecciona texto con el mouse  →  2. Haz clic en un color para subrayar  →  3. Haz doble clic en el subrayado para agregar nota
+                  </span>
+                </div>
+              </div>
+
+              <!-- Transcription Text with Highlights -->
               <div class="bg-white rounded-xl p-6 shadow-sm">
                 <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
                   <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -364,7 +693,10 @@
                   </svg>
                   Contenido Transcrito
                 </h4>
-                <div class="prose prose-sm max-w-none">
+                <div 
+                  class="prose prose-sm max-w-none"
+                  @mouseup="handleTextSelection"
+                >
                   <p class="text-gray-700 whitespace-pre-wrap leading-relaxed">{{ currentTranscription.transcription }}</p>
                 </div>
               </div>
@@ -394,7 +726,7 @@
               class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-medium hover:bg-indigo-200 transition-all"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002 2v8a2 2 0 00-2 2z"/>
               </svg>
               Copiar
             </button>
@@ -512,15 +844,218 @@
         </div>
       </div>
     </transition>
+
+    <!-- Modal Nota de Highlight -->
+    <transition name="modal">
+      <div
+        v-if="showHighlightNoteModal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        @click="closeHighlightNoteModal"
+      >
+        <div
+          class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden"
+          @click.stop
+        >
+          <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-800">
+                {{ currentHighlight?.noteId ? 'Editar Nota Clínica' : 'Crear Nota Clínica' }}
+              </h3>
+              <p class="text-xs text-gray-500">Agrega información clínica sobre el texto subrayado.</p>
+            </div>
+            <button
+              type="button"
+              @click="closeHighlightNoteModal"
+              class="text-gray-500 hover:text-gray-700 p-2 rounded-full"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <form @submit.prevent="saveHighlightNote" class="p-6 space-y-4">
+            <!-- Texto Subrayado -->
+            <div class="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+              <p class="text-xs text-yellow-800 font-medium mb-1">Texto subrayado:</p>
+              <p class="text-sm text-gray-700 italic line-clamp-3">"{{ currentHighlight?.text }}"</p>
+            </div>
+
+            <div>
+              <label class="text-xs font-medium text-gray-700">Título de la Nota</label>
+              <input
+                v-model="noteForm.title"
+                type="text"
+                placeholder="Ej: Síntoma importante, Tratamiento recomendado..."
+                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="text-xs font-medium text-gray-700">Descripción</label>
+              <textarea
+                v-model="noteForm.description"
+                rows="4"
+                placeholder="Describe la relevancia clínica de este texto..."
+                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+                required
+              ></textarea>
+            </div>
+
+            <div class="flex items-center justify-end gap-2">
+              <button
+                v-if="currentHighlight?.noteId"
+                type="button"
+                @click="deleteHighlightWithNote(currentHighlight.id)"
+                class="px-4 py-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200"
+              >
+                Eliminar
+              </button>
+              <button
+                type="button"
+                @click="closeHighlightNoteModal"
+                class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+              >
+                {{ currentHighlight?.noteId ? 'Actualizar Nota' : 'Guardar Nota' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Botón Flotante de Configuración de Subrayado -->
+    <div class="fixed bottom-6 right-6 z-40">
+      <!-- Menú de configuración -->
+      <transition name="scale">
+        <div
+          v-if="showHighlightConfigMenu"
+          class="absolute bottom-16 right-0 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 w-72 mb-2"
+        >
+          <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
+            <h4 class="font-semibold text-gray-800 text-sm">Configuración de Subrayado</h4>
+            <button
+              @click="showHighlightConfigMenu = false"
+              class="text-gray-400 hover:text-gray-600"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Colores por defecto -->
+          <div class="mb-4">
+            <p class="text-xs font-medium text-gray-600 mb-2">Color por defecto:</p>
+            <div class="flex gap-2">
+              <button
+                v-for="color in highlightColors"
+                :key="color"
+                @click="selectedHighlightColor = color"
+                :class="[
+                  'w-8 h-8 rounded-lg border-2 transition-all',
+                  selectedHighlightColor === color ? 'border-gray-800 scale-110' : 'border-transparent',
+                  color === 'yellow' && 'bg-yellow-300',
+                  color === 'green' && 'bg-green-300',
+                  color === 'red' && 'bg-red-300',
+                  color === 'purple' && 'bg-purple-300',
+                  color === 'orange' && 'bg-orange-300'
+                ]"
+                :title="color"
+              />
+            </div>
+          </div>
+          
+          <!-- Estadísticas de subrayados -->
+          <div class="bg-gray-50 rounded-lg p-3 mb-3">
+            <p class="text-xs text-gray-600 mb-1">Estadísticas:</p>
+            <div class="flex justify-between text-xs">
+              <span class="text-gray-500">Subrayados:</span>
+              <span class="font-semibold text-gray-800">{{ highlights.length }}</span>
+            </div>
+            <div class="flex justify-between text-xs mt-1">
+              <span class="text-gray-500">Notas clínicas:</span>
+              <span class="font-semibold text-gray-800">{{ clinicalNotes.length }}</span>
+            </div>
+          </div>
+          
+          <!-- Acciones -->
+          <div class="space-y-2">
+            <button
+              @click="clearAllHighlightsConfirm"
+              class="w-full px-3 py-2 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              Limpiar todos los subrayados
+            </button>
+            <button
+              @click="exportHighlights"
+              class="w-full px-3 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-medium hover:bg-indigo-100 transition-colors flex items-center justify-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+              Exportar subrayados
+            </button>
+          </div>
+        </div>
+      </transition>
+      
+      <!-- Botón principal flotante -->
+      <button
+        @click="showHighlightConfigMenu = !showHighlightConfigMenu"
+        :class="[
+          'w-14 h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center',
+          showHighlightConfigMenu 
+            ? 'bg-gray-800 text-white rotate-45' 
+            : 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:scale-110 hover:shadow-xl'
+        ]"
+        title="Configuración de Subrayado"
+      >
+        <svg v-if="!showHighlightConfigMenu" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+        </svg>
+        <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed, nextTick, onMounted } from 'vue';
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
 import Tesseract from 'tesseract.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import {
+  initDatabase,
+  saveResource,
+  getAllResources,
+  deleteResource as deleteResourceFromDB,
+  saveFile,
+  getFile,
+  deleteFile,
+  saveHighlight,
+  getHighlightsByResource,
+  getHighlightById,
+  deleteHighlight,
+  saveClinicalNote,
+  getAllClinicalNotes,
+  deleteClinicalNote,
+  getClinicalNoteByHighlightId,
+  type HighlightColor
+} from '../../services/persistenceService';
 
 // Configurar el worker de PDF.js
 if (typeof window !== 'undefined') {
@@ -529,7 +1064,7 @@ if (typeof window !== 'undefined') {
 
 // Configurar Gemini AI
 const GEMINI_API_KEY = 'AIzaSyDNP0r2CAaKvjf0sT4DQMvir1b-zTxMVho';
-const genAI = new GoogleGenerativeAI({ apiKey: GEMINI_API_KEY });
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 interface Resource {
   id: number;
@@ -550,6 +1085,30 @@ interface Message {
   resources: number[];
 }
 
+// Interfaces para Highlights y Notas Clínicas
+interface Highlight {
+  id: string;
+  resourceId: number;
+  text: string;
+  color: HighlightColor;
+  startOffset: number;
+  endOffset: number;
+  createdAt: Date;
+  noteId?: string;
+}
+
+interface ClinicalNote {
+  id: string;
+  highlightId: string;
+  resourceId: number;
+  resourceName: string;
+  highlightText: string;
+  title: string;
+  description: string;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
 // Variables reactivas
 const resources = ref<Resource[]>([]);
 const selectedResources = ref<number[]>([]);
@@ -562,6 +1121,44 @@ const showAddResourceModal = ref(false);
 const currentTranscription = ref<Resource | null>(null);
 const messagesEnd = ref<HTMLElement | null>(null);
 const chatContainer = ref<HTMLElement | null>(null);
+const activeTab = ref<'chat' | 'tree' | 'notes'>('chat');
+const isLoading = ref(false);
+const loadError = ref<string | null>(null);
+
+// Variables para Highlights y Notas Clínicas
+const highlights = ref<Highlight[]>([]);
+const clinicalNotes = ref<ClinicalNote[]>([]);
+const selectedHighlightColor = ref<HighlightColor>('yellow');
+const showHighlightNoteModal = ref(false);
+const currentHighlight = ref<Highlight | null>(null);
+const noteForm = ref({
+  title: '',
+  description: ''
+});
+const isTextSelected = ref(false);
+const selectionRange = ref<{ start: number; end: number; text: string } | null>(null);
+
+// Variables para tooltip flotante de subrayado
+const showHighlightTooltip = ref(false);
+const highlightTooltipPosition = ref({ x: 0, y: 0 });
+
+// Variables para botón flotante de configuración
+const showHighlightConfigMenu = ref(false);
+
+// Colores disponibles para subrayado
+const highlightColors: HighlightColor[] = ['yellow', 'green', 'red', 'purple', 'orange'];
+
+// Función auxiliar para obtener clase de color del botón
+const getHighlightButtonClass = (color: HighlightColor): string => {
+  const colorMap: Record<HighlightColor, string> = {
+    yellow: 'bg-yellow-300',
+    green: 'bg-green-300',
+    red: 'bg-red-300',
+    purple: 'bg-purple-300',
+    orange: 'bg-orange-300'
+  };
+  return colorMap[color];
+};
 
 // Contadores
 let messageIdCounter = 0;
@@ -584,6 +1181,533 @@ const canAddResource = computed(() => {
 
 // Funciones helper
 const getResourceById = (id: number) => resources.value.find((r) => r.id === id);
+
+// ✅ FUNCIÓN DE CARGA DE RECURSOS (PERSISTENCIA)
+const loadResources = async () => {
+  try {
+    isLoading.value = true;
+    loadError.value = null;
+    
+    // Inicializar base de datos
+    await initDatabase();
+    
+    // Cargar recursos desde IndexedDB
+    const storedResources = await getAllResources();
+    
+    // Recuperar archivos y reconstruir objetos Resource
+    const loadedResources: Resource[] = [];
+    let maxId = 0;
+    
+    for (const stored of storedResources) {
+      // Actualizar contador de IDs
+      if (stored.id > maxId) maxId = stored.id;
+      
+      // Reconstruir recurso
+      const resource: Resource = {
+        id: stored.id,
+        name: stored.name,
+        type: stored.type,
+        description: stored.description,
+        createdAt: new Date(stored.createdAt),
+        url: stored.url,
+        transcription: stored.transcription,
+        transcriptionStatus: stored.transcriptionStatus
+      };
+      
+      // Si tiene archivo asociado, recuperarlo
+      if (stored.fileId) {
+        const file = await getFile(stored.fileId);
+        if (file) {
+          resource.file = file;
+        }
+      }
+      
+      loadedResources.push(resource);
+    }
+    
+    // Actualizar estado
+    resources.value = loadedResources;
+    resourceIdCounter.value = maxId + 1;
+    
+    console.log(`✅ Cargados ${loadedResources.length} recursos desde IndexedDB`);
+  } catch (error) {
+    console.error('Error al cargar recursos:', error);
+    loadError.value = `Error al cargar recursos: ${error}`;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Cargar recursos al montar el componente
+onMounted(() => {
+  loadResources();
+  loadAllClinicalNotes();
+});
+
+// ✅ FUNCIONES PARA HIGHLIGHTS Y NOTAS CLÍNICAS
+
+/**
+ * Carga todos los highlights de un recurso y los renderiza en el DOM
+ */
+const loadHighlightsForResource = async (resourceId: number) => {
+  try {
+    const storedHighlights = await getHighlightsByResource(resourceId);
+    const loadedHighlights: Highlight[] = storedHighlights.map(h => ({
+      id: h.id,
+      resourceId: h.resourceId,
+      text: h.text,
+      color: h.color,
+      startOffset: h.startOffset,
+      endOffset: h.endOffset,
+      createdAt: new Date(h.createdAt),
+      noteId: h.noteId
+    }));
+    
+    // Filtrar highlights del recurso actual
+    highlights.value = highlights.value.filter(h => h.resourceId !== resourceId);
+    highlights.value.push(...loadedHighlights);
+    
+    // Renderizar los highlights en el DOM después de cargar
+    nextTick(() => {
+      renderHighlightsInTranscription();
+    });
+    
+    return loadedHighlights;
+  } catch (error) {
+    console.error('Error al cargar highlights:', error);
+    return [];
+  }
+};
+
+/**
+ * Renderiza los highlights existentes en el texto de la transcripción
+ */
+const renderHighlightsInTranscription = () => {
+  if (!currentTranscription.value?.transcription) return;
+  
+  const container = document.querySelector('.prose p');
+  if (!container) return;
+  
+  const resourceId = currentTranscription.value.id;
+  const resourceHighlights = highlights.value.filter(h => h.resourceId === resourceId);
+  
+  if (resourceHighlights.length === 0) return;
+  
+  // Obtener el texto original
+  const originalText = currentTranscription.value.transcription;
+  
+  // Crear un nuevo HTML con los highlights aplicados
+  let html = originalText;
+  
+  // Ordenar highlights por posición (de atrás hacia adelante para no desplazar índices)
+  const sortedHighlights = [...resourceHighlights].sort((a, b) => b.startOffset - a.startOffset);
+  
+  // Aplicar cada highlight
+  for (const highlight of sortedHighlights) {
+    const colorStyles: Record<HighlightColor, string> = {
+      yellow: 'background-color: #fef08a;',
+      green: 'background-color: #bbf7d0;',
+      red: 'background-color: #fecaca;',
+      purple: 'background-color: #e9d5ff;',
+      orange: 'background-color: #fed7aa;'
+    };
+    
+    const escapedText = highlight.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escapedText})`, 'g');
+    
+    html = html.replace(regex, `<span 
+      data-highlight-id="${highlight.id}" 
+      data-color="${highlight.color}"
+      style="${colorStyles[highlight.color]} padding: 2px 4px; border-radius: 3px; cursor: pointer;"
+      class="highlighted-text"
+    >$1</span>`);
+  }
+  
+  // Actualizar el contenido del contenedor
+  container.innerHTML = html;
+  
+  // Agregar event listeners a los spans creados
+  const spans = container.querySelectorAll('.highlighted-text');
+  spans.forEach(span => {
+    span.addEventListener('dblclick', () => {
+      const highlightId = span.getAttribute('data-highlight-id');
+      const highlight = highlights.value.find(h => h.id === highlightId);
+      if (highlight) {
+        handleHighlightDoubleClick(highlight);
+      }
+    });
+  });
+  
+  console.log(`✅ ${resourceHighlights.length} highlights renderizados en el DOM`);
+};
+
+/**
+ * Carga todas las notas clínicas
+ */
+const loadAllClinicalNotes = async () => {
+  try {
+    const storedNotes = await getAllClinicalNotes();
+    clinicalNotes.value = storedNotes.map(n => {
+      const resource = getResourceById(n.resourceId);
+      return {
+        id: n.id,
+        highlightId: n.highlightId,
+        resourceId: n.resourceId,
+        resourceName: resource?.name || 'Recurso desconocido',
+        highlightText: '', // Se actualizará después
+        title: n.title,
+        description: n.description,
+        createdAt: new Date(n.createdAt),
+        updatedAt: n.updatedAt ? new Date(n.updatedAt) : undefined
+      };
+    });
+    
+    // Actualizar el texto del highlight para cada nota
+    for (const note of clinicalNotes.value) {
+      const highlight = await getHighlightById(note.highlightId);
+      if (highlight) {
+        note.highlightText = highlight.text;
+      }
+    }
+    
+    console.log(`✅ Cargadas ${clinicalNotes.value.length} notas clínicas`);
+  } catch (error) {
+    console.error('Error al cargar notas clínicas:', error);
+  }
+};
+
+/**
+ * Obtiene el color de highlight según el tipo seleccionado
+ */
+const getHighlightColorClass = (color: HighlightColor): string => {
+  const colorMap: Record<HighlightColor, string> = {
+    yellow: 'bg-yellow-200 hover:bg-yellow-300',
+    green: 'bg-green-200 hover:bg-green-300',
+    red: 'bg-red-200 hover:bg-red-300',
+    purple: 'bg-purple-200 hover:bg-purple-300',
+    orange: 'bg-orange-200 hover:bg-orange-300'
+  };
+  return colorMap[color] || colorMap.yellow;
+};
+
+/**
+ * Maneja la selección de texto en la transcripción - muestra tooltip flotante
+ */
+const handleTextSelection = (event: MouseEvent) => {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) {
+    isTextSelected.value = false;
+    selectionRange.value = null;
+    showHighlightTooltip.value = false;
+    return;
+  }
+  
+  const range = selection.getRangeAt(0);
+  const text = selection.toString().trim();
+  
+  if (text.length > 0) {
+    isTextSelected.value = true;
+    selectionRange.value = {
+      start: range.startOffset,
+      end: range.endOffset,
+      text: text
+    };
+    
+    // Mostrar tooltip flotante cerca del cursor
+    showHighlightTooltip.value = true;
+    highlightTooltipPosition.value = {
+      x: event.clientX,
+      y: event.clientY - 60 // Posicionar arriba del cursor
+    };
+  } else {
+    isTextSelected.value = false;
+    selectionRange.value = null;
+    showHighlightTooltip.value = false;
+  }
+};
+
+/**
+ * Aplica el subrayado visual al texto seleccionado en el DOM
+ */
+const applyHighlightToDOM = (range: Range, color: HighlightColor, highlightId: string) => {
+  const span = document.createElement('span');
+  span.className = `${getHighlightColorClass(color)} cursor-pointer transition-all`;
+  span.dataset.highlightId = highlightId;
+  span.dataset.color = color;
+  
+  // Aplicar estilos inline para asegurar visibilidad
+  const colorStyles: Record<HighlightColor, string> = {
+    yellow: 'background-color: #fef08a;',
+    green: 'background-color: #bbf7d0;',
+    red: 'background-color: #fecaca;',
+    purple: 'background-color: #e9d5ff;',
+    orange: 'background-color: #fed7aa;'
+  };
+  span.style.cssText = `${colorStyles[color]} padding: 2px 4px; border-radius: 3px;`;
+  
+  try {
+    range.surroundContents(span);
+    
+    // Agregar evento de doble clic al span
+    span.addEventListener('dblclick', () => {
+      const highlight = highlights.value.find(h => h.id === highlightId);
+      if (highlight) {
+        handleHighlightDoubleClick(highlight);
+      }
+    });
+    
+    return span;
+  } catch (error) {
+    console.error('Error al aplicar highlight al DOM:', error);
+    return null;
+  }
+};
+
+/**
+ * Crea un highlight con el texto seleccionado desde el tooltip
+ */
+const createHighlightFromTooltip = async (color: HighlightColor) => {
+  if (!currentTranscription.value || !selectionRange.value) return;
+  
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) return;
+  
+  const range = selection.getRangeAt(0);
+  const resourceId = currentTranscription.value.id;
+  const highlightId = `highlight-${resourceId}-${Date.now()}`;
+  
+  // Aplicar el subrayado visual al DOM primero
+  const span = applyHighlightToDOM(range, color, highlightId);
+  if (!span) {
+    console.error('No se pudo aplicar el highlight al DOM');
+    return;
+  }
+  
+  const newHighlight: Highlight = {
+    id: highlightId,
+    resourceId: resourceId,
+    text: selectionRange.value.text,
+    color: color,
+    startOffset: selectionRange.value.start,
+    endOffset: selectionRange.value.end,
+    createdAt: new Date()
+  };
+  
+  try {
+    // Guardar en IndexedDB
+    await saveHighlight({
+      id: newHighlight.id,
+      resourceId: newHighlight.resourceId,
+      text: newHighlight.text,
+      color: newHighlight.color,
+      startOffset: newHighlight.startOffset,
+      endOffset: newHighlight.endOffset,
+      createdAt: newHighlight.createdAt.toISOString()
+    });
+    
+    // Agregar al estado
+    highlights.value.push(newHighlight);
+    
+    // Ocultar tooltip y limpiar selección
+    showHighlightTooltip.value = false;
+    window.getSelection()?.removeAllRanges();
+    isTextSelected.value = false;
+    selectionRange.value = null;
+    
+    // Abrir modal para crear nota
+    currentHighlight.value = newHighlight;
+    noteForm.value = { title: '', description: '' };
+    showHighlightNoteModal.value = true;
+    
+    console.log(`✅ Highlight creado y aplicado visualmente: ${highlightId}`);
+  } catch (error) {
+    console.error('Error al crear highlight:', error);
+  }
+};
+
+/**
+ * Maneja el doble clic en un highlight existente
+ */
+const handleHighlightDoubleClick = async (highlight: Highlight) => {
+  currentHighlight.value = highlight;
+  
+  // Buscar si ya existe una nota para este highlight
+  const existingNote = await getClinicalNoteByHighlightId(highlight.id);
+  
+  if (existingNote) {
+    // Cargar datos de la nota existente
+    noteForm.value = {
+      title: existingNote.title,
+      description: existingNote.description
+    };
+  } else {
+    // Crear nueva nota
+    noteForm.value = { title: '', description: '' };
+  }
+  
+  showHighlightNoteModal.value = true;
+};
+
+/**
+ * Guarda la nota clínica asociada al highlight
+ */
+const saveHighlightNote = async () => {
+  if (!currentHighlight.value) return;
+  
+  const noteId = `note-${currentHighlight.value.id}`;
+  const now = new Date();
+  
+  const note: ClinicalNote = {
+    id: noteId,
+    highlightId: currentHighlight.value.id,
+    resourceId: currentHighlight.value.resourceId,
+    resourceName: getResourceById(currentHighlight.value.resourceId)?.name || 'Recurso',
+    highlightText: currentHighlight.value.text,
+    title: noteForm.value.title,
+    description: noteForm.value.description,
+    createdAt: now,
+    updatedAt: now
+  };
+  
+  try {
+    // Guardar en IndexedDB
+    await saveClinicalNote({
+      id: note.id,
+      highlightId: note.highlightId,
+      resourceId: note.resourceId,
+      title: note.title,
+      description: note.description,
+      createdAt: note.createdAt.toISOString(),
+      updatedAt: note.updatedAt?.toISOString()
+    });
+    
+    // Actualizar el highlight con el noteId
+    await saveHighlight({
+      id: currentHighlight.value.id,
+      resourceId: currentHighlight.value.resourceId,
+      text: currentHighlight.value.text,
+      color: currentHighlight.value.color,
+      startOffset: currentHighlight.value.startOffset,
+      endOffset: currentHighlight.value.endOffset,
+      createdAt: currentHighlight.value.createdAt.toISOString(),
+      noteId: noteId
+    });
+    
+    currentHighlight.value.noteId = noteId;
+    
+    // Actualizar lista de notas
+    const existingIndex = clinicalNotes.value.findIndex(n => n.id === noteId);
+    if (existingIndex >= 0) {
+      clinicalNotes.value[existingIndex] = note;
+    } else {
+      clinicalNotes.value.unshift(note);
+    }
+    
+    console.log(`✅ Nota clínica guardada: ${noteId}`);
+    
+    // Cerrar modal
+    closeHighlightNoteModal();
+  } catch (error) {
+    console.error('Error al guardar nota clínica:', error);
+  }
+};
+
+/**
+ * Cierra el modal de nota de highlight
+ */
+const closeHighlightNoteModal = () => {
+  showHighlightNoteModal.value = false;
+  currentHighlight.value = null;
+  noteForm.value = { title: '', description: '' };
+};
+
+/**
+ * Elimina un highlight y su nota asociada
+ */
+const deleteHighlightWithNote = async (highlightId: string) => {
+  try {
+    // Eliminar nota asociada si existe
+    const note = await getClinicalNoteByHighlightId(highlightId);
+    if (note) {
+      await deleteClinicalNote(note.id);
+      clinicalNotes.value = clinicalNotes.value.filter(n => n.id !== note.id);
+    }
+    
+    // Eliminar highlight
+    await deleteHighlight(highlightId);
+    highlights.value = highlights.value.filter(h => h.id !== highlightId);
+    
+    console.log(`✅ Highlight ${highlightId} eliminado`);
+  } catch (error) {
+    console.error('Error al eliminar highlight:', error);
+  }
+};
+
+/**
+ * Confirmar y limpiar todos los highlights
+ */
+const clearAllHighlightsConfirm = async () => {
+  if (!confirm('¿Estás seguro de que deseas eliminar TODOS los subrayados y notas clínicas? Esta acción no se puede deshacer.')) {
+    return;
+  }
+  
+  try {
+    // Eliminar todos los highlights y sus notas
+    for (const highlight of [...highlights.value]) {
+      await deleteHighlightWithNote(highlight.id);
+    }
+    
+    highlights.value = [];
+    clinicalNotes.value = [];
+    
+    console.log('✅ Todos los highlights han sido eliminados');
+    alert('Todos los subrayados y notas han sido eliminados.');
+  } catch (error) {
+    console.error('Error al limpiar highlights:', error);
+  }
+};
+
+/**
+ * Exportar highlights a JSON
+ */
+const exportHighlights = () => {
+  const exportData = {
+    highlights: highlights.value.map(h => ({
+      id: h.id,
+      resourceId: h.resourceId,
+      text: h.text,
+      color: h.color,
+      startOffset: h.startOffset,
+      endOffset: h.endOffset,
+      createdAt: h.createdAt.toISOString(),
+      noteId: h.noteId
+    })),
+    clinicalNotes: clinicalNotes.value.map(n => ({
+      id: n.id,
+      highlightId: n.highlightId,
+      resourceId: n.resourceId,
+      resourceName: n.resourceName,
+      highlightText: n.highlightText,
+      title: n.title,
+      description: n.description,
+      createdAt: n.createdAt.toISOString(),
+      updatedAt: n.updatedAt?.toISOString()
+    })),
+    exportedAt: new Date().toISOString()
+  };
+  
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `highlights_export_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  console.log('✅ Highlights exportados');
+};
 
 const formatDate = (date?: Date | string) => {
   if (!date) return '-';
@@ -625,9 +1749,28 @@ const toggleResourceSelection = (id: number) => {
   }
 };
 
-const deleteResource = (id: number) => {
-  resources.value = resources.value.filter((r) => r.id !== id);
-  selectedResources.value = selectedResources.value.filter((selectedId) => selectedId !== id);
+// ✅ FUNCIÓN DE ELIMINACIÓN CON PERSISTENCIA
+const deleteResource = async (id: number) => {
+  try {
+    // Obtener el recurso antes de eliminarlo
+    const resource = getResourceById(id);
+    
+    // Eliminar archivo asociado si existe
+    if (resource?.file) {
+      await deleteFile(id);
+    }
+    
+    // Eliminar de IndexedDB
+    await deleteResourceFromDB(id);
+    
+    // Eliminar del estado
+    resources.value = resources.value.filter((r) => r.id !== id);
+    selectedResources.value = selectedResources.value.filter((selectedId) => selectedId !== id);
+    
+    console.log(`✅ Recurso ${id} eliminado de IndexedDB`);
+  } catch (error) {
+    console.error('Error al eliminar recurso:', error);
+  }
 };
 
 // Funciones de modal
@@ -653,7 +1796,8 @@ const handleFileChange = (event: Event) => {
   }
 };
 
-const addResource = () => {
+// ✅ FUNCIÓN DE AGREGAR RECURSO CON PERSISTENCIA
+const addResource = async () => {
   const now = new Date();
   const id = resourceIdCounter.value++;
   
@@ -687,7 +1831,35 @@ const addResource = () => {
     url: newResourceMode.value === 'url' ? newResourceUrl.value.trim() : undefined,
   };
 
-  resources.value.unshift(newRes);
+  try {
+    // Guardar archivo en IndexedDB si existe
+    if (newRes.file) {
+      await saveFile(id, newRes.file);
+    }
+    
+    // Guardar metadatos del recurso
+    const resourceToStore = {
+      id: newRes.id,
+      name: newRes.name,
+      type: newRes.type,
+      description: newRes.description,
+      createdAt: newRes.createdAt instanceof Date ? newRes.createdAt.toISOString() : newRes.createdAt,
+      url: newRes.url,
+      transcription: newRes.transcription,
+      transcriptionStatus: newRes.transcriptionStatus,
+      fileId: newRes.file ? id : undefined
+    };
+    
+    await saveResource(resourceToStore);
+    
+    // Agregar al estado
+    resources.value.unshift(newRes);
+    
+    console.log(`✅ Recurso ${id} guardado en IndexedDB`);
+  } catch (error) {
+    console.error('Error al guardar recurso:', error);
+  }
+
   closeAddResourceModal();
 };
 
@@ -749,6 +1921,7 @@ const transcribeSelectedResources = async () => {
   }
 };
 
+// ✅ FUNCIÓN DE TRANSCRIPCIÓN CON PERSISTENCIA
 const transcribeResource = async (resource: Resource): Promise<void> => {
   if (!resource.file) {
     throw new Error('No hay archivo asociado al recurso');
@@ -766,6 +1939,25 @@ const transcribeResource = async (resource: Resource): Promise<void> => {
     resource.transcription = await transcribeImage(resource.file);
   } else {
     throw new Error(`Tipo de archivo no soportado: ${resource.type}`);
+  }
+  
+  // ✅ GUARDAR TRANSCRIPCIÓN EN INDEXEDDB
+  try {
+    const existingResource = await getAllResources().then(resources => 
+      resources.find(r => r.id === resource.id)
+    );
+    
+    if (existingResource) {
+      const updatedResource = {
+        ...existingResource,
+        transcription: resource.transcription,
+        transcriptionStatus: resource.transcriptionStatus
+      };
+      await saveResource(updatedResource);
+      console.log(`✅ Transcripción guardada para recurso ${resource.id}`);
+    }
+  } catch (error) {
+    console.error('Error al guardar transcripción:', error);
   }
 };
 
@@ -905,7 +2097,6 @@ Proporciona una respuesta completa y detallada basada en el contenido transcribi
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    console.log(response.text());
     const aiResponse = response.text() || 'Lo siento, no pude procesar tu pregunta en este momento.';
 
     // Agregar respuesta de la IA
@@ -941,80 +2132,16 @@ Proporciona una respuesta completa y detallada basada en el contenido transcribi
   });
 };
 
-const sendMessage = async () => {
-  if (!userInput.value.trim() || selectedResources.value.length === 0) return;
-
-  messages.value.push({
-    id: messageIdCounter++,
-    role: 'user',
-    content: userInput.value,
-    resources: []
-  });
-
-  const userQuestion = userInput.value;
-  userInput.value = '';
-
-  await scrollToBottom();
-
-  isThinking.value = true;
-  
-  setTimeout(async () => {
-    const transcribedResources = selectedResources.value
-      .map(id => getResourceById(id))
-      .filter(r => r && r.transcription);
-
-    if (transcribedResources.length === 0) {
-      messages.value.push({
-        id: messageIdCounter++,
-        role: 'assistant',
-        content: `⚠️ **Recursos no transcritos**\n\nLos recursos seleccionados aún no han sido transcritos. Por favor, haz clic en "Transcribir Seleccionados" primero.`,
-        resources: [...selectedResources.value]
-      });
-      isThinking.value = false;
-      await scrollToBottom();
-      return;
-    }
-
-    const selectedResourcesNames = transcribedResources
-      .map(r => r?.name)
-      .join(', ');
-
-    let contextInfo = '\n\n📚 **Análisis de documentos:**\n';
-    transcribedResources.forEach(r => {
-      if (r && r.transcription) {
-        const preview = r.transcription.substring(0, 300).replace(/\n/g, ' ');
-        const wordCount = r.transcription.split(/\s+/).length;
-        contextInfo += `\n📄 **${r.name}** (${wordCount} palabras)\n${preview}...\n`;
-      }
-    });
-
-    let responseContent = `Basándome en los ${transcribedResources.length} documento(s) seleccionado(s) (${selectedResourcesNames}), aquí está mi análisis sobre: "${userQuestion}"\n`;
-    
-    responseContent += contextInfo;
-    
-    responseContent += '';
-
-    messages.value.push({
-      id: messageIdCounter++,
-      role: 'assistant',
-      content: responseContent,
-      resources: [...selectedResources.value]
-    });
-
-    isThinking.value = false;
-    await scrollToBottom();
-  }, 2000);
-};
-
-const scrollToBottom = async () => {
-  await nextTick();
-  messagesEnd.value?.scrollIntoView({ behavior: 'smooth' });
-};
-
 // Funciones de visualización
-const viewTranscription = (resource: Resource) => {
+// ✅ FUNCIÓN DE VISUALIZACIÓN DE TRANSCRIPCIÓN CON HIGHLIGHTS
+const viewTranscription = async (resource: Resource) => {
   currentTranscription.value = resource;
   showTranscriptionModal.value = true;
+  
+  // Cargar highlights del recurso
+  if (resource.id) {
+    await loadHighlightsForResource(resource.id);
+  }
 };
 
 const copyTranscription = async () => {
@@ -1022,6 +2149,17 @@ const copyTranscription = async () => {
   
   try {
     await navigator.clipboard.writeText(currentTranscription.value.transcription);
+    alert('Transcripción copiada al portapapeles');
+  } catch (error) {
+    console.error('Error al copiar:', error);
+  }
+};
+
+const copyTranscriptionText = async (text?: string) => {
+  if (!text) return;
+  
+  try {
+    await navigator.clipboard.writeText(text);
     alert('Transcripción copiada al portapapeles');
   } catch (error) {
     console.error('Error al copiar:', error);
@@ -1051,6 +2189,11 @@ const countWords = (text?: string): number => {
 const countLines = (text?: string): number => {
   if (!text) return 0;
   return text.split('\n').length;
+};
+
+const scrollToBottom = async () => {
+  await nextTick();
+  messagesEnd.value?.scrollIntoView({ behavior: 'smooth' });
 };
 </script>
 
