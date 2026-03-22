@@ -215,22 +215,22 @@
         </div>
       </div>
 
-      <!-- Tab Content -->
-      <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Tab Content - Single Scroll Container -->
+      <div class="flex-1 flex flex-col min-h-0">
         <!-- Chat Tab -->
-        <div v-if="activeTab === 'chat'" class="flex-1 flex flex-col">
+        <div v-if="activeTab === 'chat'" class="flex-1 flex flex-col min-h-0 overflow-y-auto">
           <!-- Resumen de Recursos Seleccionados -->
-          <div class="bg-white border-b border-blue-100 shadow-sm">
-            <div class="p-6">
-              <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <div class="bg-white border-b border-blue-100 shadow-sm flex-shrink-0">
+            <div class="p-4">
+              <h2 class="text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
                 <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                 </svg>
-                Contexto de Conversación
+                Recursos en la conversación
               </h2>
 
-              <div v-if="selectedResources.length === 0" class="bg-gray-50 rounded-xl p-6 text-center border-2 border-dashed border-gray-200">
-                <p class="text-sm text-gray-500">No hay recursos seleccionados. Selecciona recursos del panel izquierdo para comenzar.</p>
+              <div v-if="selectedResources.length === 0" class="bg-gray-50 rounded-lg p-4 text-center border border-dashed border-gray-300">
+                <p class="text-sm text-gray-500">Selecciona recursos del panel izquierdo para incluirlos en la conversación.</p>
               </div>
 
               <div v-else class="flex flex-wrap gap-2">
@@ -238,7 +238,7 @@
                   v-for="resourceId in selectedResources"
                   :key="resourceId"
                   :class="[
-                    'px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2',
+                    'px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2',
                     getResourceColor(getResourceById(resourceId)?.type || '').badge
                   ]"
                 >
@@ -377,20 +377,20 @@
         </div>
 
         <!-- Tree Tab -->
-        <div v-if="activeTab === 'tree'" class="flex-1 flex flex-col">
+        <div v-if="activeTab === 'tree'" class="flex-1 flex flex-col min-h-0 overflow-y-auto">
           <!-- Header del Árbol -->
-          <div class="bg-white border-b border-blue-100 shadow-sm p-6">
-            <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <div class="bg-white border-b border-blue-100 shadow-sm p-4 flex-shrink-0">
+            <h2 class="text-base font-semibold text-gray-800 mb-1 flex items-center gap-2">
               <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
               </svg>
               Flujo de Transcripciones
             </h2>
-            <p class="text-sm text-gray-600">Visualización jerárquica de recursos y sus transcripciones</p>
+            <p class="text-xs text-gray-500">Visualización jerárquica de recursos</p>
           </div>
 
           <!-- Árbol de Recursos -->
-          <div class="flex-1 overflow-y-auto p-6">
+          <div class="flex-1 p-4">
             <div v-if="resources.length === 0" class="text-center py-12">
               <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -520,23 +520,37 @@
         </div>
 
         <!-- Notas Clínicas Tab -->
-        <div v-if="activeTab === 'notes'" class="flex-1 flex flex-col">
+        <div v-if="activeTab === 'notes'" class="flex-1 flex flex-col min-h-0">
           <!-- Header de Notas Clínicas -->
-          <div class="bg-white border-b border-blue-100 shadow-sm p-6">
-            <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+          <div class="bg-white border-b border-blue-100 shadow-sm p-4 flex-shrink-0">
+            <h2 class="text-base font-semibold text-gray-800 mb-1 flex items-center gap-2">
               <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
               Notas Clínicas
             </h2>
-            <p class="text-sm text-gray-600">
-              Notas creadas desde textos subrayados en las transcripciones.
-              Haz doble clic en cualquier subrayado para agregar o editar una nota.
+            <p class="text-xs text-gray-500">
+              Notas creadas desde textos subrayados en transcripciones
             </p>
           </div>
 
           <!-- Lista de Notas Clínicas -->
-          <div class="flex-1 overflow-y-auto p-6">
+          <div class="flex-1 overflow-y-auto p-4 relative">
+            <!-- Botón flotante para árbol global -->
+            <button
+              v-if="clinicalNotes.length > 0"
+              @click="generateGlobalTree"
+              class="absolute bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-10 group"
+              title="Ver árbol global de notas"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12"/>
+              </svg>
+              <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Árbol global
+              </span>
+            </button>
+
             <div v-if="clinicalNotes.length === 0" class="text-center py-12">
               <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -557,34 +571,45 @@
                 class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all"
               >
                 <!-- Header de la Nota -->
-                <div class="flex items-start justify-between mb-3">
-                  <div class="flex-1">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ note.title }}</h3>
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex-1 min-w-0">
+                    <h3 class="text-base font-semibold text-gray-900 mb-2 leading-tight">{{ note.title }}</h3>
                     <p class="text-xs text-gray-500 flex items-center gap-2">
-                      <span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded">{{ note.resourceName }}</span>
-                      <span>•</span>
+                      <span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">{{ note.resourceName }}</span>
+                      <span class="text-gray-400">•</span>
                       <span>{{ formatDate(note.createdAt) }}</span>
                     </p>
                   </div>
-                  <button
-                    @click="deleteClinicalNote(note.id); clinicalNotes = clinicalNotes.filter(n => n.id !== note.id)"
-                    class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                  </button>
+                  <div class="flex items-center gap-1 ml-2">
+                    <button
+                      @click="generateTreeFromNote(note)"
+                      class="text-indigo-500 hover:text-indigo-700 p-2 rounded-lg hover:bg-indigo-50 transition-all"
+                      title="Generar árbol de ideas"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12"/>
+                      </svg>
+                    </button>
+                    <button
+                      @click="deleteClinicalNote(note.id); clinicalNotes = clinicalNotes.filter(n => n.id !== note.id)"
+                      class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Texto Subrayado -->
-                <div class="mb-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
-                  <p class="text-xs text-yellow-800 font-medium mb-1">Texto subrayado:</p>
-                  <p class="text-sm text-gray-700 italic line-clamp-2">"{{ note.highlightText }}"</p>
+                <div class="mb-4 p-3 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg">
+                  <p class="text-xs text-amber-800 font-medium mb-1 uppercase tracking-wide">Texto subrayado</p>
+                  <p class="text-sm text-gray-700 italic leading-relaxed">"{{ note.highlightText }}"</p>
                 </div>
 
                 <!-- Descripción de la Nota -->
-                <div class="prose prose-sm max-w-none mb-4">
-                  <p class="text-gray-700 whitespace-pre-wrap">{{ note.description }}</p>
+                <div class="mb-4">
+                  <p class="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{{ note.description }}</p>
                 </div>
 
                 <!-- Botón Analizar con IA -->
@@ -980,6 +1005,72 @@
       </div>
     </transition>
 
+    <!-- Modal de Visualización de Árbol (Vue Flow) -->
+    <transition name="fade">
+      <div
+        v-if="showTreeModal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        @click.self="showTreeModal = false"
+      >
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[80vh] flex flex-col overflow-hidden">
+          <!-- Header -->
+          <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-indigo-100 rounded-lg">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-800">Árbol de Ideas</h3>
+                <p class="text-sm text-gray-500">{{ currentTreeNote?.title }}</p>
+              </div>
+            </div>
+            <button
+              @click="showTreeModal = false"
+              class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-all"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Vue Flow Canvas -->
+          <div class="flex-1 relative bg-gray-50">
+            <VueFlow
+              v-model:nodes="treeNodes"
+              v-model:edges="treeEdges"
+              :default-viewport="{ x: 0, y: 0, zoom: 1 }"
+              :min-zoom="0.2"
+              :max-zoom="4"
+              fit-view-on-init
+              class="w-full h-full"
+            >
+              <!-- Panel de controles -->
+              <div class="absolute top-4 right-4 z-10 flex flex-col gap-2">
+                <button
+                  @click="fitView"
+                  class="bg-white p-2 rounded-lg shadow-md hover:shadow-lg transition-all text-gray-600 hover:text-indigo-600"
+                  title="Ajustar vista"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                  </svg>
+                </button>
+              </div>
+            </VueFlow>
+          </div>
+
+          <!-- Footer con instrucciones -->
+          <div class="p-3 bg-gray-50 border-t border-gray-200 text-xs text-gray-500 flex items-center justify-between">
+            <span>Arrastra para mover • Usa la rueda del ratón para zoom</span>
+            <span class="text-indigo-600 font-medium">{{ treeNodes.length }} nodos • {{ treeEdges.length }} conexiones</span>
+          </div>
+        </div>
+      </div>
+    </transition>
+
     <!-- Botón Flotante de Configuración de Subrayado -->
     <div class="fixed bottom-6 right-6 z-40">
       <!-- Menú de configuración -->
@@ -1087,6 +1178,9 @@ import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
 import Tesseract from 'tesseract.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { VueFlow, useVueFlow, Position } from '@vue-flow/core';
+import '@vue-flow/core/dist/style.css';
+import '@vue-flow/core/dist/theme-default.css';
 import { LMStudioClient } from '@lmstudio/sdk';
 import {
   initDatabase,
@@ -1224,6 +1318,12 @@ const highlightTooltipPosition = ref({ x: 0, y: 0 });
 
 // Variables para botón flotante de configuración
 const showHighlightConfigMenu = ref(false);
+
+// Variables para Vue Flow - Visualización de árbol de notas
+const showTreeModal = ref(false);
+const treeNodes = ref<Array<{id: string, label: string, position: {x: number, y: number}, style?: Record<string, string>}>>([]);
+const treeEdges = ref<Array<{id: string, source: string, target: string}>>([]);
+const currentTreeNote = ref<ClinicalNote | null>(null);
 
 // Colores disponibles para subrayado
 const highlightColors: HighlightColor[] = ['yellow', 'green', 'red', 'purple', 'orange'];
@@ -1690,6 +1790,230 @@ const saveHighlightNote = async () => {
   } catch (error) {
     console.error('Error al guardar nota clínica:', error);
   }
+};
+
+/**
+ * Genera un árbol de ideas a partir del contenido de una nota clínica
+ */
+const generateTreeFromNote = (note: ClinicalNote) => {
+  currentTreeNote.value = note;
+  
+  // Procesar el contenido para crear nodos
+  const content = note.description || '';
+  const title = note.title || 'Nota sin título';
+  const lines = content.split('\n').filter(line => line.trim());
+  
+  const nodes: Array<{id: string, label: string, position: {x: number, y: number}, style?: Record<string, string>}> = [];
+  const edges: Array<{id: string, source: string, target: string}> = [];
+  
+  // Nodo raíz (título de la nota)
+  nodes.push({
+    id: 'root',
+    label: title,
+    position: { x: 400, y: 50 },
+    style: { background: '#4f46e5', color: 'white', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 'bold' }
+  });
+  
+  // Crear nodos hijos a partir del contenido
+  let currentY = 150;
+  let childIndex = 0;
+  
+  lines.forEach((line, index) => {
+    const trimmedLine = line.trim();
+    if (trimmedLine.length > 0) {
+      const nodeId = `node-${index}`;
+      
+      // Determinar el nivel basado en el contenido
+      let level = 1;
+      if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('• ')) {
+        level = 2;
+      } else if (/^\d+\./.test(trimmedLine)) {
+        level = 1;
+      }
+      
+      nodes.push({
+        id: nodeId,
+        label: trimmedLine.substring(0, 50) + (trimmedLine.length > 50 ? '...' : ''),
+        position: { x: 200 + (childIndex % 3) * 200, y: currentY + Math.floor(childIndex / 3) * 100 },
+        style: { 
+          background: level === 1 ? '#e0e7ff' : '#f3f4f6', 
+          border: '1px solid #c7d2fe',
+          padding: '8px 12px',
+          borderRadius: '6px',
+          fontSize: '12px',
+          width: '180px'
+        }
+      });
+      
+      // Conectar con el nodo raíz o con el nodo anterior del mismo nivel
+      edges.push({
+        id: `edge-${index}`,
+        source: level === 1 ? 'root' : `node-${Math.max(0, index - 1)}`,
+        target: nodeId
+      });
+      
+      childIndex++;
+    }
+  });
+  
+  // Si no hay contenido, crear un nodo informativo
+  if (nodes.length === 1) {
+    nodes.push({
+      id: 'info',
+      label: 'Sin contenido detallado',
+      position: { x: 400, y: 200 },
+      style: { background: '#fef3c7', border: '1px solid #fbbf24', padding: '8px', borderRadius: '6px' }
+    });
+    edges.push({
+      id: 'edge-info',
+      source: 'root',
+      target: 'info'
+    });
+  }
+  
+  treeNodes.value = nodes;
+  treeEdges.value = edges;
+  showTreeModal.value = true;
+  
+  console.log(`🌳 Árbol generado: ${nodes.length} nodos, ${edges.length} conexiones`);
+};
+
+/**
+ * Genera un árbol global de todas las notas clínicas
+ * Cada nodo representa una nota completa, conectadas por recurso y fecha
+ */
+const generateGlobalTree = () => {
+  if (clinicalNotes.value.length === 0) {
+    alert('No hay notas clínicas para visualizar');
+    return;
+  }
+
+  const nodes: Array<{id: string, label: string, position: {x: number, y: number}, style?: Record<string, string>}> = [];
+  const edges: Array<{id: string, source: string, target: string}> = [];
+  
+  // Nodo raíz central
+  nodes.push({
+    id: 'root',
+    label: 'Notas Clínicas',
+    position: { x: 400, y: 50 },
+    style: { 
+      background: '#4f46e5', 
+      color: 'white', 
+      border: 'none', 
+      padding: '12px 20px', 
+      borderRadius: '8px', 
+      fontWeight: 'bold',
+      fontSize: '14px'
+    }
+  });
+
+  // Agrupar notas por recurso
+  const notesByResource = new Map<string, ClinicalNote[]>();
+  clinicalNotes.value.forEach(note => {
+    const resourceName = note.resourceName || 'Sin recurso';
+    if (!notesByResource.has(resourceName)) {
+      notesByResource.set(resourceName, []);
+    }
+    notesByResource.get(resourceName)?.push(note);
+  });
+
+  let resourceIndex = 0;
+  const resourceEntries = Array.from(notesByResource.entries());
+  
+  resourceEntries.forEach(([resourceName, notes], rIndex) => {
+    // Nodo de recurso (nivel 1)
+    const resourceNodeId = `resource-${rIndex}`;
+    const resourceX = 150 + (rIndex % 3) * 250;
+    const resourceY = 180 + Math.floor(rIndex / 3) * 150;
+    
+    nodes.push({
+      id: resourceNodeId,
+      label: resourceName,
+      position: { x: resourceX, y: resourceY },
+      style: { 
+        background: '#e0e7ff', 
+        border: '2px solid #6366f1',
+        padding: '10px 16px', 
+        borderRadius: '8px', 
+        fontWeight: '600',
+        fontSize: '12px',
+        color: '#4338ca',
+        width: '160px'
+      }
+    });
+    
+    // Conectar recurso al root
+    edges.push({
+      id: `edge-resource-${rIndex}`,
+      source: 'root',
+      target: resourceNodeId
+    });
+
+    // Ordenar notas por fecha
+    notes.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+    // Crear nodos de notas para este recurso
+    notes.forEach((note, nIndex) => {
+      const noteNodeId = `note-${note.id}`;
+      const noteX = resourceX + (nIndex % 2) * 180 - 90;
+      const noteY = resourceY + 100 + Math.floor(nIndex / 2) * 100;
+      
+      // Truncar título si es muy largo
+      const shortTitle = note.title.length > 25 
+        ? note.title.substring(0, 25) + '...' 
+        : note.title;
+      
+      nodes.push({
+        id: noteNodeId,
+        label: shortTitle,
+        position: { x: noteX, y: noteY },
+        style: { 
+          background: '#f8fafc', 
+          border: '1px solid #cbd5e1',
+          padding: '8px 12px', 
+          borderRadius: '6px', 
+          fontSize: '11px',
+          color: '#334155',
+          width: '140px'
+        }
+      });
+      
+      // Conectar nota a su recurso padre
+      edges.push({
+        id: `edge-note-${note.id}`,
+        source: resourceNodeId,
+        target: noteNodeId
+      });
+
+      // Conectar notas secuenciales del mismo recurso (evolución temporal)
+      if (nIndex > 0) {
+        const prevNote = notes[nIndex - 1];
+        edges.push({
+          id: `edge-sequence-${prevNote.id}-${note.id}`,
+          source: `note-${prevNote.id}`,
+          target: noteNodeId,
+          // @ts-ignore - estilo personalizado para conexiones temporales
+          style: { stroke: '#94a3b8', strokeDasharray: '5,5' }
+        });
+      }
+    });
+  });
+  
+  treeNodes.value = nodes;
+  treeEdges.value = edges;
+  showTreeModal.value = true;
+  currentTreeNote.value = null; // Indica que es vista global
+  
+  console.log(`🌳 Árbol global generado: ${nodes.length} nodos, ${edges.length} conexiones, ${resourceEntries.length} recursos`);
+};
+
+/**
+ * Ajusta la vista del árbol para mostrar todos los nodos
+ */
+const fitView = () => {
+  // La funcionalidad fit-view-on-init ya está habilitada en VueFlow
+  // Esta función puede expandirse para ajustes personalizados
+  console.log('🔍 Ajustando vista del árbol');
 };
 
 /**
