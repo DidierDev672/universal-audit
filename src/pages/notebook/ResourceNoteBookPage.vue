@@ -523,34 +523,14 @@
         <div v-if="activeTab === 'notes'" class="flex-1 flex flex-col min-h-0">
           <!-- Header de Notas Clínicas -->
           <div class="bg-white border-b border-blue-100 shadow-sm p-4 flex-shrink-0">
-            <h2 class="text-base font-semibold text-gray-800 mb-1 flex items-center gap-2">
-              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
-              Notas Clínicas
-            </h2>
-            <p class="text-xs text-gray-500">
-              Notas creadas desde textos subrayados en transcripciones
-            </p>
+            <div>
+              <h2 class="text-lg font-semibold text-gray-800">Notas Clínicas</h2>
+              <p class="text-xs text-gray-500">Notas creadas desde textos subrayados en transcripciones</p>
+            </div>
           </div>
 
-          <!-- Lista de Notas Clínicas -->
-          <div class="flex-1 overflow-y-auto p-4 relative">
-            <!-- Botón flotante para árbol global -->
-            <button
-              v-if="clinicalNotes.length > 0"
-              @click="generateGlobalTree"
-              class="absolute bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-10 group"
-              title="Ver árbol global de notas"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12"/>
-              </svg>
-              <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Árbol global
-              </span>
-            </button>
-
+          <!-- Contenido de Notas Clínicas -->
+          <div class="flex-1 overflow-y-auto p-6 relative">
             <div v-if="clinicalNotes.length === 0" class="text-center py-12">
               <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1071,6 +1051,139 @@
       </div>
     </transition>
 
+    <!-- Modal de Nuevo Cuadro Clínico -->
+    <transition name="fade">
+      <div
+        v-if="showClinicalPictureModal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        @click.self="closeClinicalPictureModal"
+      >
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+          <!-- Header -->
+          <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-emerald-50">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-emerald-100 rounded-lg">
+                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800">Nuevo Cuadro Clínico</h3>
+            </div>
+            <button
+              @click="closeClinicalPictureModal"
+              class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-all"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Formulario -->
+          <div class="p-6 space-y-4">
+            <!-- Título -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+              <input
+                v-model="clinicalPictureForm.title"
+                type="text"
+                placeholder="Ej: Consulta inicial - Paciente Juan Pérez"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+              />
+            </div>
+
+            <!-- Nombre del Paciente -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Paciente</label>
+              <input
+                v-model="clinicalPictureForm.patientName"
+                type="text"
+                placeholder="Nombre completo del paciente"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+              />
+            </div>
+
+            <!-- Descripción -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+              <textarea
+                v-model="clinicalPictureForm.description"
+                rows="3"
+                placeholder="Descripción general del caso o motivo de consulta"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none"
+              />
+            </div>
+
+            <!-- Estado -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+              <select
+                v-model="clinicalPictureForm.status"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+              >
+                <option value="draft">Borrador</option>
+                <option value="active">Activo</option>
+                <option value="completed">Completado</option>
+                <option value="archived">Archivado</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+            <button
+              @click="closeClinicalPictureModal"
+              class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              @click="createNewClinicalPicture"
+              :disabled="isLoadingClinicalPictures || !clinicalPictureForm.title.trim()"
+              class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-medium rounded-lg transition-all flex items-center gap-2"
+            >
+              <svg v-if="isLoadingClinicalPictures" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+              </svg>
+              {{ isLoadingClinicalPictures ? 'Creando...' : 'Crear Cuadro Clínico' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Botones Flotantes de Cuadro Clínico y Árbol (fuera de tabs) -->
+    <div class="fixed bottom-6 right-24 z-40 flex flex-col gap-3">
+      <!-- Botón flotante Ver Cuadros Clínicos -->
+      <button
+        @click="router.push('/clinical-pictures')"
+        class="bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-10 group"
+        title="Ver todos los cuadros clínicos"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+          Ver cuadros clínicos
+        </span>
+      </button>
+
+      <!-- Botón flotante del árbol global -->
+      <button
+        @click="generateGlobalTree"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-10 group"
+        title="Ver árbol global de notas"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12"/>
+        </svg>
+        <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+          Árbol global
+        </span>
+      </button>
+    </div>
+
     <!-- Botón Flotante de Configuración de Subrayado -->
     <div class="fixed bottom-6 right-6 z-40">
       <!-- Menú de configuración -->
@@ -1174,6 +1287,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
 import Tesseract from 'tesseract.js';
@@ -1200,6 +1314,24 @@ import {
   getClinicalNoteByHighlightId,
   type HighlightColor
 } from '../../services/persistenceService';
+
+// Importar servicio de Cuadro Clínico
+import {
+  createClinicalPicture,
+  getClinicalPictureById,
+  listClinicalPictures,
+  updateClinicalPicture,
+  deleteClinicalPicture,
+  addChatMessage,
+  addClinicalNote as addNoteToClinicalPicture,
+  addTranscription,
+  addResource as addResourceToClinicalPicture
+} from '../../services/clinicalPictureService';
+import type {
+  ClinicalPicture,
+  CreateClinicalPictureDTO,
+  ClinicalPictureChatMessage
+} from '../../types/clinicalPicture';
 
 // Configurar el worker de PDF.js
 if (typeof window !== 'undefined') {
@@ -1325,6 +1457,18 @@ const treeNodes = ref<Array<{id: string, label: string, position: {x: number, y:
 const treeEdges = ref<Array<{id: string, source: string, target: string}>>([]);
 const currentTreeNote = ref<ClinicalNote | null>(null);
 
+// Variables para Cuadro Clínico
+const clinicalPictures = ref<ClinicalPicture[]>([]);
+const currentClinicalPicture = ref<ClinicalPicture | null>(null);
+const showClinicalPictureModal = ref(false);
+const clinicalPictureForm = ref<CreateClinicalPictureDTO>({
+  title: '',
+  description: '',
+  patientName: '',
+  status: 'draft'
+});
+const isLoadingClinicalPictures = ref(false);
+
 // Colores disponibles para subrayado
 const highlightColors: HighlightColor[] = ['yellow', 'green', 'red', 'purple', 'orange'];
 
@@ -1343,6 +1487,9 @@ const getHighlightButtonClass = (color: HighlightColor): string => {
 // Contadores
 let messageIdCounter = 0;
 const resourceIdCounter = ref(1);
+
+// Router
+const router = useRouter();
 
 // Add resource modal state
 const newResourceMode = ref<'file' | 'url'>('file');
@@ -2175,6 +2322,145 @@ const exportHighlights = () => {
   URL.revokeObjectURL(url);
   
   console.log('✅ Highlights exportados');
+};
+
+// ============================================
+// FUNCIONES DE CUADRO CLÍNICO
+// ============================================
+
+/**
+ * Cargar todos los cuadros clínicos desde Supabase
+ */
+const loadClinicalPictures = async () => {
+  try {
+    isLoadingClinicalPictures.value = true;
+    const response = await listClinicalPictures();
+    clinicalPictures.value = response.data;
+    console.log(`✅ ${response.data.length} cuadros clínicos cargados`);
+  } catch (error) {
+    console.error('Error al cargar cuadros clínicos:', error);
+    alert('Error al cargar cuadros clínicos');
+  } finally {
+    isLoadingClinicalPictures.value = false;
+  }
+};
+
+/**
+ * Crear un nuevo cuadro clínico
+ */
+const createNewClinicalPicture = async () => {
+  if (!clinicalPictureForm.value.title.trim()) {
+    alert('El título es obligatorio');
+    return;
+  }
+
+  try {
+    isLoadingClinicalPictures.value = true;
+    const newPicture = await createClinicalPicture({
+      title: clinicalPictureForm.value.title,
+      description: clinicalPictureForm.value.description,
+      patientName: clinicalPictureForm.value.patientName,
+      status: clinicalPictureForm.value.status
+    });
+
+    clinicalPictures.value.unshift(newPicture);
+    showClinicalPictureModal.value = false;
+    
+    // Reset form
+    clinicalPictureForm.value = {
+      title: '',
+      description: '',
+      patientName: '',
+      status: 'draft'
+    };
+
+    console.log('✅ Cuadro clínico creado:', newPicture.id);
+    alert('Cuadro clínico creado exitosamente');
+  } catch (error) {
+    console.error('Error al crear cuadro clínico:', error);
+    alert('Error al crear cuadro clínico');
+  } finally {
+    isLoadingClinicalPictures.value = false;
+  }
+};
+
+/**
+ * Abrir un cuadro clínico existente
+ */
+const openClinicalPicture = async (id: string) => {
+  try {
+    isLoadingClinicalPictures.value = true;
+    const picture = await getClinicalPictureById(id);
+    if (picture) {
+      currentClinicalPicture.value = picture;
+      console.log('✅ Cuadro clínico abierto:', picture.title);
+    }
+  } catch (error) {
+    console.error('Error al abrir cuadro clínico:', error);
+    alert('Error al abrir cuadro clínico');
+  } finally {
+    isLoadingClinicalPictures.value = false;
+  }
+};
+
+/**
+ * Guardar chat actual en cuadro clínico
+ */
+const saveChatToClinicalPicture = async (clinicalPictureId: string) => {
+  try {
+    const chatMessages = chatHistory.value.map(msg => ({
+      role: msg.role as 'user' | 'assistant' | 'system',
+      content: msg.content,
+      metadata: { timestamp: msg.timestamp }
+    }));
+
+    for (const message of chatMessages) {
+      await addChatMessage(clinicalPictureId, message);
+    }
+
+    console.log(`✅ ${chatMessages.length} mensajes guardados en cuadro clínico`);
+    alert('Chat guardado en cuadro clínico');
+  } catch (error) {
+    console.error('Error al guardar chat:', error);
+    alert('Error al guardar chat');
+  }
+};
+
+/**
+ * Guardar notas clínicas en cuadro clínico
+ */
+const saveNotesToClinicalPicture = async (clinicalPictureId: string) => {
+  try {
+    for (const note of clinicalNotes.value) {
+      await addNoteToClinicalPicture(clinicalPictureId, {
+        title: note.title,
+        description: note.description,
+        highlightText: note.highlightText,
+        resourceId: note.resourceId,
+        resourceName: note.resourceName,
+        highlightId: note.highlightId
+      });
+    }
+
+    console.log(`✅ ${clinicalNotes.value.length} notas guardadas en cuadro clínico`);
+    alert('Notas guardadas en cuadro clínico');
+  } catch (error) {
+    console.error('Error al guardar notas:', error);
+    alert('Error al guardar notas');
+  }
+};
+
+/**
+ * Cerrar modal de cuadro clínico
+ */
+const closeClinicalPictureModal = () => {
+  showClinicalPictureModal.value = false;
+  clinicalPictureForm.value = {
+    title: '',
+    description: '',
+    patientName: '',
+    status: 'draft'
+  };
 };
 
 const formatDate = (date?: Date | string) => {

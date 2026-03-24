@@ -243,6 +243,56 @@
   </svg>
 </RouterLink>
 
+<!-- Ver Cuadros Clínicos -->
+<RouterLink
+  to="/clinical-pictures"
+  @click="activeItem = 'clinical-pictures'"
+  :class="[
+    'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
+    activeItem === 'clinical-pictures'
+      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+      : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
+  ]"
+>
+  <div :class="[
+    'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
+    activeItem === 'clinical-pictures'
+      ? 'bg-white/20 backdrop-blur-sm'
+      : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
+  ]">
+    <svg :class="[
+        'w-6 h-6 transition-transform',
+        activeItem === 'clinical-pictures' ? 'text-white scale-110' : 'text-emerald-600'
+      ]"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>
+  </div>
+
+  <div class="flex-1 text-left">
+    <span class="font-semibold block">Ver Cuadros Clínicos</span>
+    <p :class="[
+        'text-xs mt-0.5',
+        activeItem === 'clinical-pictures' ? 'text-white/80' : 'text-gray-500'
+      ]">
+      Lista de cuadros clínicos
+    </p>
+  </div>
+
+  <svg
+    v-if="activeItem === 'clinical-pictures'"
+    class="w-5 h-5 text-white animate-pulse"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+  </svg>
+</RouterLink>
+
             <!-- Crear Registro Paciente -->
             <RouterLink 
               to="/patient-registration-form" 

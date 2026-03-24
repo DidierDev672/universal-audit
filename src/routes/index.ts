@@ -18,6 +18,8 @@ import AudioLibraryPage from "../pages/sound/AudioLibraryPage.vue";
 import CreateScreeningPage from "../presentation/pages/screening/CreateScreeningPage.vue";
 import ResourceNoteBookPage from "../pages/notebook/ResourceNoteBookPage.vue";
 
+import ClinicalPicturesListPage from "../pages/clinical/ClinicalPicturesListPage.vue";
+import ClinicalPictureDetailPage from "../pages/clinical/ClinicalPictureDetailPage.vue";
 
 const routes = [
   { path: '/', redirect: '/research' },
@@ -48,7 +50,11 @@ const routes = [
 
   // ? Screening Management
   { path: "/create-screening", name: "create-screening", component: CreateScreeningPage },
-  { path: "/notebook", name: "note book", component: ResourceNoteBookPage }
+  { path: "/notebook", name: "note book", component: ResourceNoteBookPage },
+
+  // ? Clinical Pictures Management
+  { path: "/clinical-pictures", name: "clinical-pictures", component: ClinicalPicturesListPage },
+  { path: "/clinical-picture/:id", name: "clinical-picture-detail", component: ClinicalPictureDetailPage }
 ];
 
 export const router = createRouter({
