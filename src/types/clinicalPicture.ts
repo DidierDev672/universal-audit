@@ -97,7 +97,7 @@ export interface ClinicalPicture {
 }
 
 /**
- * DTO para crear un nuevo cuadro clínico
+ * DTO para crear un nuevo cuadro clínico con todos los datos relacionados
  */
 export interface CreateClinicalPictureDTO {
   title: string;
@@ -106,6 +106,11 @@ export interface CreateClinicalPictureDTO {
   patientName?: string;
   status?: 'draft' | 'active' | 'archived' | 'completed';
   tags?: string[];
+  // Datos relacionados opcionales para creación integral
+  chat?: ClinicalPictureChat;
+  notes?: ClinicalPictureNote[];
+  transcriptions?: ClinicalPictureTranscription[];
+  resources?: ClinicalPictureResource[];
 }
 
 /**

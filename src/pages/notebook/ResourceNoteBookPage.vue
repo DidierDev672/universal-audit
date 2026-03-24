@@ -219,16 +219,32 @@
       <div class="flex-1 flex flex-col min-h-0">
         <!-- Chat Tab -->
         <div v-if="activeTab === 'chat'" class="flex-1 flex flex-col min-h-0 overflow-y-auto">
-          <!-- Resumen de Recursos Seleccionados -->
+          <!-- Header con botón Crear Cuadro Clínico -->
           <div class="bg-white border-b border-blue-100 shadow-sm flex-shrink-0">
-            <div class="p-4">
-              <h2 class="text-base font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                </svg>
-                Recursos en la conversación
-              </h2>
+            <div class="p-4 flex items-center justify-between">
+              <div>
+                <h2 class="text-base font-semibold text-gray-800 mb-1 flex items-center gap-2">
+                  <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                  </svg>
+                  Recursos en la conversación
+                </h2>
+                <p class="text-xs text-gray-500">Selecciona recursos del panel izquierdo para incluirlos en la conversación</p>
+              </div>
 
+              <!-- Botón Crear Cuadro Clínico -->
+              <button
+                @click="showClinicalPictureModal = true"
+                class="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Crear Cuadro Clínico
+              </button>
+            </div>
+
+            <div class="px-4 pb-4">
               <div v-if="selectedResources.length === 0" class="bg-gray-50 rounded-lg p-4 text-center border border-dashed border-gray-300">
                 <p class="text-sm text-gray-500">Selecciona recursos del panel izquierdo para incluirlos en la conversación.</p>
               </div>
@@ -1339,7 +1355,7 @@ if (typeof window !== 'undefined') {
 }
 
 // Configurar Gemini AI
-const GEMINI_API_KEY = 'AIzaSyDWorLQO9nxyF_cZ4KsGT4z1XzHSKAiYVg';
+const GEMINI_API_KEY = 'AIzaSyCxqVJx2Mr3CmNtmEYSyjpgAn1uVHOhcvM';
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 /**
@@ -2346,7 +2362,8 @@ const loadClinicalPictures = async () => {
 };
 
 /**
- * Crear un nuevo cuadro clínico
+ * Crear un nuevo cuadro clínico con todos los datos relacionados
+ * Incluye: recursos, transcripciones, notas clínicas e historial de chat
  */
 const createNewClinicalPicture = async () => {
   if (!clinicalPictureForm.value.title.trim()) {
@@ -2356,16 +2373,73 @@ const createNewClinicalPicture = async () => {
 
   try {
     isLoadingClinicalPictures.value = true;
+
+    // Preparar los recursos con sus transcripciones
+    const resourcesData = resources.value.map(resource => ({
+      id: resource.id,
+      name: resource.name,
+      type: resource.type as 'pdf' | 'audio' | 'video' | 'url' | 'youtube',
+      description: resource.description,
+      url: resource.url,
+      fileSize: resource.file?.size,
+      transcription: resource.transcription,
+      createdAt: new Date()
+    }));
+
+    // Preparar las transcripciones como entidades independientes
+    const transcriptionsData = resources.value
+      .filter(r => r.transcription && r.transcription.trim())
+      .map(resource => ({
+        id: crypto.randomUUID(),
+        text: resource.transcription!,
+        resourceId: resource.id,
+        resourceName: resource.name,
+        createdAt: new Date()
+      }));
+
+    // Preparar las notas clínicas
+    const notesData = clinicalNotes.value.map(note => ({
+      id: note.id,
+      title: note.title,
+      description: note.description,
+      highlightText: note.highlightText,
+      resourceId: note.resourceId,
+      resourceName: note.resourceName,
+      highlightId: note.highlightId,
+      createdAt: new Date(note.createdAt)
+    }));
+
+    // Preparar el chat con todos los mensajes
+    const chatData = {
+      id: crypto.randomUUID(),
+      title: `Chat - ${clinicalPictureForm.value.title}`,
+      messages: messages.value.map(msg => ({
+        id: crypto.randomUUID(),
+        role: msg.role,
+        content: msg.content,
+        timestamp: new Date(),
+        metadata: { resources: msg.resources }
+      })),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    // Crear el cuadro clínico completo con todos los datos
     const newPicture = await createClinicalPicture({
       title: clinicalPictureForm.value.title,
       description: clinicalPictureForm.value.description,
       patientName: clinicalPictureForm.value.patientName,
-      status: clinicalPictureForm.value.status
+      status: clinicalPictureForm.value.status,
+      // Datos relacionados integrados
+      resources: resourcesData,
+      transcriptions: transcriptionsData,
+      notes: notesData,
+      chat: chatData
     });
 
     clinicalPictures.value.unshift(newPicture);
     showClinicalPictureModal.value = false;
-    
+
     // Reset form
     clinicalPictureForm.value = {
       title: '',
@@ -2374,11 +2448,17 @@ const createNewClinicalPicture = async () => {
       status: 'draft'
     };
 
-    console.log('✅ Cuadro clínico creado:', newPicture.id);
-    alert('Cuadro clínico creado exitosamente');
+    console.log('✅ Cuadro clínico creado exitosamente:', {
+      id: newPicture.id,
+      resources: resourcesData.length,
+      transcriptions: transcriptionsData.length,
+      notes: notesData.length,
+      messages: chatData.messages.length
+    });
+    alert(`Cuadro clínico creado exitosamente con ${resourcesData.length} recursos, ${transcriptionsData.length} transcripciones, ${notesData.length} notas y ${chatData.messages.length} mensajes`);
   } catch (error) {
     console.error('Error al crear cuadro clínico:', error);
-    alert('Error al crear cuadro clínico');
+    alert('Error al crear cuadro clínico. Por favor intente nuevamente.');
   } finally {
     isLoadingClinicalPictures.value = false;
   }

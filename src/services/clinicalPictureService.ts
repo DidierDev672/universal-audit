@@ -21,14 +21,27 @@ import type {
 const TABLE_NAME = 'clinical_pictures';
 
 /**
- * Crear un nuevo cuadro clínico
+ * Crear un nuevo cuadro clínico básico (compatibilidad hacia atrás)
  */
 export const createClinicalPicture = async (
   dto: CreateClinicalPictureDTO,
   userId?: string
 ): Promise<ClinicalPicture> => {
+  return createClinicalPictureComplete(dto, userId);
+};
+
+/**
+ * Crear un nuevo cuadro clínico con todos los datos relacionados
+ * Permite crear el cuadro clínico junto con recursos, transcripciones, notas y chat en una sola operación
+ */
+const createClinicalPictureComplete = async (
+  dto: CreateClinicalPictureDTO,
+  userId?: string
+): Promise<ClinicalPicture> => {
   const now = new Date().toISOString();
+  const chatId = crypto.randomUUID();
   
+  // Construir el objeto completo con todos los datos relacionados
   const newClinicalPicture = {
     title: dto.title,
     description: dto.description || null,
@@ -37,15 +50,36 @@ export const createClinicalPicture = async (
     created_by: userId || null,
     status: dto.status || 'draft',
     tags: dto.tags || [],
-    chat: {
-      id: crypto.randomUUID(),
+    // Chat: usar el proporcionado o crear uno vacío
+    chat: dto.chat ? {
+      ...dto.chat,
+      id: dto.chat.id || chatId,
+      createdAt: dto.chat.createdAt || now,
+      updatedAt: dto.chat.updatedAt || now
+    } : {
+      id: chatId,
       messages: [],
       createdAt: now,
       updatedAt: now
     },
-    notes: [],
-    transcriptions: [],
-    resources: [],
+    // Notas: usar las proporcionadas o array vacío
+    notes: (dto.notes || []).map(note => ({
+      ...note,
+      id: note.id || crypto.randomUUID(),
+      createdAt: note.createdAt || now
+    })),
+    // Transcripciones: usar las proporcionadas o array vacío
+    transcriptions: (dto.transcriptions || []).map(transcription => ({
+      ...transcription,
+      id: transcription.id || crypto.randomUUID(),
+      createdAt: transcription.createdAt || now
+    })),
+    // Recursos: usar los proporcionados o array vacío
+    resources: (dto.resources || []).map(resource => ({
+      ...resource,
+      id: resource.id || Date.now(),
+      createdAt: resource.createdAt || now
+    })),
     created_at: now,
     updated_at: now
   };
