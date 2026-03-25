@@ -40,6 +40,17 @@
           </svg>
           {{ isTranscribing ? 'Transcribiendo...' : 'Transcribir Seleccionados' }}
         </button>
+
+        <!-- Botón Vincular Tamizajes/Cuestionarios -->
+        <button
+          @click="showLinkScreeningModal = true"
+          class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
+          Vincular Tamizajes/Cuestionarios
+        </button>
       </div>
 
       <!-- Lista de Recursos -->
@@ -915,6 +926,194 @@
       </div>
     </transition>
 
+    <!-- Modal Vincular Tamizajes/Cuestionarios -->
+    <transition name="modal">
+      <div
+        v-if="showLinkScreeningModal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        @click="showLinkScreeningModal = false"
+      >
+        <div
+          class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+          @click.stop
+        >
+          <!-- Header -->
+          <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-purple-600 to-pink-600">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-white/20 rounded-xl">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-white">Vincular Tamizajes y Cuestionarios</h3>
+                <p class="text-xs text-white/80">Selecciona tamizajes auditivos y cuestionarios de tinnitus para vincular al cuaderno clínico.</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              @click="showLinkScreeningModal = false"
+              class="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Search -->
+          <div class="p-4 border-b border-gray-200">
+            <div class="relative">
+              <input
+                v-model="screeningSearchQuery"
+                type="text"
+                placeholder="Buscar tamizajes o cuestionarios..."
+                class="w-full pl-12 pr-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all"
+              />
+              <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 overflow-y-auto p-4 space-y-6">
+            <!-- Loading State -->
+            <div v-if="isLoadingScreenings" class="text-center py-8">
+              <svg class="w-8 h-8 animate-spin mx-auto mb-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              <p class="text-sm text-gray-600">Cargando tamizajes y cuestionarios...</p>
+            </div>
+
+            <template v-else>
+              <!-- Tamizajes Section -->
+              <div>
+                <h4 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/>
+                    </svg>
+                  </div>
+                  Tamizajes Auditivos
+                </h4>
+                <div class="space-y-2">
+                  <div
+                    v-for="screening in availableScreenings"
+                    :key="screening.id"
+                    @click="toggleScreeningSelection(screening.id)"
+                    :class="[
+                      'p-3 rounded-xl border-2 cursor-pointer transition-all',
+                      selectedScreeningIds.includes(screening.id)
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-blue-300'
+                    ]"
+                  >
+                    <div class="flex items-start gap-3">
+                      <div :class="[
+                        'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5',
+                        selectedScreeningIds.includes(screening.id)
+                          ? 'border-blue-600 bg-blue-600'
+                          : 'border-gray-300'
+                      ]">
+                        <svg v-if="selectedScreeningIds.includes(screening.id)" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <h5 class="font-medium text-gray-800">{{ screening.title }}</h5>
+                        <p class="text-xs text-gray-500 line-clamp-2">{{ screening.description }}</p>
+                        <div class="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                          <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Tamizaje</span>
+                          <span v-if="screening.soundTitle">• {{ screening.soundTitle }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="availableScreenings.length === 0" class="text-center py-4 text-sm text-gray-500">
+                    No hay tamizajes disponibles
+                  </div>
+                </div>
+              </div>
+
+              <!-- Questionnaires Section -->
+              <div>
+                <h4 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                  </div>
+                  Cuestionarios de Tinnitus
+                </h4>
+                <div class="space-y-2">
+                  <div
+                    v-for="questionnaire in availableQuestionnaires"
+                    :key="questionnaire.id"
+                    @click="toggleQuestionnaireSelection(String(questionnaire.id))"
+                    :class="[
+                      'p-3 rounded-xl border-2 cursor-pointer transition-all',
+                      selectedQuestionnaireIds.includes(String(questionnaire.id))
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-purple-300'
+                    ]"
+                  >
+                    <div class="flex items-start gap-3">
+                      <div :class="[
+                        'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5',
+                        selectedQuestionnaireIds.includes(String(questionnaire.id))
+                          ? 'border-purple-600 bg-purple-600'
+                          : 'border-gray-300'
+                      ]">
+                        <svg v-if="selectedQuestionnaireIds.includes(String(questionnaire.id))" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                      </div>
+                      <div class="flex-1">
+                        <h5 class="font-medium text-gray-800">{{ questionnaire.title }}</h5>
+                        <p class="text-xs text-gray-500 line-clamp-2">{{ questionnaire.description }}</p>
+                        <div class="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                          <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded">Cuestionario</span>
+                          <span v-if="questionnaire.questions">• {{ questionnaire.questions.length }} preguntas</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="availableQuestionnaires.length === 0" class="text-center py-4 text-sm text-gray-500">
+                    No hay cuestionarios disponibles
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <!-- Footer -->
+          <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+            <span class="text-sm text-gray-600">
+              {{ selectedScreeningIds.length + selectedQuestionnaireIds.length }} seleccionados
+            </span>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                @click="showLinkScreeningModal = false"
+                class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                @click="linkSelectedScreeningsAndQuestionnaires"
+                :disabled="selectedScreeningIds.length === 0 && selectedQuestionnaireIds.length === 0"
+                class="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Vincular Seleccionados
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
     <!-- Modal Nota de Highlight -->
     <transition name="modal">
       <div
@@ -1302,7 +1501,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted } from 'vue';
+import { ref, computed, nextTick, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
@@ -1348,6 +1547,17 @@ import type {
   CreateClinicalPictureDTO,
   ClinicalPictureChatMessage
 } from '../../types/clinicalPicture';
+
+// Importar servicio de integración para tamizajes y cuestionarios
+import {
+  getAllScreenings,
+  getAllQuestionnaires,
+  searchScreeningsAndQuestionnaires,
+  generateTranscription,
+  formatAsResource,
+  type Screening,
+  type Questionnaire
+} from '../../services/clinicalIntegrationService';
 
 // Configurar el worker de PDF.js
 if (typeof window !== 'undefined') {
@@ -1485,6 +1695,15 @@ const clinicalPictureForm = ref<CreateClinicalPictureDTO>({
 });
 const isLoadingClinicalPictures = ref(false);
 
+// Variables para Tamizajes y Cuestionarios
+const showLinkScreeningModal = ref(false);
+const availableScreenings = ref<Screening[]>([]);
+const availableQuestionnaires = ref<Questionnaire[]>([]);
+const screeningSearchQuery = ref('');
+const isLoadingScreenings = ref(false);
+const selectedScreeningIds = ref<string[]>([]);
+const selectedQuestionnaireIds = ref<string[]>([]);
+
 // Colores disponibles para subrayado
 const highlightColors: HighlightColor[] = ['yellow', 'green', 'red', 'purple', 'orange'];
 
@@ -1585,6 +1804,145 @@ const loadResources = async () => {
 onMounted(() => {
   loadResources();
   loadAllClinicalNotes();
+});
+
+// ✅ FUNCIONES PARA TAMIZAJES Y CUESTIONARIOS
+
+/**
+ * Cargar tamizajes y cuestionarios cuando se abre el modal
+ */
+const loadScreeningsAndQuestionnaires = async () => {
+  isLoadingScreenings.value = true;
+  try {
+    const [screenings, questionnaires] = await Promise.all([
+      getAllScreenings(),
+      getAllQuestionnaires()
+    ]);
+    availableScreenings.value = screenings;
+    availableQuestionnaires.value = questionnaires;
+  } catch (error) {
+    console.error('Error loading screenings and questionnaires:', error);
+    alert('Error al cargar tamizajes y cuestionarios');
+  } finally {
+    isLoadingScreenings.value = false;
+  }
+};
+
+/**
+ * Toggle selección de tamizaje
+ */
+const toggleScreeningSelection = (id: string) => {
+  const index = selectedScreeningIds.value.indexOf(id);
+  if (index === -1) {
+    selectedScreeningIds.value.push(id);
+  } else {
+    selectedScreeningIds.value.splice(index, 1);
+  }
+};
+
+/**
+ * Toggle selección de cuestionario
+ */
+const toggleQuestionnaireSelection = (id: string) => {
+  const index = selectedQuestionnaireIds.value.indexOf(id);
+  if (index === -1) {
+    selectedQuestionnaireIds.value.push(id);
+  } else {
+    selectedQuestionnaireIds.value.splice(index, 1);
+  }
+};
+
+/**
+ * Vincular tamizajes y cuestionarios seleccionados como recursos
+ */
+const linkSelectedScreeningsAndQuestionnaires = async () => {
+  try {
+    // Vincular tamizajes seleccionados
+    for (const screeningId of selectedScreeningIds.value) {
+      const screening = availableScreenings.value.find(s => s.id === screeningId);
+      if (screening) {
+        // Generar transcripción del tamizaje
+        const transcription = await generateTranscription('screening', screeningId);
+
+        // Crear recurso estructurado
+        const resource = formatAsResource(screening, 'screening');
+
+        // Agregar a recursos
+        resources.value.push({
+          ...resource,
+          transcription,
+          transcriptionStatus: 'completed'
+        });
+
+        // Guardar en persistencia
+        await saveResource({
+          id: resource.id,
+          name: resource.name,
+          type: resource.type,
+          description: resource.description,
+          url: resource.url,
+          file: undefined,
+          transcription,
+          createdAt: resource.createdAt
+        });
+
+        console.log('✅ Tamizaje vinculado:', screening.title);
+      }
+    }
+
+    // Vincular cuestionarios seleccionados
+    for (const questionnaireId of selectedQuestionnaireIds.value) {
+      const questionnaire = availableQuestionnaires.value.find(q => String(q.id) === questionnaireId);
+      if (questionnaire) {
+        // Generar transcripción del cuestionario
+        const transcription = await generateTranscription('questionnaire', questionnaireId);
+
+        // Crear recurso estructurado
+        const resource = formatAsResource(questionnaire, 'questionnaire');
+
+        // Agregar a recursos
+        resources.value.push({
+          ...resource,
+          transcription,
+          transcriptionStatus: 'completed'
+        });
+
+        // Guardar en persistencia
+        await saveResource({
+          id: resource.id,
+          name: resource.name,
+          type: resource.type,
+          description: resource.description,
+          url: resource.url,
+          file: undefined,
+          transcription,
+          createdAt: resource.createdAt
+        });
+
+        console.log('✅ Cuestionario vinculado:', questionnaire.title);
+      }
+    }
+
+    // Mostrar mensaje de éxito
+    const totalLinked = selectedScreeningIds.value.length + selectedQuestionnaireIds.value.length;
+    alert(`${totalLinked} elemento(s) vinculado(s) exitosamente al cuaderno clínico`);
+
+    // Cerrar modal y limpiar selecciones
+    showLinkScreeningModal.value = false;
+    selectedScreeningIds.value = [];
+    selectedQuestionnaireIds.value = [];
+
+  } catch (error) {
+    console.error('Error linking screenings/questionnaires:', error);
+    alert('Error al vincular elementos. Por favor intente nuevamente.');
+  }
+};
+
+// Watch para cargar datos cuando se abre el modal
+watch(showLinkScreeningModal, (newValue) => {
+  if (newValue) {
+    loadScreeningsAndQuestionnaires();
+  }
 });
 
 // ✅ FUNCIONES PARA HIGHLIGHTS Y NOTAS CLÍNICAS

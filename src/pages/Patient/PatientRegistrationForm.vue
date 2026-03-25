@@ -153,7 +153,7 @@
             <div class="flex items-center gap-6 mb-3">
               <label class="flex items-center gap-2 cursor-pointer">
                 <input
-                  v-model="formData.hasMedicationAllergy"
+                  v-model="formData.isAllergic"
                   type="radio"
                   :value="true"
                   class="w-4 h-4 text-emerald-600"
@@ -162,7 +162,7 @@
               </label>
               <label class="flex items-center gap-2 cursor-pointer">
                 <input
-                  v-model="formData.hasMedicationAllergy"
+                  v-model="formData.isAllergic"
                   type="radio"
                   :value="false"
                   class="w-4 h-4 text-emerald-600"
@@ -170,17 +170,6 @@
                 <span class="text-gray-700">No</span>
               </label>
             </div>
-            
-            <transition name="fade">
-              <textarea
-                v-if="formData.hasMedicationAllergy === true"
-                v-model="formData.medicationAllergies"
-                rows="3"
-                required
-                placeholder="Especifique a qué medicamentos es alérgico..."
-                class="w-full px-4 py-3 border-2 border-emerald-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-emerald-100 focus:border-emerald-500 transition-all resize-none"
-              ></textarea>
-            </transition>
           </div>
         </div>
 
@@ -208,7 +197,7 @@
                   Nombre Completo del Padre <span class="text-red-500">*</span>
                 </label>
                 <input
-                  v-model="formData.fatherName"
+                  v-model="formData.familyData.father.fullName"
                   type="text"
                   required
                   placeholder="Ej: Carlos Pérez Rodríguez"
@@ -221,7 +210,7 @@
                   Edad del Padre <span class="text-red-500">*</span>
                 </label>
                 <input
-                  v-model.number="formData.fatherAge"
+                  v-model.number="formData.familyData.father.age"
                   type="number"
                   required
                   min="18"
@@ -236,7 +225,7 @@
                   Enfermedades del Padre
                 </label>
                 <textarea
-                  v-model="formData.fatherDiseases"
+                  v-model="formData.familyData.father.diseases"
                   rows="3"
                   placeholder="Especifique enfermedades o condiciones médicas (Ej: Diabetes, Hipertensión). Deje en blanco si no tiene."
                   class="w-full px-4 py-3 bg-white border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all resize-none"
@@ -260,7 +249,7 @@
                   Nombre Completo de la Madre <span class="text-red-500">*</span>
                 </label>
                 <input
-                  v-model="formData.motherName"
+                  v-model="formData.familyData.mother.fullName"
                   type="text"
                   required
                   placeholder="Ej: María García López"
@@ -273,7 +262,7 @@
                   Edad de la Madre <span class="text-red-500">*</span>
                 </label>
                 <input
-                  v-model.number="formData.motherAge"
+                  v-model.number="formData.familyData.mother.age"
                   type="number"
                   required
                   min="18"
@@ -288,7 +277,7 @@
                   Enfermedades de la Madre
                 </label>
                 <textarea
-                  v-model="formData.motherDiseases"
+                  v-model="formData.familyData.mother.diseases"
                   rows="3"
                   placeholder="Especifique enfermedades o condiciones médicas (Ej: Artritis, Colesterol alto). Deje en blanco si no tiene."
                   class="w-full px-4 py-3 bg-white border-2 border-pink-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-pink-100 focus:border-pink-500 transition-all resize-none"
@@ -324,12 +313,6 @@
             <div v-if="formData.height && formData.weight" class="flex items-start gap-3">
               <span class="text-sm font-semibold text-gray-500 w-32">Medidas:</span>
               <span class="text-sm text-gray-800">{{ formData.height }} cm / {{ formData.weight }} kg (IMC: {{ calculateBMI() }})</span>
-            </div>
-            <div v-if="formData.hasMedicationAllergy !== null" class="flex items-start gap-3">
-              <span class="text-sm font-semibold text-gray-500 w-32">Alergias:</span>
-              <span class="text-sm text-gray-800">
-                {{ formData.hasMedicationAllergy ? formData.medicationAllergies : 'Sin alergias medicamentosas' }}
-              </span>
             </div>
           </div>
         </div>
@@ -398,6 +381,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import axios from 'axios';
 
 // Form Data
 const formData = ref({
@@ -408,16 +392,20 @@ const formData = ref({
   birthDate: '',
   height: null as number | null,
   weight: null as number | null,
-  hasMedicationAllergy: null as boolean | null,
-  medicationAllergies: '',
-  
+  isAllergic: null as boolean | null,
   // Datos Familiares
-  fatherName: '',
-  fatherAge: null as number | null,
-  fatherDiseases: '',
-  motherName: '',
-  motherAge: null as number | null,
-  motherDiseases: '',
+  familyData: {
+    father: {
+      fullName: '',
+      age: null as number | null,
+      diseases: '',
+    },
+    mother: {
+      fullName: '',
+      age: null as number | null,
+      diseases: '',
+    },
+  },
 });
 
 // States
@@ -444,10 +432,10 @@ const patientAge = computed(() => {
 
 const documentTypeLabel = computed(() => {
   const types: Record<string, string> = {
-    'TI': 'Tarjeta de Identidad',
-    'CC': 'Cédula de Ciudadanía',
+    'TI': 'Tarjeta de identidad',
+    'CC': 'Cedula de ciudadania',
     'PA': 'Pasaporte',
-    'TE': 'Tarjeta de Extranjero',
+    'TE': 'Tarjeta de extranjero',
   };
   return types[formData.value.documentType] || '';
 });
@@ -459,17 +447,10 @@ const isFormValid = computed(() => {
     formData.value.documentNumber &&
     formData.value.birthDate &&
     formData.value.height !== null &&
-    formData.value.weight !== null &&
-    formData.value.hasMedicationAllergy !== null &&
-    (formData.value.hasMedicationAllergy === false || formData.value.medicationAllergies.length > 0);
+    formData.value.weight !== null;
 
-  const familyDataValid =
-    formData.value.fatherName.length > 0 &&
-    formData.value.fatherAge !== null &&
-    formData.value.motherName.length > 0 &&
-    formData.value.motherAge !== null;
 
-  return personalDataValid && familyDataValid;
+  return personalDataValid;
 });
 
 const formProgress = computed(() => {
@@ -483,12 +464,6 @@ const formProgress = computed(() => {
   if (formData.value.birthDate) completedFields++;
   if (formData.value.height) completedFields++;
   if (formData.value.weight) completedFields++;
-  if (formData.value.hasMedicationAllergy !== null) completedFields++;
-  if (formData.value.fatherName) completedFields++;
-  if (formData.value.fatherAge) completedFields++;
-  if (formData.value.motherName) completedFields++;
-  if (formData.value.motherAge) completedFields++;
-
   progress = Math.round((completedFields / totalFields) * 100);
   return progress;
 });
@@ -510,11 +485,27 @@ const handleSubmit = async () => {
   
   const data = {
     ...formData.value,
+    documentType: documentTypeLabel.value,
     age: patientAge.value,
-    bmi: calculateBMI(),
-    registeredAt: new Date(),
+    familyData: {
+      father: {
+        ...formData.value.familyData.father,
+        diseases: formData.value.familyData.father.diseases ? [formData.value.familyData.father.diseases] : [],
+      },
+      mother: {
+        ...formData.value.familyData.mother,
+        diseases: formData.value.familyData.mother.diseases ? [formData.value.familyData.mother.diseases] : [],
+      },
+    },
   };
+
   
+  axios.post('http://localhost:3000/api/v1/patients', data)
+  .then((result) => {
+    console.log('The record has been successfully created');
+  })
+  .catch((error: Error) => console.log({error}));
+
   console.log('Paciente registrado:', data);
   
   isSubmitting.value = false;
@@ -529,14 +520,19 @@ const resetForm = () => {
     birthDate: '',
     height: null,
     weight: null,
-    hasMedicationAllergy: null,
-    medicationAllergies: '',
-    fatherName: '',
-    fatherAge: null,
-    fatherDiseases: '',
-    motherName: '',
-    motherAge: null,
-    motherDiseases: '',
+    isAllergic: null,
+    familyData: {
+      father: {
+        fullName: '',
+        age: null,
+        diseases: '',
+      },
+      mother: {
+        fullName: '',
+        age: null,
+        diseases: '',
+      },
+    },
   };
 };
 </script>
