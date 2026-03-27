@@ -31,11 +31,13 @@ export class ScreeningRepository implements IScreeningRepository {
   }
 
   async getById(id: string): Promise<Screening | null> {
+    if(!id) return null;
     const response = await axios.get(`${this.apiUrl}/${id}`);
     return response.data || null;
   }
 
   async update(id: string, data: Partial<CreateScreeningRequest>): Promise<Screening> {
+    if(!id) throw new Error('ID is required');
     const response = await axios.put(`${this.apiUrl}/${id}`, data);
     return response.data;
   }

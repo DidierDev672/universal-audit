@@ -14,12 +14,15 @@ import PatientRegistrationForm from "../pages/Patient/PatientRegistrationForm.vu
 
 import AddSoundForm from "../pages/sound/AddSoundForm.vue";
 import AudioLibraryPage from "../pages/sound/AudioLibraryPage.vue";
+import AudioMixerPage from "../pages/AudioMixer/AudioMixerPage.vue";
 
 import CreateScreeningPage from "../presentation/pages/screening/CreateScreeningPage.vue";
 import ResourceNoteBookPage from "../pages/notebook/ResourceNoteBookPage.vue";
 
 import ClinicalPicturesListPage from "../pages/clinical/ClinicalPicturesListPage.vue";
 import ClinicalPictureDetailPage from "../pages/clinical/ClinicalPictureDetailPage.vue";
+import PatientScreeningAssignmentPage from "../pages/patientScreening/PatientScreeningAssignmentPage.vue";
+import UserRegistrationPage from "../pages/User/UserRegistrationPage.vue";
 
 const routes = [
   { path: '/', redirect: '/research' },
@@ -54,7 +57,16 @@ const routes = [
 
   // ? Clinical Pictures Management
   { path: "/clinical-pictures", name: "clinical-pictures", component: ClinicalPicturesListPage },
-  { path: "/clinical-picture/:id", name: "clinical-picture-detail", component: ClinicalPictureDetailPage }
+  { path: "/clinical-picture/:id", name: "clinical-picture-detail", component: ClinicalPictureDetailPage },
+
+  // ? Patient Screening Assignment
+  { path: "/patient-screening-assignment", name: "patient-screening-assignment", component: PatientScreeningAssignmentPage },
+  
+  // ? Audio Mixer
+  { path: "/audio-mixer", name: "audio-mixer", component: AudioMixerPage },
+
+  // ? User Registration
+  { path: "/user-registration", name: "user-registration", component: UserRegistrationPage }
 ];
 
 export const router = createRouter({
