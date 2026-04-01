@@ -1,13 +1,14 @@
 <template>
   <div class="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-    
+
     <!-- Sidebar Izquierdo - Recursos -->
     <aside class="w-80 bg-white border-r border-blue-100 flex flex-col shadow-lg">
       <!-- Header del Sidebar -->
       <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white">
         <h2 class="text-xl font-bold mb-2 flex items-center gap-2">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           Recursos
         </h2>
@@ -16,40 +17,47 @@
 
       <!-- Botones de Acción -->
       <div class="p-4 border-b border-gray-200 space-y-2">
-        <button
-          @click="showAddResourceModal = true"
-          class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
-        >
+        <button @click="showAddResourceModal = true"
+          class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
           Agregar Recurso
         </button>
 
         <!-- Botón Transcribir Seleccionados -->
-        <button
-          @click="transcribeSelectedResources"
+        <button @click="transcribeSelectedResources"
           :disabled="(selectedResources?.length ?? 0) === 0 || isTranscribing"
-          class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+          class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
           <svg v-if="!isTranscribing" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           <svg v-else class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           {{ isTranscribing ? 'Transcribiendo...' : 'Transcribir Seleccionados' }}
         </button>
 
         <!-- Botón Vincular Tamizajes/Cuestionarios -->
-        <button
-          @click="showLinkScreeningModal = true"
-          class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg"
-        >
+        <button @click="showLinkScreeningModal = true"
+          class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl font-semibold hover:from-purple-600 hover:to-pink-700 transition-all shadow-md hover:shadow-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
           Vincular Tamizajes/Cuestionarios
+        </button>
+
+        <!-- Botón Agregar Respuestas de Tamizaje -->
+        <button @click="openScreeningResponsesModal"
+          class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-semibold hover:from-cyan-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+          Agregar Respuestas Tamizaje
         </button>
       </div>
 
@@ -58,23 +66,20 @@
         <div v-if="(resources?.length ?? 0) === 0" class="text-center py-12">
           <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
           <p class="text-sm text-gray-500">No hay recursos agregados</p>
         </div>
 
         <!-- Resource Card -->
-        <div
-          v-for="resource in resources || []"
-          :key="resource.id"
-          :class="[
-            'group bg-white border-2 rounded-xl p-4 transition-all',
-            selectedResources.includes(resource.id)
-              ? 'border-indigo-500 bg-indigo-50'
-              : 'border-gray-200 hover:border-indigo-300'
-          ]"
-        >
+        <div v-for="resource in resources || []" :key="resource.id" :class="[
+          'group bg-white border-2 rounded-xl p-4 transition-all',
+          selectedResources.includes(resource.id)
+            ? 'border-indigo-500 bg-indigo-50'
+            : 'border-gray-200 hover:border-indigo-300'
+        ]">
           <div class="flex items-start gap-3">
             <!-- Checkbox -->
             <div class="mt-1 cursor-pointer" @click="toggleResourceSelection(resource.id)">
@@ -84,8 +89,9 @@
                   ? 'border-indigo-600 bg-indigo-600'
                   : 'border-gray-300 group-hover:border-indigo-400'
               ]">
-                <svg v-if="selectedResources.includes(resource.id)" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                <svg v-if="selectedResources.includes(resource.id)" class="w-3 h-3 text-white" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
             </div>
@@ -98,7 +104,8 @@
                   getResourceColor(resource.type).bg
                 ]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
                 <div class="flex-1 min-w-0">
@@ -108,7 +115,7 @@
                   <p class="text-xs text-gray-500">{{ resource.type }}</p>
                 </div>
               </div>
-              
+
               <p class="text-xs text-gray-600 line-clamp-2 mb-2">
                 {{ resource.description }}
               </p>
@@ -118,38 +125,36 @@
                 <div :class="[
                   'text-xs px-2 py-1 rounded-lg inline-flex items-center gap-1',
                   resource.transcriptionStatus === 'completed' ? 'bg-green-100 text-green-700' :
-                  resource.transcriptionStatus === 'processing' ? 'bg-yellow-100 text-yellow-700' :
-                  'bg-red-100 text-red-700'
+                    resource.transcriptionStatus === 'processing' ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-red-100 text-red-700'
                 ]">
-                  <svg v-if="resource.transcriptionStatus === 'completed'" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  <svg v-if="resource.transcriptionStatus === 'completed'" class="w-3 h-3" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  <svg v-if="resource.transcriptionStatus === 'processing'" class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                  <svg v-if="resource.transcriptionStatus === 'processing'" class="w-3 h-3 animate-spin" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                   {{ resource.transcriptionStatus === 'completed' ? 'Transcrito' :
-                     resource.transcriptionStatus === 'processing' ? 'Procesando...' :
-                     'Error' }}
+                    resource.transcriptionStatus === 'processing' ? 'Procesando...' :
+                      'Error' }}
                 </div>
               </div>
 
               <!-- Botón Ver Transcripción -->
-              <button
-                v-if="resource.transcription"
-                @click="viewTranscription(resource)"
-                class="text-xs px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors font-medium mb-2"
-              >
+              <button v-if="resource.transcription" @click="viewTranscription(resource)"
+                class="text-xs px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors font-medium mb-2">
                 Ver Transcripción
               </button>
 
               <div class="flex items-center justify-between text-xs text-gray-400">
                 <span>{{ formatDate(resource.createdAt) }}</span>
-                <button
-                  @click="deleteResource(resource.id)"
-                  class="text-red-500 hover:text-red-700 transition-colors"
-                >
+                <button @click="deleteResource(resource.id)" class="text-red-500 hover:text-red-700 transition-colors">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </button>
               </div>
@@ -172,53 +177,48 @@
       <!-- Tabs Navigation -->
       <div class="bg-white border-b border-blue-100 shadow-sm">
         <div class="flex">
-          <button
-            @click="activeTab = 'chat'"
-            :class="[
-              'flex-1 px-6 py-4 font-medium transition-all border-b-2',
-              activeTab === 'chat'
-                ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-            ]"
-          >
+          <button @click="activeTab = 'chat'" :class="[
+            'flex-1 px-6 py-4 font-medium transition-all border-b-2',
+            activeTab === 'chat'
+              ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+          ]">
             <div class="flex items-center justify-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
               </svg>
               Chat
             </div>
           </button>
-          <button
-            @click="activeTab = 'tree'"
-            :class="[
-              'flex-1 px-6 py-4 font-medium transition-all border-b-2',
-              activeTab === 'tree'
-                ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-            ]"
-          >
+          <button @click="activeTab = 'tree'" :class="[
+            'flex-1 px-6 py-4 font-medium transition-all border-b-2',
+            activeTab === 'tree'
+              ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+          ]">
             <div class="flex items-center justify-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
               </svg>
               Árbol de Recursos
             </div>
           </button>
-          <button
-            @click="activeTab = 'notes'"
-            :class="[
-              'flex-1 px-6 py-4 font-medium transition-all border-b-2',
-              activeTab === 'notes'
-                ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-            ]"
-          >
+          <button @click="activeTab = 'notes'" :class="[
+            'flex-1 px-6 py-4 font-medium transition-all border-b-2',
+            activeTab === 'notes'
+              ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+          ]">
             <div class="flex items-center justify-center gap-2">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               Notas Clínicas
-              <span v-if="clinicalNotes.length > 0" class="ml-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs rounded-full">
+              <span v-if="clinicalNotes.length > 0"
+                class="ml-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs rounded-full">
                 {{ clinicalNotes.length }}
               </span>
             </div>
@@ -236,49 +236,47 @@
               <div>
                 <h2 class="text-base font-semibold text-gray-800 mb-1 flex items-center gap-2">
                   <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                   </svg>
                   Recursos en la conversación
                 </h2>
-                <p class="text-xs text-gray-500">Selecciona recursos del panel izquierdo para incluirlos en la conversación</p>
+                <p class="text-xs text-gray-500">Selecciona recursos del panel izquierdo para incluirlos en la
+                  conversación</p>
               </div>
 
               <!-- Botón Crear Cuadro Clínico -->
-              <button
-                @click="showClinicalPictureModal = true"
-                class="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
-              >
+              <button @click="showClinicalPictureModal = true"
+                class="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-all shadow-md hover:shadow-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Crear Cuadro Clínico
               </button>
             </div>
 
             <div class="px-4 pb-4">
-              <div v-if="selectedResources.length === 0" class="bg-gray-50 rounded-lg p-4 text-center border border-dashed border-gray-300">
-                <p class="text-sm text-gray-500">Selecciona recursos del panel izquierdo para incluirlos en la conversación.</p>
+              <div v-if="selectedResources.length === 0"
+                class="bg-gray-50 rounded-lg p-4 text-center border border-dashed border-gray-300">
+                <p class="text-sm text-gray-500">Selecciona recursos del panel izquierdo para incluirlos en la
+                  conversación.</p>
               </div>
 
               <div v-else class="flex flex-wrap gap-2">
-                <div
-                  v-for="resourceId in selectedResources"
-                  :key="resourceId"
-                  :class="[
-                    'px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2',
-                    getResourceColor(getResourceById(resourceId)?.type || '').badge
-                  ]"
-                >
+                <div v-for="resourceId in selectedResources" :key="resourceId" :class="[
+                  'px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-2',
+                  getResourceColor(getResourceById(resourceId)?.type || '').badge
+                ]">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   {{ getResourceById(resourceId)?.name }}
-                  <button
-                    @click="toggleResourceSelection(resourceId)"
-                    class="ml-1 hover:bg-white/30 rounded-full p-0.5"
-                  >
+                  <button @click="toggleResourceSelection(resourceId)"
+                    class="ml-1 hover:bg-white/30 rounded-full p-0.5">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
@@ -293,7 +291,8 @@
               <div class="text-center max-w-md">
                 <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                   </svg>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800 mb-2">Asistente de Recursos</h3>
@@ -310,14 +309,10 @@
             </div>
 
             <!-- Mensajes del Chat -->
-            <div
-              v-for="message in messages"
-              :key="message.id"
-              :class="[
-                'flex',
-                message.role === 'user' ? 'justify-end' : 'justify-start'
-              ]"
-            >
+            <div v-for="message in messages" :key="message.id" :class="[
+              'flex',
+              message.role === 'user' ? 'justify-end' : 'justify-start'
+            ]">
               <div :class="[
                 'max-w-3xl rounded-2xl px-6 py-4',
                 message.role === 'user'
@@ -325,33 +320,35 @@
                   : 'bg-white border border-gray-200 text-gray-800'
               ]">
                 <div class="flex items-start gap-3">
-                  <div v-if="message.role === 'assistant'" class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div v-if="message.role === 'assistant'"
+                    class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                   </div>
-                  
+
                   <div class="flex-1">
                     <p class="text-sm whitespace-pre-wrap">{{ message.content }}</p>
-                    
+
                     <!-- Recursos citados -->
-                    <div v-if="message.resources && message.resources.length > 0" class="mt-3 pt-3 border-t border-white/20">
+                    <div v-if="message.resources && message.resources.length > 0"
+                      class="mt-3 pt-3 border-t border-white/20">
                       <p class="text-xs opacity-70 mb-2">Basado en:</p>
                       <div class="flex flex-wrap gap-1">
-                        <span
-                          v-for="resourceId in message.resources"
-                          :key="resourceId"
-                          class="text-xs px-2 py-1 bg-white/20 rounded-lg"
-                        >
+                        <span v-for="resourceId in message.resources" :key="resourceId"
+                          class="text-xs px-2 py-1 bg-white/20 rounded-lg">
                           {{ getResourceById(resourceId)?.name }}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div v-if="message.role === 'user'" class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div v-if="message.role === 'user'"
+                    class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
                 </div>
@@ -363,8 +360,10 @@
               <div class="max-w-3xl bg-white border border-gray-200 rounded-2xl px-6 py-4">
                 <div class="flex items-center gap-3">
                   <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                    <svg class="w-5 h-5 text-indigo-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    <svg class="w-5 h-5 text-indigo-600 animate-spin" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                   </div>
                   <p class="text-sm text-gray-600">Analizando recursos...</p>
@@ -378,26 +377,20 @@
           <!-- Input de Chat -->
           <div class="border-t border-gray-200 bg-white p-6">
             <form @submit.prevent="chatWithAI" class="flex gap-3">
-              <input
-                v-model="userInput"
-                type="text"
-                placeholder="Pregunta sobre los recursos seleccionados..."
+              <input v-model="userInput" type="text" placeholder="Pregunta sobre los recursos seleccionados..."
                 :disabled="selectedResources.length === 0 || isThinking"
-                class="flex-1 px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all disabled:bg-gray-50 disabled:cursor-not-allowed"
-              />
-              <button
-                type="submit"
-                :disabled="!userInput.trim() || selectedResources.length === 0 || isThinking"
-                class="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+                class="flex-1 px-6 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all disabled:bg-gray-50 disabled:cursor-not-allowed" />
+              <button type="submit" :disabled="!userInput.trim() || selectedResources.length === 0 || isThinking"
+                class="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>
               </button>
             </form>
             <p class="text-xs text-gray-500 mt-2">
-              {{ selectedResources.length > 0 
-                ? `Consultando ${selectedResources.length} recurso(s) seleccionado(s)` 
+              {{ selectedResources.length > 0
+                ? `Consultando ${selectedResources.length} recurso(s) seleccionado(s)`
                 : 'Selecciona al menos un recurso para comenzar' }}
             </p>
           </div>
@@ -409,7 +402,8 @@
           <div class="bg-white border-b border-blue-100 shadow-sm p-4 flex-shrink-0">
             <h2 class="text-base font-semibold text-gray-800 mb-1 flex items-center gap-2">
               <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
               </svg>
               Flujo de Transcripciones
             </h2>
@@ -421,7 +415,8 @@
             <div v-if="resources.length === 0" class="text-center py-12">
               <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 </svg>
               </div>
               <p class="text-sm text-gray-500">No hay recursos para mostrar en el árbol</p>
@@ -429,11 +424,8 @@
 
             <!-- Árbol con Recursos -->
             <div v-else class="space-y-4">
-              <div
-                v-for="resource in resources"
-                :key="resource.id"
-                class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
-              >
+              <div v-for="resource in resources" :key="resource.id"
+                class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
                 <!-- Header del Recurso -->
                 <div class="bg-gradient-to-r from-gray-50 to-blue-50 px-4 py-3 border-b border-gray-200">
                   <div class="flex items-center gap-3">
@@ -442,7 +434,8 @@
                       getResourceColor(resource.type).bg
                     ]">
                       <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
                     <div class="flex-1">
@@ -452,14 +445,14 @@
                     <div :class="[
                       'px-2 py-1 rounded-lg text-xs font-medium',
                       resource.transcriptionStatus === 'completed' ? 'bg-green-100 text-green-700' :
-                      resource.transcriptionStatus === 'processing' ? 'bg-yellow-100 text-yellow-700' :
-                      resource.transcriptionStatus === 'error' ? 'bg-red-100 text-red-700' :
-                      'bg-gray-100 text-gray-600'
+                        resource.transcriptionStatus === 'processing' ? 'bg-yellow-100 text-yellow-700' :
+                          resource.transcriptionStatus === 'error' ? 'bg-red-100 text-red-700' :
+                            'bg-gray-100 text-gray-600'
                     ]">
                       {{ resource.transcriptionStatus === 'completed' ? 'Transcrito' :
-                         resource.transcriptionStatus === 'processing' ? 'Procesando...' :
-                         resource.transcriptionStatus === 'error' ? 'Error' :
-                         'No transcrito' }}
+                        resource.transcriptionStatus === 'processing' ? 'Procesando...' :
+                          resource.transcriptionStatus === 'error' ? 'Error' :
+                            'No transcrito' }}
                     </div>
                   </div>
                 </div>
@@ -470,14 +463,13 @@
                   <div v-if="!resource.transcription" class="text-center py-6">
                     <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
                       <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
                     <p class="text-sm text-gray-500 mb-3">Este recurso aún no ha sido transcrito</p>
-                    <button
-                      @click="toggleResourceSelection(resource.id); transcribeSelectedResources();"
-                      class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm font-medium"
-                    >
+                    <button @click="toggleResourceSelection(resource.id); transcribeSelectedResources();"
+                      class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm font-medium">
                       Transcribir Ahora
                     </button>
                   </div>
@@ -505,21 +497,18 @@
                       <div class="flex items-center justify-between mb-2">
                         <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
                           <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                           Vista Previa
                         </h4>
                         <div class="flex gap-2">
-                          <button
-                            @click="viewTranscription(resource)"
-                            class="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition-colors"
-                          >
+                          <button @click="viewTranscription(resource)"
+                            class="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition-colors">
                             Ver Completo
                           </button>
-                          <button
-                            @click="copyTranscriptionText(resource.transcription)"
-                            class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
-                          >
+                          <button @click="copyTranscriptionText(resource.transcription)"
+                            class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors">
                             Copiar
                           </button>
                         </div>
@@ -561,7 +550,8 @@
             <div v-if="clinicalNotes.length === 0" class="text-center py-12">
               <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
               <h3 class="text-lg font-medium text-gray-800 mb-2">No hay notas clínicas</h3>
@@ -572,37 +562,34 @@
             </div>
 
             <div v-else class="space-y-4">
-              <div
-                v-for="note in clinicalNotes"
-                :key="note.id"
-                class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all"
-              >
+              <div v-for="note in clinicalNotes" :key="note.id"
+                class="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all">
                 <!-- Header de la Nota -->
                 <div class="flex items-start justify-between mb-4">
                   <div class="flex-1 min-w-0">
                     <h3 class="text-base font-semibold text-gray-900 mb-2 leading-tight">{{ note.title }}</h3>
                     <p class="text-xs text-gray-500 flex items-center gap-2">
-                      <span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">{{ note.resourceName }}</span>
+                      <span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">{{
+                        note.resourceName }}</span>
                       <span class="text-gray-400">•</span>
                       <span>{{ formatDate(note.createdAt) }}</span>
                     </p>
                   </div>
                   <div class="flex items-center gap-1 ml-2">
-                    <button
-                      @click="generateTreeFromNote(note)"
+                    <button @click="generateTreeFromNote(note)"
                       class="text-indigo-500 hover:text-indigo-700 p-2 rounded-lg hover:bg-indigo-50 transition-all"
-                      title="Generar árbol de ideas"
-                    >
+                      title="Generar árbol de ideas">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12" />
                       </svg>
                     </button>
                     <button
                       @click="deleteClinicalNote(note.id); clinicalNotes = clinicalNotes.filter(n => n.id !== note.id)"
-                      class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all"
-                    >
+                      class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                     </button>
                   </div>
@@ -621,40 +608,40 @@
 
                 <!-- Botón Analizar con IA -->
                 <div v-if="note.description?.trim()" class="mb-4">
-                  <button
-                    @click="analyzeNoteWithAI(note)"
-                    :disabled="isAnalyzingNote[note.id]"
-                    class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg font-medium hover:from-emerald-600 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <svg v-if="!isAnalyzingNote[note.id]" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                  <button @click="analyzeNoteWithAI(note)" :disabled="isAnalyzingNote[note.id]"
+                    class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg font-medium hover:from-emerald-600 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg v-if="!isAnalyzingNote[note.id]" class="w-5 h-5" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                     <svg v-else class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                     {{ isAnalyzingNote[note.id] ? 'Analizando...' : 'Analizar con IA' }}
                   </button>
                 </div>
 
                 <!-- Resultados del Análisis IA -->
-                <div v-if="note.aiAnalysis" class="mt-4 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl">
+                <div v-if="note.aiAnalysis"
+                  class="mt-4 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl">
                   <div class="flex items-center gap-2 mb-3">
                     <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                     <h4 class="font-semibold text-purple-800">Orientación Clínica (IA)</h4>
                     <span class="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
                       {{ formatDate(note.aiAnalysis.analyzedAt) }}
                     </span>
                   </div>
-                  
+
                   <div class="space-y-2">
-                    <div
-                      v-for="(suggestion, index) in note.aiAnalysis.suggestions"
-                      :key="index"
-                      class="flex items-start gap-3 p-3 bg-white/70 rounded-lg"
-                    >
-                      <span class="w-6 h-6 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-xs font-semibold shrink-0">
+                    <div v-for="(suggestion, index) in note.aiAnalysis.suggestions" :key="index"
+                      class="flex items-start gap-3 p-3 bg-white/70 rounded-lg">
+                      <span
+                        class="w-6 h-6 bg-purple-100 text-purple-700 rounded-full flex items-center justify-center text-xs font-semibold shrink-0">
                         {{ index + 1 }}
                       </span>
                       <p class="text-sm text-gray-700">{{ suggestion }}</p>
@@ -663,7 +650,8 @@
 
                   <div class="mt-3 pt-3 border-t border-purple-200">
                     <p class="text-xs text-purple-600 italic">
-                      ⚠️ Estas son sugerencias orientativas, no constituyen diagnóstico médico. Consulte con un profesional de salud.
+                      ⚠️ Estas son sugerencias orientativas, no constituyen diagnóstico médico. Consulte con un
+                      profesional de salud.
                     </p>
                   </div>
                 </div>
@@ -681,17 +669,16 @@
         @click="showTranscriptionModal = false">
         <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl" @click.stop>
           <!-- Header -->
-          <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-5 rounded-t-3xl flex items-center justify-between">
+          <div
+            class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-5 rounded-t-3xl flex items-center justify-between">
             <div>
               <h3 class="text-xl font-bold text-white mb-1">Transcripción del Documento</h3>
               <p class="text-white/80 text-sm">{{ currentTranscription.name }}</p>
             </div>
-            <button
-              @click="showTranscriptionModal = false"
-              class="text-white hover:bg-white/20 rounded-lg p-2 transition-all"
-            >
+            <button @click="showTranscriptionModal = false"
+              class="text-white hover:bg-white/20 rounded-lg p-2 transition-all">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -699,47 +686,101 @@
           <!-- Content -->
           <div class="flex-1 overflow-y-auto p-6">
             <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-6 border border-gray-200">
-              <!-- Info -->
+              <!-- Info del recurso -->
               <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-200">
                 <div :class="[
                   'w-12 h-12 rounded-xl flex items-center justify-center',
                   getResourceColor(currentTranscription.type).bg
                 ]">
                   <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <div>
+                <div class="flex-1">
                   <p class="text-sm font-semibold text-gray-800">{{ currentTranscription.type }}</p>
                   <p class="text-xs text-gray-500">{{ formatDate(currentTranscription.createdAt) }}</p>
+                </div>
+              </div>
+
+              <!-- Información enriquecida del Paciente y Tamizaje (solo para screening_response) -->
+              <div v-if="currentTranscription.type === 'screening_response'"
+                class="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                <!-- Título del Tamizaje -->
+                <div v-if="currentTranscription.screeningTitle" class="mb-3 pb-3 border-b border-blue-200">
+                  <p class="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">Tamizaje</p>
+                  <p class="text-lg font-bold text-gray-800">{{ currentTranscription.screeningTitle }}</p>
+                </div>
+
+                <!-- Información del Paciente -->
+                <div v-if="currentTranscription.patientInfo" class="grid grid-cols-2 gap-3">
+                  <div class="col-span-2">
+                    <p class="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">Paciente</p>
+                    <p class="text-base font-semibold text-gray-800">{{ currentTranscription.patientInfo.name }}</p>
+                  </div>
+                  <div v-if="currentTranscription.patientInfo.email">
+                    <p class="text-xs text-gray-500">Email</p>
+                    <p class="text-sm text-gray-700">{{ currentTranscription.patientInfo.email }}</p>
+                  </div>
+                  <div v-if="currentTranscription.patientInfo.phone">
+                    <p class="text-xs text-gray-500">Teléfono</p>
+                    <p class="text-sm text-gray-700">{{ currentTranscription.patientInfo.phone }}</p>
+                  </div>
+                  <div v-if="currentTranscription.patientInfo.dateOfBirth">
+                    <p class="text-xs text-gray-500">Fecha de Nacimiento</p>
+                    <p class="text-sm text-gray-700">{{ currentTranscription.patientInfo.dateOfBirth }}</p>
+                  </div>
+                  <div v-if="currentTranscription.patientInfo.gender">
+                    <p class="text-xs text-gray-500">Género</p>
+                    <p class="text-sm text-gray-700">{{ currentTranscription.patientInfo.gender }}</p>
+                  </div>
+                  <!-- Badge de verificación -->
+                  <div class="col-span-2 mt-2">
+                    <span :class="[
+                      'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                      currentTranscription.patientInfo.exists
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    ]">
+                      <svg v-if="currentTranscription.patientInfo.exists" class="w-3 h-3 mr-1" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      <svg v-else class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      {{ currentTranscription.patientInfo.exists ? 'Paciente Verificado' : 'Paciente No Encontrado' }}
+                    </span>
+                  </div>
                 </div>
               </div>
 
               <!-- Toolbar de Subrayado Mejorado -->
               <div class="mb-4 p-4 bg-white rounded-xl shadow-sm border border-gray-200">
                 <div class="flex items-center gap-3 mb-3">
-                  <span class="text-sm font-semibold text-gray-700">Selecciona texto y elige un color para subrayar:</span>
+                  <span class="text-sm font-semibold text-gray-700">Selecciona texto y elige un color para
+                    subrayar:</span>
                 </div>
-                
+
                 <!-- Botones de color que crean highlight directamente -->
                 <div class="flex items-center gap-2 flex-wrap">
-                  <button
-                    v-for="color in highlightColors"
-                    :key="color"
+                  <button v-for="color in highlightColors" :key="color"
                     @click="selectedHighlightColor = color; if (isTextSelected) createHighlightFromTooltip(color)"
                     :class="[
                       'px-4 py-2 rounded-lg font-medium text-sm transition-all flex items-center gap-2',
-                      selectedHighlightColor === color 
-                        ? 'ring-2 ring-offset-2 ring-gray-800 scale-105' 
+                      selectedHighlightColor === color
+                        ? 'ring-2 ring-offset-2 ring-gray-800 scale-105'
                         : 'hover:scale-105',
                       color === 'yellow' && 'bg-yellow-200 text-yellow-800 hover:bg-yellow-300',
                       color === 'green' && 'bg-green-200 text-green-800 hover:bg-green-300',
                       color === 'red' && 'bg-red-200 text-red-800 hover:bg-red-300',
                       color === 'purple' && 'bg-purple-200 text-purple-800 hover:bg-purple-300',
                       color === 'orange' && 'bg-orange-200 text-orange-800 hover:bg-orange-300'
-                    ]"
-                    :disabled="!isTextSelected"
-                  >
+                    ]" :disabled="!isTextSelected">
                     <div :class="[
                       'w-3 h-3 rounded-full',
                       color === 'yellow' && 'bg-yellow-500',
@@ -748,20 +789,23 @@
                       color === 'purple' && 'bg-purple-500',
                       color === 'orange' && 'bg-orange-500'
                     ]" />
-                    {{ color === 'yellow' ? 'Amarillo' : color === 'green' ? 'Verde' : color === 'red' ? 'Rojo' : color === 'purple' ? 'Púrpura' : 'Naranja' }}
+                    {{ color === 'yellow' ? 'Amarillo' : color === 'green' ? 'Verde' : color === 'red' ? 'Rojo' : color
+                      === 'purple' ? 'Púrpura' : 'Naranja' }}
                   </button>
                 </div>
-                
+
                 <!-- Mensaje de ayuda -->
                 <div class="mt-3 text-xs text-gray-500 flex items-center gap-2">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span v-if="isTextSelected">
                     ✅ Texto seleccionado. Haz clic en un color para subrayar.
                   </span>
                   <span v-else>
-                    1. Selecciona texto con el mouse  →  2. Haz clic en un color para subrayar  →  3. Haz doble clic en el subrayado para agregar nota
+                    1. Selecciona texto con el mouse → 2. Haz clic en un color para subrayar → 3. Haz doble clic en el
+                    subrayado para agregar nota
                   </span>
                 </div>
               </div>
@@ -770,15 +814,14 @@
               <div class="bg-white rounded-xl p-6 shadow-sm">
                 <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
                   <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   Contenido Transcrito
                 </h4>
-                <div 
-                  class="prose prose-sm max-w-none"
-                  @mouseup="handleTextSelection"
-                >
-                  <p class="text-gray-700 whitespace-pre-wrap leading-relaxed">{{ currentTranscription.transcription }}</p>
+                <div class="prose prose-sm max-w-none" @mouseup="handleTextSelection">
+                  <p class="text-gray-700 whitespace-pre-wrap leading-relaxed">{{ currentTranscription.transcription }}
+                  </p>
                 </div>
               </div>
 
@@ -802,21 +845,19 @@
 
           <!-- Footer con acciones -->
           <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-3xl flex gap-3">
-            <button
-              @click="copyTranscription"
-              class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-medium hover:bg-indigo-200 transition-all"
-            >
+            <button @click="copyTranscription"
+              class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-indigo-100 text-indigo-700 rounded-xl font-medium hover:bg-indigo-200 transition-all">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002 2v8a2 2 0 00-2 2z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002 2v8a2 2 0 00-2 2z" />
               </svg>
               Copiar
             </button>
-            <button
-              @click="downloadTranscription"
-              class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-600 hover:to-purple-700 transition-all"
-            >
+            <button @click="downloadTranscription"
+              class="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium hover:from-indigo-600 hover:to-purple-700 transition-all">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               Descargar
             </button>
@@ -827,27 +868,19 @@
 
     <!-- Modal Agregar Recurso -->
     <transition name="modal">
-      <div
-        v-if="showAddResourceModal"
+      <div v-if="showAddResourceModal"
         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="closeAddResourceModal"
-      >
-        <div
-          class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden"
-          @click.stop
-        >
+        @click="closeAddResourceModal">
+        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden" @click.stop>
           <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
             <div>
               <h3 class="text-lg font-semibold text-gray-800">Agregar Recurso</h3>
               <p class="text-xs text-gray-500">Sube un documento o pega una URL.</p>
             </div>
-            <button
-              type="button"
-              @click="closeAddResourceModal"
-              class="text-gray-500 hover:text-gray-700 p-2 rounded-full"
-            >
+            <button type="button" @click="closeAddResourceModal"
+              class="text-gray-500 hover:text-gray-700 p-2 rounded-full">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -855,10 +888,8 @@
           <form @submit.prevent="addResource" class="p-6 space-y-4">
             <div>
               <label class="text-xs font-medium text-gray-700">Tipo de recurso</label>
-              <select
-                v-model="newResourceMode"
-                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-              >
+              <select v-model="newResourceMode"
+                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200">
                 <option value="file">Documento (PDF / Word / Excel)</option>
                 <option value="url">URL</option>
               </select>
@@ -866,58 +897,36 @@
 
             <div v-if="newResourceMode === 'file'">
               <label class="text-xs font-medium text-gray-700">Archivo</label>
-              <input
-                type="file"
-                @change="handleFileChange"
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
-                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-              />
+              <input type="file" @change="handleFileChange" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
+                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
               <p class="text-xs text-gray-500 mt-1">Selecciona un archivo para transcribir.</p>
             </div>
 
             <div v-if="newResourceMode === 'url'">
               <label class="text-xs font-medium text-gray-700">URL</label>
-              <input
-                v-model="newResourceUrl"
-                type="url"
-                placeholder="https://..."
-                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-              />
+              <input v-model="newResourceUrl" type="url" placeholder="https://..."
+                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
             </div>
 
             <div>
               <label class="text-xs font-medium text-gray-700">Nombre</label>
-              <input
-                v-model="newResourceName"
-                type="text"
-                placeholder="Título del recurso"
-                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-              />
+              <input v-model="newResourceName" type="text" placeholder="Título del recurso"
+                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200" />
             </div>
 
             <div>
               <label class="text-xs font-medium text-gray-700">Descripción</label>
-              <textarea
-                v-model="newResourceDescription"
-                rows="3"
-                placeholder="Descripción (opcional)"
-                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-              ></textarea>
+              <textarea v-model="newResourceDescription" rows="3" placeholder="Descripción (opcional)"
+                class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"></textarea>
             </div>
 
             <div class="flex items-center justify-end gap-2">
-              <button
-                type="button"
-                @click="closeAddResourceModal"
-                class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
+              <button type="button" @click="closeAddResourceModal"
+                class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
                 Cancelar
               </button>
-              <button
-                type="submit"
-                :disabled="!canAddResource"
-                class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <button type="submit" :disabled="!canAddResource"
+                class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
                 Agregar recurso
               </button>
             </div>
@@ -928,35 +937,31 @@
 
     <!-- Modal Vincular Tamizajes/Cuestionarios -->
     <transition name="modal">
-      <div
-        v-if="showLinkScreeningModal"
+      <div v-if="showLinkScreeningModal"
         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="showLinkScreeningModal = false"
-      >
-        <div
-          class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
-          @click.stop
-        >
+        @click="showLinkScreeningModal = false">
+        <div class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+          @click.stop>
           <!-- Header -->
-          <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-purple-600 to-pink-600">
+          <div
+            class="px-6 py-5 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-purple-600 to-pink-600">
             <div class="flex items-center gap-3">
               <div class="p-2 bg-white/20 rounded-xl">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                 </svg>
               </div>
               <div>
                 <h3 class="text-lg font-semibold text-white">Vincular Tamizajes y Cuestionarios</h3>
-                <p class="text-xs text-white/80">Selecciona tamizajes auditivos y cuestionarios de tinnitus para vincular al cuaderno clínico.</p>
+                <p class="text-xs text-white/80">Selecciona tamizajes auditivos y cuestionarios de tinnitus para
+                  vincular al cuaderno clínico.</p>
               </div>
             </div>
-            <button
-              type="button"
-              @click="showLinkScreeningModal = false"
-              class="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10"
-            >
+            <button type="button" @click="showLinkScreeningModal = false"
+              class="text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -964,14 +969,12 @@
           <!-- Search -->
           <div class="p-4 border-b border-gray-200">
             <div class="relative">
-              <input
-                v-model="screeningSearchQuery"
-                type="text"
-                placeholder="Buscar tamizajes o cuestionarios..."
-                class="w-full pl-12 pr-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all"
-              />
-              <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              <input v-model="screeningSearchQuery" type="text" placeholder="Buscar tamizajes o cuestionarios..."
+                class="w-full pl-12 pr-4 py-3 border-2 border-purple-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all" />
+              <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
           </div>
@@ -980,8 +983,10 @@
           <div class="flex-1 overflow-y-auto p-4 space-y-6">
             <!-- Loading State -->
             <div v-if="isLoadingScreenings" class="text-center py-8">
-              <svg class="w-8 h-8 animate-spin mx-auto mb-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              <svg class="w-8 h-8 animate-spin mx-auto mb-3 text-purple-600" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
               <p class="text-sm text-gray-600">Cargando tamizajes y cuestionarios...</p>
             </div>
@@ -992,23 +997,20 @@
                 <h4 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                     <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z" />
                     </svg>
                   </div>
                   Tamizajes Auditivos
                 </h4>
                 <div class="space-y-2">
-                  <div
-                    v-for="screening in availableScreenings"
-                    :key="screening.id"
-                    @click="toggleScreeningSelection(screening.id)"
-                    :class="[
+                  <div v-for="screening in availableScreenings" :key="screening.id"
+                    @click="toggleScreeningSelection(screening.id)" :class="[
                       'p-3 rounded-xl border-2 cursor-pointer transition-all',
                       selectedScreeningIds.includes(screening.id)
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-blue-300'
-                    ]"
-                  >
+                    ]">
                     <div class="flex items-start gap-3">
                       <div :class="[
                         'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5',
@@ -1016,8 +1018,9 @@
                           ? 'border-blue-600 bg-blue-600'
                           : 'border-gray-300'
                       ]">
-                        <svg v-if="selectedScreeningIds.includes(screening.id)" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        <svg v-if="selectedScreeningIds.includes(screening.id)" class="w-3 h-3 text-white" fill="none"
+                          stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
                       <div class="flex-1">
@@ -1041,23 +1044,20 @@
                 <h4 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                     <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                   </div>
                   Cuestionarios de Tinnitus
                 </h4>
                 <div class="space-y-2">
-                  <div
-                    v-for="questionnaire in availableQuestionnaires"
-                    :key="questionnaire.id"
-                    @click="toggleQuestionnaireSelection(String(questionnaire.id))"
-                    :class="[
+                  <div v-for="questionnaire in availableQuestionnaires" :key="questionnaire.id"
+                    @click="toggleQuestionnaireSelection(String(questionnaire.id))" :class="[
                       'p-3 rounded-xl border-2 cursor-pointer transition-all',
                       selectedQuestionnaireIds.includes(String(questionnaire.id))
                         ? 'border-purple-500 bg-purple-50'
                         : 'border-gray-200 hover:border-purple-300'
-                    ]"
-                  >
+                    ]">
                     <div class="flex items-start gap-3">
                       <div :class="[
                         'w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5',
@@ -1065,8 +1065,9 @@
                           ? 'border-purple-600 bg-purple-600'
                           : 'border-gray-300'
                       ]">
-                        <svg v-if="selectedQuestionnaireIds.includes(String(questionnaire.id))" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        <svg v-if="selectedQuestionnaireIds.includes(String(questionnaire.id))"
+                          class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
                       <div class="flex-1">
@@ -1093,19 +1094,13 @@
               {{ selectedScreeningIds.length + selectedQuestionnaireIds.length }} seleccionados
             </span>
             <div class="flex items-center gap-2">
-              <button
-                type="button"
-                @click="showLinkScreeningModal = false"
-                class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
+              <button type="button" @click="showLinkScreeningModal = false"
+                class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
                 Cancelar
               </button>
-              <button
-                type="button"
-                @click="linkSelectedScreeningsAndQuestionnaires"
+              <button type="button" @click="linkSelectedScreeningsAndQuestionnaires"
                 :disabled="selectedScreeningIds.length === 0 && selectedQuestionnaireIds.length === 0"
-                class="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+                class="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed">
                 Vincular Seleccionados
               </button>
             </div>
@@ -1116,15 +1111,10 @@
 
     <!-- Modal Nota de Highlight -->
     <transition name="modal">
-      <div
-        v-if="showHighlightNoteModal"
+      <div v-if="showHighlightNoteModal"
         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="closeHighlightNoteModal"
-      >
-        <div
-          class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden"
-          @click.stop
-        >
+        @click="closeHighlightNoteModal">
+        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden" @click.stop>
           <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
             <div>
               <h3 class="text-lg font-semibold text-gray-800">
@@ -1132,13 +1122,10 @@
               </h3>
               <p class="text-xs text-gray-500">Agrega información clínica sobre el texto subrayado.</p>
             </div>
-            <button
-              type="button"
-              @click="closeHighlightNoteModal"
-              class="text-gray-500 hover:text-gray-700 p-2 rounded-full"
-            >
+            <button type="button" @click="closeHighlightNoteModal"
+              class="text-gray-500 hover:text-gray-700 p-2 rounded-full">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -1152,46 +1139,31 @@
 
             <div>
               <label class="text-xs font-medium text-gray-700">Título de la Nota</label>
-              <input
-                v-model="noteForm.title"
-                type="text"
+              <input v-model="noteForm.title" type="text"
                 placeholder="Ej: Síntoma importante, Tratamiento recomendado..."
                 class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                required
-              />
+                required />
             </div>
 
             <div>
               <label class="text-xs font-medium text-gray-700">Descripción</label>
-              <textarea
-                v-model="noteForm.description"
-                rows="4"
+              <textarea v-model="noteForm.description" rows="4"
                 placeholder="Describe la relevancia clínica de este texto..."
                 class="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-                required
-              ></textarea>
+                required></textarea>
             </div>
 
             <div class="flex items-center justify-end gap-2">
-              <button
-                v-if="currentHighlight?.noteId"
-                type="button"
+              <button v-if="currentHighlight?.noteId" type="button"
                 @click="deleteHighlightWithNote(currentHighlight.id)"
-                class="px-4 py-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200"
-              >
+                class="px-4 py-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200">
                 Eliminar
               </button>
-              <button
-                type="button"
-                @click="closeHighlightNoteModal"
-                class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
-              >
+              <button type="button" @click="closeHighlightNoteModal"
+                class="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
                 Cancelar
               </button>
-              <button
-                type="submit"
-                class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
-              >
+              <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
                 {{ currentHighlight?.noteId ? 'Actualizar Nota' : 'Guardar Nota' }}
               </button>
             </div>
@@ -1202,18 +1174,17 @@
 
     <!-- Modal de Visualización de Árbol (Vue Flow) -->
     <transition name="fade">
-      <div
-        v-if="showTreeModal"
+      <div v-if="showTreeModal"
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        @click.self="showTreeModal = false"
-      >
+        @click.self="showTreeModal = false">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[80vh] flex flex-col overflow-hidden">
           <!-- Header -->
           <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
             <div class="flex items-center gap-3">
               <div class="p-2 bg-indigo-100 rounded-lg">
                 <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12" />
                 </svg>
               </div>
               <div>
@@ -1221,36 +1192,26 @@
                 <p class="text-sm text-gray-500">{{ currentTreeNote?.title }}</p>
               </div>
             </div>
-            <button
-              @click="showTreeModal = false"
-              class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-all"
-            >
+            <button @click="showTreeModal = false"
+              class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-all">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
           <!-- Vue Flow Canvas -->
           <div class="flex-1 relative bg-gray-50">
-            <VueFlow
-              v-model:nodes="treeNodes"
-              v-model:edges="treeEdges"
-              :default-viewport="{ x: 0, y: 0, zoom: 1 }"
-              :min-zoom="0.2"
-              :max-zoom="4"
-              fit-view-on-init
-              class="w-full h-full"
-            >
+            <VueFlow v-model:nodes="treeNodes" v-model:edges="treeEdges" :default-viewport="{ x: 0, y: 0, zoom: 1 }"
+              :min-zoom="0.2" :max-zoom="4" fit-view-on-init class="w-full h-full">
               <!-- Panel de controles -->
               <div class="absolute top-4 right-4 z-10 flex flex-col gap-2">
-                <button
-                  @click="fitView"
+                <button @click="fitView"
                   class="bg-white p-2 rounded-lg shadow-md hover:shadow-lg transition-all text-gray-600 hover:text-indigo-600"
-                  title="Ajustar vista"
-                >
+                  title="Ajustar vista">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                   </svg>
                 </button>
               </div>
@@ -1260,7 +1221,8 @@
           <!-- Footer con instrucciones -->
           <div class="p-3 bg-gray-50 border-t border-gray-200 text-xs text-gray-500 flex items-center justify-between">
             <span>Arrastra para mover • Usa la rueda del ratón para zoom</span>
-            <span class="text-indigo-600 font-medium">{{ treeNodes.length }} nodos • {{ treeEdges.length }} conexiones</span>
+            <span class="text-indigo-600 font-medium">{{ treeNodes.length }} nodos • {{ treeEdges.length }}
+              conexiones</span>
           </div>
         </div>
       </div>
@@ -1268,28 +1230,25 @@
 
     <!-- Modal de Nuevo Cuadro Clínico -->
     <transition name="fade">
-      <div
-        v-if="showClinicalPictureModal"
+      <div v-if="showClinicalPictureModal"
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        @click.self="closeClinicalPictureModal"
-      >
+        @click.self="closeClinicalPictureModal">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
           <!-- Header -->
           <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-emerald-50">
             <div class="flex items-center gap-3">
               <div class="p-2 bg-emerald-100 rounded-lg">
                 <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
               <h3 class="text-xl font-semibold text-gray-800">Nuevo Cuadro Clínico</h3>
             </div>
-            <button
-              @click="closeClinicalPictureModal"
-              class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-all"
-            >
+            <button @click="closeClinicalPictureModal"
+              class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-all">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
@@ -1299,43 +1258,31 @@
             <!-- Título -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Título *</label>
-              <input
-                v-model="clinicalPictureForm.title"
-                type="text"
+              <input v-model="clinicalPictureForm.title" type="text"
                 placeholder="Ej: Consulta inicial - Paciente Juan Pérez"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-              />
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none" />
             </div>
 
             <!-- Nombre del Paciente -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Paciente</label>
-              <input
-                v-model="clinicalPictureForm.patientName"
-                type="text"
-                placeholder="Nombre completo del paciente"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-              />
+              <input v-model="clinicalPictureForm.patientName" type="text" placeholder="Nombre completo del paciente"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none" />
             </div>
 
             <!-- Descripción -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
-              <textarea
-                v-model="clinicalPictureForm.description"
-                rows="3"
+              <textarea v-model="clinicalPictureForm.description" rows="3"
                 placeholder="Descripción general del caso o motivo de consulta"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none"
-              />
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none" />
             </div>
 
             <!-- Estado -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-              <select
-                v-model="clinicalPictureForm.status"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
-              >
+              <select v-model="clinicalPictureForm.status"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
                 <option value="draft">Borrador</option>
                 <option value="active">Activo</option>
                 <option value="completed">Completado</option>
@@ -1346,20 +1293,17 @@
 
           <!-- Footer -->
           <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
-            <button
-              @click="closeClinicalPictureModal"
-              class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
-            >
+            <button @click="closeClinicalPictureModal"
+              class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors">
               Cancelar
             </button>
-            <button
-              @click="createNewClinicalPicture"
+            <button @click="createNewClinicalPicture"
               :disabled="isLoadingClinicalPictures || !clinicalPictureForm.title.trim()"
-              class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-medium rounded-lg transition-all flex items-center gap-2"
-            >
+              class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-medium rounded-lg transition-all flex items-center gap-2">
               <svg v-if="isLoadingClinicalPictures" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
               {{ isLoadingClinicalPictures ? 'Creando...' : 'Crear Cuadro Clínico' }}
             </button>
@@ -1368,32 +1312,208 @@
       </div>
     </transition>
 
+    <!-- Modal de Respuestas de Tamizaje -->
+    <transition name="modal">
+      <div v-if="showScreeningResponsesModal"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+        @click="closeScreeningResponsesModal">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[85vh] overflow-hidden flex flex-col"
+          @click.stop>
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-cyan-600 to-blue-600 px-6 py-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-white">Agregar Respuestas de Tamizaje</h3>
+                  <p class="text-white/80 text-sm">Selecciona una respuesta para agregar a recursos y transcribir</p>
+                </div>
+              </div>
+              <button @click="closeScreeningResponsesModal"
+                class="text-white/80 hover:text-white hover:bg-white/20 rounded-lg p-2 transition-all"
+                aria-label="Cerrar modal">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div class="relative">
+              <input v-model="screeningResponsesSearchQuery" type="text"
+                placeholder="Buscar por ID, paciente o tamizaje..."
+                class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 transition-all" />
+              <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 overflow-y-auto p-6">
+            <!-- Loading -->
+            <div v-if="isLoadingScreeningResponses" class="flex flex-col items-center justify-center py-12">
+              <svg class="w-12 h-12 text-cyan-600 animate-spin mb-4" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <p class="text-gray-600">Cargando respuestas de tamizaje...</p>
+            </div>
+
+            <!-- Empty -->
+            <div v-else-if="filteredScreeningResponses.length === 0"
+              class="flex flex-col items-center justify-center py-12 text-center">
+              <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <h4 class="text-lg font-semibold text-gray-800 mb-2">No se encontraron respuestas</h4>
+              <p class="text-gray-600">Intenta con otra búsqueda o verifica que hay respuestas registradas.</p>
+            </div>
+
+            <!-- List -->
+            <div v-else class="grid grid-cols-1 gap-4">
+              <div v-for="response in filteredScreeningResponses" :key="response.id"
+                @click="toggleScreeningResponse(response)"
+                class="p-4 bg-white border-2 rounded-xl cursor-pointer transition-all hover:border-cyan-400 hover:shadow-lg"
+                :class="selectedScreeningResponses.some(r => r.id === response.id) ? 'border-cyan-500 ring-2 ring-cyan-100' : 'border-gray-200'">
+                <div class="flex items-start gap-4">
+                  <!-- Checkbox explícito -->
+                  <div class="flex items-center justify-center shrink-0 pt-1">
+                    <div class="w-5 h-5 rounded border-2 flex items-center justify-center transition-all"
+                      :class="selectedScreeningResponses.some(r => r.id === response.id) ? 'bg-cyan-500 border-cyan-500' : 'border-gray-300 bg-white'">
+                      <svg v-if="selectedScreeningResponses.some(r => r.id === response.id)"
+                        class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div
+                    class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white font-semibold shrink-0">
+                    {{ response.id?.slice(0, 2).toUpperCase() }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                      <h4 class="font-semibold text-gray-800">Respuesta #{{ response.id?.slice(-6) || 'N/A' }}</h4>
+                      <span class="px-2 py-0.5 bg-cyan-100 text-cyan-700 rounded-full text-xs font-medium">
+                        {{ (response.options_answer?.length || 0) }} respuestas
+                      </span>
+                    </div>
+                    <p class="text-sm text-gray-500">
+                      <span class="font-medium">Paciente:</span> {{ response.patientInfo?.name || response.patientName
+                        ||
+                        response.id_patient?.slice(-8) || 'N/A' }}
+                      <span v-if="response.patientExists === false"
+                        class="ml-2 px-2 py-0.5 bg-red-100 text-red-600 rounded-full text-xs font-medium">
+                        No existe
+                      </span>
+                      <span v-else-if="response.patientExists === true"
+                        class="ml-2 px-2 py-0.5 bg-green-100 text-green-600 rounded-full text-xs font-medium">
+                        Verificado
+                      </span>
+                    </p>
+                    <!-- Información adicional del paciente si existe -->
+                    <div v-if="response.patientExists && response.patientInfo" class="mt-2 space-y-1">
+                      <p v-if="response.patientInfo.email" class="text-xs text-gray-500">
+                        <span class="font-medium">Email:</span> {{ response.patientInfo.email }}
+                      </p>
+                      <p v-if="response.patientInfo.phone" class="text-xs text-gray-500">
+                        <span class="font-medium">Tel:</span> {{ response.patientInfo.phone }}
+                      </p>
+                      <p v-if="response.patientInfo.dateOfBirth" class="text-xs text-gray-500">
+                        <span class="font-medium">Fecha Nac:</span> {{ new
+                          Date(response.patientInfo.dateOfBirth).toLocaleDateString('es-ES') }}
+                      </p>
+                      <p v-if="response.patientInfo.gender" class="text-xs text-gray-500">
+                        <span class="font-medium">Género:</span> {{ response.patientInfo.gender === 'male' ? 'Masculino'
+                          :
+                          response.patientInfo.gender === 'female' ? 'Femenino' : response.patientInfo.gender }}
+                      </p>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">
+                      <span class="font-medium">Tamizaje:</span> {{ response.screeningTitle ||
+                        response.id_screening?.slice(-8) || 'N/A' }}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-1">
+                      Creado: {{ response.created_at ? formatScreeningResponseDate(response.created_at) : 'N/A' }}
+                    </p>
+                    <!-- Opciones -->
+                    <div v-if="(response.options_answer?.length || 0) > 0" class="mt-3 flex flex-wrap gap-2">
+                      <span v-for="opt in response.options_answer?.slice(0, 3) || []" :key="opt.id"
+                        class="px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs">
+                        {{ opt.text }}: {{ opt.value === 1 ? 'Sí' : 'No' }}
+                      </span>
+                      <span v-if="(response.options_answer?.length || 0) > 3" class="px-2 py-1 text-gray-400 text-xs">
+                        +{{ (response.options_answer?.length || 0) - 3 }} más
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+            <p class="text-sm text-gray-600">
+              <span class="font-semibold">{{ filteredScreeningResponses.length }}</span> respuesta(s) encontrada(s)
+            </p>
+            <div class="flex gap-3">
+              <button @click="closeScreeningResponsesModal"
+                class="px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-all">
+                Cancelar
+              </button>
+              <button @click="addScreeningResponseToResources" :disabled="selectedScreeningResponses.length === 0"
+                class="px-6 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Agregar {{ selectedScreeningResponses.length > 0 ? `(${selectedScreeningResponses.length})` : '' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
     <!-- Botones Flotantes de Cuadro Clínico y Árbol (fuera de tabs) -->
     <div class="fixed bottom-6 right-24 z-40 flex flex-col gap-3">
       <!-- Botón flotante Ver Cuadros Clínicos -->
-      <button
-        @click="router.push('/clinical-pictures')"
+      <button @click="router.push('/clinical-pictures')"
         class="bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-10 group"
-        title="Ver todos los cuadros clínicos"
-      >
+        title="Ver todos los cuadros clínicos">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+        <span
+          class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
           Ver cuadros clínicos
         </span>
       </button>
 
       <!-- Botón flotante del árbol global -->
-      <button
-        @click="generateGlobalTree"
+      <button @click="generateGlobalTree"
         class="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all z-10 group"
-        title="Ver árbol global de notas"
-      >
+        title="Ver árbol global de notas">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16M8 6v12M16 6v12" />
         </svg>
-        <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+        <span
+          class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
           Árbol global
         </span>
       </button>
@@ -1403,44 +1523,33 @@
     <div class="fixed bottom-6 right-6 z-40">
       <!-- Menú de configuración -->
       <transition name="scale">
-        <div
-          v-if="showHighlightConfigMenu"
-          class="absolute bottom-16 right-0 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 w-72 mb-2"
-        >
+        <div v-if="showHighlightConfigMenu"
+          class="absolute bottom-16 right-0 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 w-72 mb-2">
           <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
             <h4 class="font-semibold text-gray-800 text-sm">Configuración de Subrayado</h4>
-            <button
-              @click="showHighlightConfigMenu = false"
-              class="text-gray-400 hover:text-gray-600"
-            >
+            <button @click="showHighlightConfigMenu = false" class="text-gray-400 hover:text-gray-600">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-          
+
           <!-- Colores por defecto -->
           <div class="mb-4">
             <p class="text-xs font-medium text-gray-600 mb-2">Color por defecto:</p>
             <div class="flex gap-2">
-              <button
-                v-for="color in highlightColors"
-                :key="color"
-                @click="selectedHighlightColor = color"
-                :class="[
-                  'w-8 h-8 rounded-lg border-2 transition-all',
-                  selectedHighlightColor === color ? 'border-gray-800 scale-110' : 'border-transparent',
-                  color === 'yellow' && 'bg-yellow-300',
-                  color === 'green' && 'bg-green-300',
-                  color === 'red' && 'bg-red-300',
-                  color === 'purple' && 'bg-purple-300',
-                  color === 'orange' && 'bg-orange-300'
-                ]"
-                :title="color"
-              />
+              <button v-for="color in highlightColors" :key="color" @click="selectedHighlightColor = color" :class="[
+                'w-8 h-8 rounded-lg border-2 transition-all',
+                selectedHighlightColor === color ? 'border-gray-800 scale-110' : 'border-transparent',
+                color === 'yellow' && 'bg-yellow-300',
+                color === 'green' && 'bg-green-300',
+                color === 'red' && 'bg-red-300',
+                color === 'purple' && 'bg-purple-300',
+                color === 'orange' && 'bg-orange-300'
+              ]" :title="color" />
             </div>
           </div>
-          
+
           <!-- Estadísticas de subrayados -->
           <div class="bg-gray-50 rounded-lg p-3 mb-3">
             <p class="text-xs text-gray-600 mb-1">Estadísticas:</p>
@@ -1453,47 +1562,42 @@
               <span class="font-semibold text-gray-800">{{ clinicalNotes.length }}</span>
             </div>
           </div>
-          
+
           <!-- Acciones -->
           <div class="space-y-2">
-            <button
-              @click="clearAllHighlightsConfirm"
-              class="w-full px-3 py-2 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
-            >
+            <button @click="clearAllHighlightsConfirm"
+              class="w-full px-3 py-2 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               Limpiar todos los subrayados
             </button>
-            <button
-              @click="exportHighlights"
-              class="w-full px-3 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-medium hover:bg-indigo-100 transition-colors flex items-center justify-center gap-2"
-            >
+            <button @click="exportHighlights"
+              class="w-full px-3 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-medium hover:bg-indigo-100 transition-colors flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               Exportar subrayados
             </button>
           </div>
         </div>
       </transition>
-      
+
       <!-- Botón principal flotante -->
-      <button
-        @click="showHighlightConfigMenu = !showHighlightConfigMenu"
-        :class="[
-          'w-14 h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center',
-          showHighlightConfigMenu 
-            ? 'bg-gray-800 text-white rotate-45' 
-            : 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:scale-110 hover:shadow-xl'
-        ]"
-        title="Configuración de Subrayado"
-      >
+      <button @click="showHighlightConfigMenu = !showHighlightConfigMenu" :class="[
+        'w-14 h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center',
+        showHighlightConfigMenu
+          ? 'bg-gray-800 text-white rotate-45'
+          : 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:scale-110 hover:shadow-xl'
+      ]" title="Configuración de Subrayado">
         <svg v-if="!showHighlightConfigMenu" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
         </svg>
         <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
@@ -1503,6 +1607,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
 import Tesseract from 'tesseract.js';
@@ -1598,6 +1703,11 @@ interface Resource {
   url?: string;
   transcription?: string;
   transcriptionStatus?: 'processing' | 'completed' | 'error';
+  // Información enriquecida para recursos de tamizaje
+  patientInfo?: PatientInfo;
+  screeningTitle?: string;
+  idPatient?: string;
+  idScreening?: string;
 }
 
 interface Message {
@@ -1679,8 +1789,8 @@ const showHighlightConfigMenu = ref(false);
 
 // Variables para Vue Flow - Visualización de árbol de notas
 const showTreeModal = ref(false);
-const treeNodes = ref<Array<{id: string, label: string, position: {x: number, y: number}, style?: Record<string, string>}>>([]);
-const treeEdges = ref<Array<{id: string, source: string, target: string}>>([]);
+const treeNodes = ref<Array<{ id: string, label: string, position: { x: number, y: number }, style?: Record<string, string> }>>([]);
+const treeEdges = ref<Array<{ id: string, source: string, target: string }>>([]);
 const currentTreeNote = ref<ClinicalNote | null>(null);
 
 // Variables para Cuadro Clínico
@@ -1703,6 +1813,53 @@ const screeningSearchQuery = ref('');
 const isLoadingScreenings = ref(false);
 const selectedScreeningIds = ref<string[]>([]);
 const selectedQuestionnaireIds = ref<string[]>([]);
+
+// Variables para Respuestas de Tamizaje
+const showScreeningResponsesModal = ref(false);
+const screeningResponses = ref<ScreeningResponse[]>([]);
+const selectedScreeningResponses = ref<ScreeningResponse[]>([]);
+const screeningResponsesSearchQuery = ref('');
+const isLoadingScreeningResponses = ref(false);
+
+// Interface para información del paciente
+interface PatientInfo {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  exists: boolean;
+}
+
+// Interface para respuestas de tamizaje
+interface ScreeningResponse {
+  id: string;
+  id_patient: string;
+  id_screening: string;
+  options_answer: Array<{ id: string; text: string; value: number }>;
+  created_at: string;
+  updated_at: string;
+  patientName?: string;
+  screeningTitle?: string;
+  patientInfo?: PatientInfo;
+  patientExists?: boolean;
+}
+
+// Computed para filtrar respuestas de tamizaje
+const filteredScreeningResponses = computed(() => {
+  if (!screeningResponsesSearchQuery.value.trim()) {
+    return screeningResponses.value;
+  }
+  const query = screeningResponsesSearchQuery.value.toLowerCase();
+  return screeningResponses.value.filter(response =>
+    response.id.toLowerCase().includes(query) ||
+    response.id_patient.toLowerCase().includes(query) ||
+    response.id_screening.toLowerCase().includes(query) ||
+    response.patientName?.toLowerCase().includes(query) ||
+    response.screeningTitle?.toLowerCase().includes(query)
+  );
+});
 
 // Colores disponibles para subrayado
 const highlightColors: HighlightColor[] = ['yellow', 'green', 'red', 'purple', 'orange'];
@@ -1749,21 +1906,21 @@ const loadResources = async () => {
   try {
     isLoading.value = true;
     loadError.value = null;
-    
+
     // Inicializar base de datos
     await initDatabase();
-    
+
     // Cargar recursos desde IndexedDB
     const storedResources = await getAllResources();
-    
+
     // Recuperar archivos y reconstruir objetos Resource
     const loadedResources: Resource[] = [];
     let maxId = 0;
-    
+
     for (const stored of storedResources) {
       // Actualizar contador de IDs
       if (stored.id > maxId) maxId = stored.id;
-      
+
       // Reconstruir recurso
       const resource: Resource = {
         id: stored.id,
@@ -1775,7 +1932,7 @@ const loadResources = async () => {
         transcription: stored.transcription,
         transcriptionStatus: stored.transcriptionStatus
       };
-      
+
       // Si tiene archivo asociado, recuperarlo
       if (stored.fileId) {
         const file = await getFile(stored.fileId);
@@ -1783,14 +1940,14 @@ const loadResources = async () => {
           resource.file = file;
         }
       }
-      
+
       loadedResources.push(resource);
     }
-    
+
     // Actualizar estado
     resources.value = loadedResources;
     resourceIdCounter.value = maxId + 1;
-    
+
     console.log(`✅ Cargados ${loadedResources.length} recursos desde IndexedDB`);
   } catch (error) {
     console.error('Error al cargar recursos:', error);
@@ -1881,9 +2038,8 @@ const linkSelectedScreeningsAndQuestionnaires = async () => {
           type: resource.type,
           description: resource.description,
           url: resource.url,
-          file: undefined,
           transcription,
-          createdAt: resource.createdAt
+          createdAt: resource.createdAt instanceof Date ? resource.createdAt.toISOString() : resource.createdAt
         });
 
         console.log('✅ Tamizaje vinculado:', screening.title);
@@ -1914,9 +2070,8 @@ const linkSelectedScreeningsAndQuestionnaires = async () => {
           type: resource.type,
           description: resource.description,
           url: resource.url,
-          file: undefined,
           transcription,
-          createdAt: resource.createdAt
+          createdAt: resource.createdAt instanceof Date ? resource.createdAt.toISOString() : resource.createdAt
         });
 
         console.log('✅ Cuestionario vinculado:', questionnaire.title);
@@ -1945,6 +2100,390 @@ watch(showLinkScreeningModal, (newValue) => {
   }
 });
 
+// ✅ FUNCIONES PARA RESPUESTAS DE TAMIZAJE
+
+/**
+ * Abrir modal de respuestas de tamizaje
+ */
+const openScreeningResponsesModal = async () => {
+  showScreeningResponsesModal.value = true;
+  screeningResponsesSearchQuery.value = '';
+  selectedScreeningResponses.value = [];
+  await loadScreeningResponses();
+};
+
+/**
+ * Cerrar modal de respuestas de tamizaje
+ */
+const closeScreeningResponsesModal = () => {
+  showScreeningResponsesModal.value = false;
+  selectedScreeningResponses.value = [];
+};
+
+/**
+ * Cargar respuestas de tamizaje desde el API y enriquecer con nombres
+ */
+const loadScreeningResponses = async () => {
+  isLoadingScreeningResponses.value = true;
+  try {
+    const response = await axios.get('http://localhost:3000/api/v1/screening-responses/all', {
+      timeout: 30000,
+    });
+    const rawResponses = response.data || [];
+
+    // Enriquecer respuestas con nombres de pacientes y tamizajes
+    screeningResponses.value = await enrichScreeningResponses(rawResponses);
+  } catch (error: any) {
+    let message = 'No se pudo cargar la lista de respuestas.';
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        message = 'Error del servidor al obtener respuestas.';
+      } else if (error.request) {
+        message = 'No se pudo conectar con el servidor.';
+      }
+    }
+    console.error('Error loading screening responses:', error);
+    alert(message);
+  } finally {
+    isLoadingScreeningResponses.value = false;
+  }
+};
+
+/**
+ * Verificar si un paciente existe y obtener su información básica
+ * Con logging detallado y manejo de caché (304)
+ */
+const verifyPatientExists = async (id: string): Promise<PatientInfo> => {
+  console.log(`[PatientAPI] Iniciando verificación de paciente ID: ${id}`);
+  console.log(`[PatientAPI] Endpoint: GET /api/v1/patients/${id}`);
+
+  try {
+    const response = await axios.get(`http://localhost:3000/api/v1/patients/${id}`, {
+      timeout: 10000,
+      headers: {
+        'Accept': 'application/json',
+        'Cache-Control': 'no-cache'
+      }
+    });
+
+    // Logging de respuesta exitosa
+    console.log(`[PatientAPI] Respuesta exitosa para paciente ${id}`);
+    console.log(`[PatientAPI] Status: ${response.status} ${response.statusText}`);
+    console.log(`[PatientAPI] Headers:`, response.headers);
+    console.log(`[PatientAPI] Datos recibidos:`, response.data);
+
+    const patient = response.data;
+
+    if (patient) {
+      console.log(`[PatientAPI] Paciente ${id} encontrado:`, {
+        name: patient.fullName || patient.name,
+        email: patient.email,
+        phone: patient.phone
+      });
+
+      return {
+        id: id,
+        name: patient.fullName || patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim() || 'Nombre no disponible',
+        email: patient.email,
+        phone: patient.phone,
+        dateOfBirth: patient.birthDate || patient.dateOfBirth,
+        gender: patient.gender,
+        exists: true
+      };
+    }
+
+    console.warn(`[PatientAPI] Paciente ${id} no encontrado en la respuesta`);
+    return { id, name: 'Paciente no encontrado', exists: false };
+
+  } catch (error: any) {
+    console.error(`[PatientAPI] Error al verificar paciente ${id}:`, error);
+
+    // Manejo específico de códigos de estado HTTP
+    if (axios.isAxiosError(error)) {
+      const statusCode = error.response?.status;
+      const errorData = error.response?.data;
+
+      console.error(`[PatientAPI] Status Code: ${statusCode}`);
+      console.error(`[PatientAPI] Error Data:`, errorData);
+      console.error(`[PatientAPI] Error Message:`, error.message);
+
+      // Alerta personalizada para 304 Not Modified
+      if (statusCode === 304) {
+        const alertMessage = `⚠️ Alerta: Status 304 Not Modified\n\nEl servidor está devolviendo un código 304 porque:\n\n1. La información del paciente (ID: ${id}) no ha cambiado desde la última solicitud.\n2. El navegador o un proxy intermedio está cacheando la respuesta.\n3. No hay nueva información para actualizar.\n\nEsto es un comportamiento normal de caché HTTP.\nLos datos mostrados provienen de la caché local.`;
+
+        console.warn(`[PatientAPI] Alerta 304: Datos de paciente ${id} obtenidos de caché`);
+        alert(alertMessage);
+
+        // Intentar obtener datos de caché local si existen
+        const cachedResponse = screeningResponses.value.find(r => r.id_patient === id);
+        if (cachedResponse?.patientInfo) {
+          console.log(`[PatientAPI] Retornando datos en caché para paciente ${id}`);
+          return cachedResponse.patientInfo;
+        }
+
+        return { id, name: 'Paciente (datos en caché)', exists: true };
+      }
+
+      // Manejo de otros errores HTTP comunes
+      switch (statusCode) {
+        case 400:
+          console.error(`[PatientAPI] Error 400: Solicitud inválida para paciente ${id}`);
+          break;
+        case 401:
+          console.error(`[PatientAPI] Error 401: No autorizado`);
+          break;
+        case 403:
+          console.error(`[PatientAPI] Error 403: Acceso prohibido`);
+          break;
+        case 404:
+          console.warn(`[PatientAPI] Error 404: Paciente ${id} no existe en la base de datos`);
+          break;
+        case 500:
+          console.error(`[PatientAPI] Error 500: Error interno del servidor`);
+          break;
+        case 502:
+          console.error(`[PatientAPI] Error 502: Bad Gateway`);
+          break;
+        case 503:
+          console.error(`[PatientAPI] Error 503: Servicio no disponible`);
+          break;
+        default:
+          console.error(`[PatientAPI] Error ${statusCode}: Error desconocido`);
+      }
+
+      // Log de error de red
+      if (error.request && !error.response) {
+        console.error(`[PatientAPI] Error de red: No se pudo conectar al servidor`);
+        console.error(`[PatientAPI] Request config:`, error.config);
+      }
+    } else {
+      // Error no relacionado con Axios
+      console.error(`[PatientAPI] Error no-HTTP:`, error);
+    }
+
+    console.warn(`[PatientAPI] Retornando estado 'no encontrado' para paciente ${id}`);
+    return { id, name: 'Paciente no encontrado', exists: false };
+  }
+};
+
+/**
+ * Obtener título de tamizaje por ID
+ * Consume el endpoint /api/v1/screenings/:id para obtener el título
+ */
+const getScreeningTitleById = async (id: string): Promise<string | null> => {
+  console.log(`[ScreeningAPI] Obteniendo título para tamizaje ID: ${id}`);
+
+  try {
+    const response = await axios.get(`http://localhost:3000/api/v1/screenings/${id}`, {
+      timeout: 10000,
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+
+    console.log(`[ScreeningAPI] Respuesta exitosa para tamizaje ${id}`);
+    console.log(`[ScreeningAPI] Status: ${response.status}`);
+    console.log(`[ScreeningAPI] Datos recibidos:`, response.data);
+
+    const screening = response.data;
+
+    if (screening && screening.title) {
+      console.log(`[ScreeningAPI] Título encontrado: "${screening.title}"`);
+      return screening.title;
+    }
+
+    console.warn(`[ScreeningAPI] No se encontró título en la respuesta para tamizaje ${id}`);
+    return null;
+  } catch (error: any) {
+    console.error(`[ScreeningAPI] Error al obtener título del tamizaje ${id}:`, error);
+
+    if (axios.isAxiosError(error)) {
+      const statusCode = error.response?.status;
+      console.error(`[ScreeningAPI] Status Code: ${statusCode}`);
+
+      switch (statusCode) {
+        case 304:
+          console.warn(`[ScreeningAPI] Datos de tamizaje ${id} obtenidos de caché`);
+          break;
+        case 404:
+          console.warn(`[ScreeningAPI] Tamizaje ${id} no encontrado`);
+          break;
+        default:
+          console.error(`[ScreeningAPI] Error ${statusCode}:`, error.message);
+      }
+    }
+
+    return null;
+  }
+};
+
+/**
+ * Enriquecer respuestas con nombres de pacientes y títulos de tamizajes
+ * Consume endpoints /api/v1/patients/:id y /api/v1/screenings/:id
+ */
+const enrichScreeningResponses = async (responses: ScreeningResponse[] | any): Promise<ScreeningResponse[]> => {
+  // Validar que responses sea un array
+  if (!Array.isArray(responses)) {
+    console.warn('responses no es un array:', responses);
+    // Si es un objeto con una propiedad que contiene el array, intentar extraerlo
+    if (responses && typeof responses === 'object') {
+      const possibleArray = responses.data || responses.items || responses.results || Object.values(responses)[0];
+      if (Array.isArray(possibleArray)) {
+        responses = possibleArray;
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+
+  console.log(`[Enrich] Enriqueciendo ${responses.length} respuestas de tamizaje`);
+
+  const enriched = await Promise.all(
+    responses.map(async (response) => {
+      // Verificar que el paciente existe y obtener su información
+      // También obtener el título del tamizaje desde el endpoint dedicado
+      const [patientInfo, screeningTitle] = await Promise.all([
+        verifyPatientExists(response.id_patient),
+        getScreeningTitleById(response.id_screening)
+      ]);
+
+      console.log(`[Enrich] Respuesta ${response.id} enriquecida:`, {
+        patientName: patientInfo.name,
+        patientExists: patientInfo.exists,
+        screeningTitle: screeningTitle || 'No disponible'
+      });
+
+      return {
+        ...response,
+        patientName: patientInfo.name,
+        patientInfo: patientInfo,
+        patientExists: patientInfo.exists,
+        screeningTitle: screeningTitle || undefined
+      };
+    })
+  );
+
+  console.log(`[Enrich] ${enriched.length} respuestas enriquecidas exitosamente`);
+  return enriched;
+};
+
+/**
+ * Seleccionar una sola respuesta de tamizaje (comportamiento radio button)
+ */
+const toggleScreeningResponse = (response: ScreeningResponse) => {
+  // Si ya está seleccionada, deseleccionarla
+  const index = selectedScreeningResponses.value.findIndex(r => r.id === response.id);
+  if (index !== -1) {
+    selectedScreeningResponses.value = [];
+  } else {
+    // Reemplazar selección anterior con la nueva
+    selectedScreeningResponses.value = [response];
+  }
+};
+
+/**
+ * Agregar respuestas seleccionadas a recursos con transcripción
+ */
+const addScreeningResponseToResources = async () => {
+  if (selectedScreeningResponses.value.length === 0) return;
+
+  try {
+    let addedCount = 0;
+
+    for (const response of selectedScreeningResponses.value) {
+      // Validar campos requeridos
+      if (!response.id_patient) {
+        console.warn('Respuesta sin id_patient, omitiendo:', response.id);
+        continue;
+      }
+      if (!response.id_screening) {
+        console.warn('Respuesta sin id_screening, omitiendo:', response.id);
+        continue;
+      }
+
+      // Crear texto de transcripción con las respuestas
+      const optionsText = response.options_answer
+        ?.map((opt: { text: string; value: number }) => `${opt.text}: ${opt.value === 1 ? 'Sí' : 'No'}`)
+        .join('\n') || '';
+
+      const transcriptionText = `Respuesta de Tamizaje
+
+Paciente ID: ${response.id_patient}
+Tamizaje ID: ${response.id_screening}
+Fecha: ${new Date(response.created_at).toLocaleDateString('es-ES')}
+
+Respuestas:
+${optionsText}`;
+
+      // Crear recurso con información enriquecida
+      const newResource: Resource = {
+        id: resourceIdCounter.value++,
+        name: `Respuesta Tamizaje - ${response.id_patient.slice(-8)}`,
+        type: 'screening_response',
+        description: `Respuestas del tamizaje ${response.id_screening.slice(-8)} - ${response.options_answer?.length || 0} preguntas respondidas`,
+        createdAt: new Date(),
+        url: `/screening-responses/${response.id}`,
+        transcription: transcriptionText,
+        transcriptionStatus: 'completed',
+        // Información enriquecida del paciente y tamizaje
+        patientInfo: response.patientInfo,
+        screeningTitle: response.screeningTitle,
+        idPatient: response.id_patient,
+        idScreening: response.id_screening
+      };
+
+      // Agregar a la lista de recursos
+      resources.value.push(newResource);
+
+      // Guardar en persistencia
+      await saveResource({
+        id: newResource.id,
+        name: newResource.name,
+        type: newResource.type,
+        description: newResource.description,
+        url: newResource.url,
+        transcription: newResource.transcription,
+        createdAt: newResource.createdAt instanceof Date ? newResource.createdAt.toISOString() : newResource.createdAt
+      });
+
+      addedCount++;
+    }
+
+    console.log(`✅ ${addedCount} respuestas de tamizaje agregadas a recursos`);
+    alert(`${addedCount} respuesta(s) de tamizaje agregada(s) exitosamente a recursos`);
+
+    // Cerrar modal y limpiar selección
+    closeScreeningResponsesModal();
+  } catch (error) {
+    console.error('Error al agregar respuestas a recursos:', error);
+    alert('Error al agregar respuestas de tamizaje');
+  }
+};
+
+/**
+ * Formatear fecha de respuesta
+ */
+const formatScreeningResponseDate = (date: string | null | undefined) => {
+  if (!date) return 'Fecha no disponible';
+  try {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+      return 'Fecha inválida';
+    }
+    return parsedDate.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch (error) {
+    return 'Fecha inválida';
+  }
+};
+
 // ✅ FUNCIONES PARA HIGHLIGHTS Y NOTAS CLÍNICAS
 
 /**
@@ -1963,16 +2502,16 @@ const loadHighlightsForResource = async (resourceId: number) => {
       createdAt: new Date(h.createdAt),
       noteId: h.noteId
     }));
-    
+
     // Filtrar highlights del recurso actual
     highlights.value = highlights.value.filter(h => h.resourceId !== resourceId);
     highlights.value.push(...loadedHighlights);
-    
+
     // Renderizar los highlights en el DOM después de cargar
     nextTick(() => {
       renderHighlightsInTranscription();
     });
-    
+
     return loadedHighlights;
   } catch (error) {
     console.error('Error al cargar highlights:', error);
@@ -1985,24 +2524,24 @@ const loadHighlightsForResource = async (resourceId: number) => {
  */
 const renderHighlightsInTranscription = () => {
   if (!currentTranscription.value?.transcription) return;
-  
+
   const container = document.querySelector('.prose p');
   if (!container) return;
-  
+
   const resourceId = currentTranscription.value.id;
   const resourceHighlights = highlights.value.filter(h => h.resourceId === resourceId);
-  
+
   if (resourceHighlights.length === 0) return;
-  
+
   // Obtener el texto original
   const originalText = currentTranscription.value.transcription;
-  
+
   // Crear un nuevo HTML con los highlights aplicados
   let html = originalText;
-  
+
   // Ordenar highlights por posición (de atrás hacia adelante para no desplazar índices)
   const sortedHighlights = [...resourceHighlights].sort((a, b) => b.startOffset - a.startOffset);
-  
+
   // Aplicar cada highlight
   for (const highlight of sortedHighlights) {
     const colorStyles: Record<HighlightColor, string> = {
@@ -2012,10 +2551,10 @@ const renderHighlightsInTranscription = () => {
       purple: 'background-color: #e9d5ff;',
       orange: 'background-color: #fed7aa;'
     };
-    
+
     const escapedText = highlight.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp(`(${escapedText})`, 'g');
-    
+
     html = html.replace(regex, `<span 
       data-highlight-id="${highlight.id}" 
       data-color="${highlight.color}"
@@ -2023,10 +2562,10 @@ const renderHighlightsInTranscription = () => {
       class="highlighted-text"
     >$1</span>`);
   }
-  
+
   // Actualizar el contenido del contenedor
   container.innerHTML = html;
-  
+
   // Agregar event listeners a los spans creados
   const spans = container.querySelectorAll('.highlighted-text');
   spans.forEach(span => {
@@ -2038,7 +2577,7 @@ const renderHighlightsInTranscription = () => {
       }
     });
   });
-  
+
   console.log(`✅ ${resourceHighlights.length} highlights renderizados en el DOM`);
 };
 
@@ -2062,7 +2601,7 @@ const loadAllClinicalNotes = async () => {
         updatedAt: n.updatedAt ? new Date(n.updatedAt) : undefined
       };
     });
-    
+
     // Actualizar el texto del highlight para cada nota
     for (const note of clinicalNotes.value) {
       const highlight = await getHighlightById(note.highlightId);
@@ -2070,7 +2609,7 @@ const loadAllClinicalNotes = async () => {
         note.highlightText = highlight.text;
       }
     }
-    
+
     console.log(`✅ Cargadas ${clinicalNotes.value.length} notas clínicas`);
   } catch (error) {
     console.error('Error al cargar notas clínicas:', error);
@@ -2102,10 +2641,10 @@ const handleTextSelection = (event: MouseEvent) => {
     showHighlightTooltip.value = false;
     return;
   }
-  
+
   const range = selection.getRangeAt(0);
   const text = selection.toString().trim();
-  
+
   if (text.length > 0) {
     isTextSelected.value = true;
     selectionRange.value = {
@@ -2113,7 +2652,7 @@ const handleTextSelection = (event: MouseEvent) => {
       end: range.endOffset,
       text: text
     };
-    
+
     // Mostrar tooltip flotante cerca del cursor
     showHighlightTooltip.value = true;
     highlightTooltipPosition.value = {
@@ -2135,7 +2674,7 @@ const applyHighlightToDOM = (range: Range, color: HighlightColor, highlightId: s
   span.className = `${getHighlightColorClass(color)} cursor-pointer transition-all`;
   span.dataset.highlightId = highlightId;
   span.dataset.color = color;
-  
+
   // Aplicar estilos inline para asegurar visibilidad
   const colorStyles: Record<HighlightColor, string> = {
     yellow: 'background-color: #fef08a;',
@@ -2145,10 +2684,10 @@ const applyHighlightToDOM = (range: Range, color: HighlightColor, highlightId: s
     orange: 'background-color: #fed7aa;'
   };
   span.style.cssText = `${colorStyles[color]} padding: 2px 4px; border-radius: 3px;`;
-  
+
   try {
     range.surroundContents(span);
-    
+
     // Agregar evento de doble clic al span
     span.addEventListener('dblclick', () => {
       const highlight = highlights.value.find(h => h.id === highlightId);
@@ -2156,7 +2695,7 @@ const applyHighlightToDOM = (range: Range, color: HighlightColor, highlightId: s
         handleHighlightDoubleClick(highlight);
       }
     });
-    
+
     return span;
   } catch (error) {
     console.error('Error al aplicar highlight al DOM:', error);
@@ -2169,21 +2708,21 @@ const applyHighlightToDOM = (range: Range, color: HighlightColor, highlightId: s
  */
 const createHighlightFromTooltip = async (color: HighlightColor) => {
   if (!currentTranscription.value || !selectionRange.value) return;
-  
+
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0) return;
-  
+
   const range = selection.getRangeAt(0);
   const resourceId = currentTranscription.value.id;
   const highlightId = `highlight-${resourceId}-${Date.now()}`;
-  
+
   // Aplicar el subrayado visual al DOM primero
   const span = applyHighlightToDOM(range, color, highlightId);
   if (!span) {
     console.error('No se pudo aplicar el highlight al DOM');
     return;
   }
-  
+
   const newHighlight: Highlight = {
     id: highlightId,
     resourceId: resourceId,
@@ -2193,7 +2732,7 @@ const createHighlightFromTooltip = async (color: HighlightColor) => {
     endOffset: selectionRange.value.end,
     createdAt: new Date()
   };
-  
+
   try {
     // Guardar en IndexedDB
     await saveHighlight({
@@ -2205,21 +2744,21 @@ const createHighlightFromTooltip = async (color: HighlightColor) => {
       endOffset: newHighlight.endOffset,
       createdAt: newHighlight.createdAt.toISOString()
     });
-    
+
     // Agregar al estado
     highlights.value.push(newHighlight);
-    
+
     // Ocultar tooltip y limpiar selección
     showHighlightTooltip.value = false;
     window.getSelection()?.removeAllRanges();
     isTextSelected.value = false;
     selectionRange.value = null;
-    
+
     // Abrir modal para crear nota
     currentHighlight.value = newHighlight;
     noteForm.value = { title: '', description: '' };
     showHighlightNoteModal.value = true;
-    
+
     console.log(`✅ Highlight creado y aplicado visualmente: ${highlightId}`);
   } catch (error) {
     console.error('Error al crear highlight:', error);
@@ -2231,10 +2770,10 @@ const createHighlightFromTooltip = async (color: HighlightColor) => {
  */
 const handleHighlightDoubleClick = async (highlight: Highlight) => {
   currentHighlight.value = highlight;
-  
+
   // Buscar si ya existe una nota para este highlight
   const existingNote = await getClinicalNoteByHighlightId(highlight.id);
-  
+
   if (existingNote) {
     // Cargar datos de la nota existente
     noteForm.value = {
@@ -2245,7 +2784,7 @@ const handleHighlightDoubleClick = async (highlight: Highlight) => {
     // Crear nueva nota
     noteForm.value = { title: '', description: '' };
   }
-  
+
   showHighlightNoteModal.value = true;
 };
 
@@ -2254,10 +2793,10 @@ const handleHighlightDoubleClick = async (highlight: Highlight) => {
  */
 const saveHighlightNote = async () => {
   if (!currentHighlight.value) return;
-  
+
   const noteId = `note-${currentHighlight.value.id}`;
   const now = new Date();
-  
+
   const note: ClinicalNote = {
     id: noteId,
     highlightId: currentHighlight.value.id,
@@ -2269,7 +2808,7 @@ const saveHighlightNote = async () => {
     createdAt: now,
     updatedAt: now
   };
-  
+
   try {
     // Guardar en IndexedDB
     await saveClinicalNote({
@@ -2281,7 +2820,7 @@ const saveHighlightNote = async () => {
       createdAt: note.createdAt.toISOString(),
       updatedAt: note.updatedAt?.toISOString()
     });
-    
+
     // Actualizar el highlight con el noteId
     await saveHighlight({
       id: currentHighlight.value.id,
@@ -2293,9 +2832,9 @@ const saveHighlightNote = async () => {
       createdAt: currentHighlight.value.createdAt.toISOString(),
       noteId: noteId
     });
-    
+
     currentHighlight.value.noteId = noteId;
-    
+
     // Actualizar lista de notas
     const existingIndex = clinicalNotes.value.findIndex(n => n.id === noteId);
     if (existingIndex >= 0) {
@@ -2303,9 +2842,9 @@ const saveHighlightNote = async () => {
     } else {
       clinicalNotes.value.unshift(note);
     }
-    
+
     console.log(`✅ Nota clínica guardada: ${noteId}`);
-    
+
     // Cerrar modal
     closeHighlightNoteModal();
   } catch (error) {
@@ -2318,15 +2857,15 @@ const saveHighlightNote = async () => {
  */
 const generateTreeFromNote = (note: ClinicalNote) => {
   currentTreeNote.value = note;
-  
+
   // Procesar el contenido para crear nodos
   const content = note.description || '';
   const title = note.title || 'Nota sin título';
   const lines = content.split('\n').filter(line => line.trim());
-  
-  const nodes: Array<{id: string, label: string, position: {x: number, y: number}, style?: Record<string, string>}> = [];
-  const edges: Array<{id: string, source: string, target: string}> = [];
-  
+
+  const nodes: Array<{ id: string, label: string, position: { x: number, y: number }, style?: Record<string, string> }> = [];
+  const edges: Array<{ id: string, source: string, target: string }> = [];
+
   // Nodo raíz (título de la nota)
   nodes.push({
     id: 'root',
@@ -2334,16 +2873,16 @@ const generateTreeFromNote = (note: ClinicalNote) => {
     position: { x: 400, y: 50 },
     style: { background: '#4f46e5', color: 'white', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: 'bold' }
   });
-  
+
   // Crear nodos hijos a partir del contenido
   let currentY = 150;
   let childIndex = 0;
-  
+
   lines.forEach((line, index) => {
     const trimmedLine = line.trim();
     if (trimmedLine.length > 0) {
       const nodeId = `node-${index}`;
-      
+
       // Determinar el nivel basado en el contenido
       let level = 1;
       if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('• ')) {
@@ -2351,13 +2890,13 @@ const generateTreeFromNote = (note: ClinicalNote) => {
       } else if (/^\d+\./.test(trimmedLine)) {
         level = 1;
       }
-      
+
       nodes.push({
         id: nodeId,
         label: trimmedLine.substring(0, 50) + (trimmedLine.length > 50 ? '...' : ''),
         position: { x: 200 + (childIndex % 3) * 200, y: currentY + Math.floor(childIndex / 3) * 100 },
-        style: { 
-          background: level === 1 ? '#e0e7ff' : '#f3f4f6', 
+        style: {
+          background: level === 1 ? '#e0e7ff' : '#f3f4f6',
           border: '1px solid #c7d2fe',
           padding: '8px 12px',
           borderRadius: '6px',
@@ -2365,18 +2904,18 @@ const generateTreeFromNote = (note: ClinicalNote) => {
           width: '180px'
         }
       });
-      
+
       // Conectar con el nodo raíz o con el nodo anterior del mismo nivel
       edges.push({
         id: `edge-${index}`,
         source: level === 1 ? 'root' : `node-${Math.max(0, index - 1)}`,
         target: nodeId
       });
-      
+
       childIndex++;
     }
   });
-  
+
   // Si no hay contenido, crear un nodo informativo
   if (nodes.length === 1) {
     nodes.push({
@@ -2391,11 +2930,11 @@ const generateTreeFromNote = (note: ClinicalNote) => {
       target: 'info'
     });
   }
-  
+
   treeNodes.value = nodes;
   treeEdges.value = edges;
   showTreeModal.value = true;
-  
+
   console.log(`🌳 Árbol generado: ${nodes.length} nodos, ${edges.length} conexiones`);
 };
 
@@ -2409,20 +2948,20 @@ const generateGlobalTree = () => {
     return;
   }
 
-  const nodes: Array<{id: string, label: string, position: {x: number, y: number}, style?: Record<string, string>}> = [];
-  const edges: Array<{id: string, source: string, target: string}> = [];
-  
+  const nodes: Array<{ id: string, label: string, position: { x: number, y: number }, style?: Record<string, string> }> = [];
+  const edges: Array<{ id: string, source: string, target: string }> = [];
+
   // Nodo raíz central
   nodes.push({
     id: 'root',
     label: 'Notas Clínicas',
     position: { x: 400, y: 50 },
-    style: { 
-      background: '#4f46e5', 
-      color: 'white', 
-      border: 'none', 
-      padding: '12px 20px', 
-      borderRadius: '8px', 
+    style: {
+      background: '#4f46e5',
+      color: 'white',
+      border: 'none',
+      padding: '12px 20px',
+      borderRadius: '8px',
       fontWeight: 'bold',
       fontSize: '14px'
     }
@@ -2440,29 +2979,29 @@ const generateGlobalTree = () => {
 
   let resourceIndex = 0;
   const resourceEntries = Array.from(notesByResource.entries());
-  
+
   resourceEntries.forEach(([resourceName, notes], rIndex) => {
     // Nodo de recurso (nivel 1)
     const resourceNodeId = `resource-${rIndex}`;
     const resourceX = 150 + (rIndex % 3) * 250;
     const resourceY = 180 + Math.floor(rIndex / 3) * 150;
-    
+
     nodes.push({
       id: resourceNodeId,
       label: resourceName,
       position: { x: resourceX, y: resourceY },
-      style: { 
-        background: '#e0e7ff', 
+      style: {
+        background: '#e0e7ff',
         border: '2px solid #6366f1',
-        padding: '10px 16px', 
-        borderRadius: '8px', 
+        padding: '10px 16px',
+        borderRadius: '8px',
         fontWeight: '600',
         fontSize: '12px',
         color: '#4338ca',
         width: '160px'
       }
     });
-    
+
     // Conectar recurso al root
     edges.push({
       id: `edge-resource-${rIndex}`,
@@ -2478,27 +3017,27 @@ const generateGlobalTree = () => {
       const noteNodeId = `note-${note.id}`;
       const noteX = resourceX + (nIndex % 2) * 180 - 90;
       const noteY = resourceY + 100 + Math.floor(nIndex / 2) * 100;
-      
+
       // Truncar título si es muy largo
-      const shortTitle = note.title.length > 25 
-        ? note.title.substring(0, 25) + '...' 
+      const shortTitle = note.title.length > 25
+        ? note.title.substring(0, 25) + '...'
         : note.title;
-      
+
       nodes.push({
         id: noteNodeId,
         label: shortTitle,
         position: { x: noteX, y: noteY },
-        style: { 
-          background: '#f8fafc', 
+        style: {
+          background: '#f8fafc',
           border: '1px solid #cbd5e1',
-          padding: '8px 12px', 
-          borderRadius: '6px', 
+          padding: '8px 12px',
+          borderRadius: '6px',
           fontSize: '11px',
           color: '#334155',
           width: '140px'
         }
       });
-      
+
       // Conectar nota a su recurso padre
       edges.push({
         id: `edge-note-${note.id}`,
@@ -2519,12 +3058,12 @@ const generateGlobalTree = () => {
       }
     });
   });
-  
+
   treeNodes.value = nodes;
   treeEdges.value = edges;
   showTreeModal.value = true;
   currentTreeNote.value = null; // Indica que es vista global
-  
+
   console.log(`🌳 Árbol global generado: ${nodes.length} nodos, ${edges.length} conexiones, ${resourceEntries.length} recursos`);
 };
 
@@ -2557,11 +3096,11 @@ const deleteHighlightWithNote = async (highlightId: string) => {
       await deleteClinicalNote(note.id);
       clinicalNotes.value = clinicalNotes.value.filter(n => n.id !== note.id);
     }
-    
+
     // Eliminar highlight
     await deleteHighlight(highlightId);
     highlights.value = highlights.value.filter(h => h.id !== highlightId);
-    
+
     console.log(`✅ Highlight ${highlightId} eliminado`);
   } catch (error) {
     console.error('Error al eliminar highlight:', error);
@@ -2612,8 +3151,8 @@ Proporciona las sugerencias numeradas, una por línea, sin introducción ni conc
       .slice(0, 5); // Máximo 5 sugerencias
 
     // Si no se extrajeron sugerencias, usar el texto completo dividido en oraciones
-    const finalSuggestions = suggestions.length > 0 
-      ? suggestions 
+    const finalSuggestions = suggestions.length > 0
+      ? suggestions
       : text.split('.').filter(s => s.trim().length > 20).slice(0, 5);
 
     // Guardar el análisis en la nota
@@ -2639,16 +3178,16 @@ const clearAllHighlightsConfirm = async () => {
   if (!confirm('¿Estás seguro de que deseas eliminar TODOS los subrayados y notas clínicas? Esta acción no se puede deshacer.')) {
     return;
   }
-  
+
   try {
     // Eliminar todos los highlights y sus notas
     for (const highlight of [...highlights.value]) {
       await deleteHighlightWithNote(highlight.id);
     }
-    
+
     highlights.value = [];
     clinicalNotes.value = [];
-    
+
     console.log('✅ Todos los highlights han sido eliminados');
     alert('Todos los subrayados y notas han sido eliminados.');
   } catch (error) {
@@ -2684,7 +3223,7 @@ const exportHighlights = () => {
     })),
     exportedAt: new Date().toISOString()
   };
-  
+
   const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -2694,7 +3233,7 @@ const exportHighlights = () => {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  
+
   console.log('✅ Highlights exportados');
 };
 
@@ -2946,19 +3485,19 @@ const deleteResource = async (id: number) => {
   try {
     // Obtener el recurso antes de eliminarlo
     const resource = getResourceById(id);
-    
+
     // Eliminar archivo asociado si existe
     if (resource?.file) {
       await deleteFile(id);
     }
-    
+
     // Eliminar de IndexedDB
     await deleteResourceFromDB(id);
-    
+
     // Eliminar del estado
     resources.value = resources.value.filter((r) => r.id !== id);
     selectedResources.value = selectedResources.value.filter((selectedId) => selectedId !== id);
-    
+
     console.log(`✅ Recurso ${id} eliminado de IndexedDB`);
   } catch (error) {
     console.error('Error al eliminar recurso:', error);
@@ -2992,12 +3531,12 @@ const handleFileChange = (event: Event) => {
 const addResource = async () => {
   const now = new Date();
   const id = resourceIdCounter.value++;
-  
+
   let type = 'DOCUMENTO';
-  
+
   if (newResourceMode.value === 'file' && newResourceFile.value) {
     const extension = newResourceFile.value.name.split('.').pop()?.toLowerCase() || '';
-    
+
     if (extension === 'pdf') {
       type = 'PDF';
     } else if (['doc', 'docx'].includes(extension)) {
@@ -3028,7 +3567,7 @@ const addResource = async () => {
     if (newRes.file) {
       await saveFile(id, newRes.file);
     }
-    
+
     // Guardar metadatos del recurso
     const resourceToStore = {
       id: newRes.id,
@@ -3041,12 +3580,12 @@ const addResource = async () => {
       transcriptionStatus: newRes.transcriptionStatus,
       fileId: newRes.file ? id : undefined
     };
-    
+
     await saveResource(resourceToStore);
-    
+
     // Agregar al estado
     resources.value.unshift(newRes);
-    
+
     console.log(`✅ Recurso ${id} guardado en IndexedDB`);
   } catch (error) {
     console.error('Error al guardar recurso:', error);
@@ -3057,37 +3596,100 @@ const addResource = async () => {
 
 // Funciones de transcripción
 const transcribeSelectedResources = async () => {
-  if (selectedResources.value.length === 0) return;
-  
+  console.log('[TranscribeSelected] Iniciando transcripción de recursos seleccionados');
+  console.log(`[TranscribeSelected] Total recursos seleccionados: ${selectedResources.value.length}`);
+  console.log(`[TranscribeSelected] IDs seleccionados:`, selectedResources.value);
+
+  if (selectedResources.value.length === 0) {
+    console.warn('[TranscribeSelected] No hay recursos seleccionados para transcribir');
+    return;
+  }
+
   isTranscribing.value = true;
-  
+  console.log('[TranscribeSelected] Estado isTranscribing activado');
+
   try {
+    console.log('[TranscribeSelected] Obteniendo información de recursos seleccionados...');
     const selectedResourcesInfo = selectedResources.value
       .map((id) => getResourceById(id))
       .filter(Boolean) as Resource[];
 
-    for (const resource of selectedResourcesInfo) {
-      resource.transcriptionStatus = 'processing';
+    console.log(`[TranscribeSelected] Recursos válidos para transcripción: ${selectedResourcesInfo.length}`);
+    console.log('[TranscribeSelected] Detalle de recursos:', selectedResourcesInfo.map(r => ({ id: r.id, name: r.name, type: r.type, hasFile: !!r.file })));
 
-      if (!resource.file) {
-        resource.transcriptionStatus = 'error';
-        resource.transcription = 'No hay archivo asociado al recurso para transcribir.';
+    let processedCount = 0;
+    let successCount = 0;
+    let errorCount = 0;
+    let skippedCount = 0;
+
+    for (const resource of selectedResourcesInfo) {
+      processedCount++;
+      console.log(`[TranscribeSelected] [${processedCount}/${selectedResourcesInfo.length}] Procesando recurso: ${resource.name} (ID: ${resource.id})`);
+
+      resource.transcriptionStatus = 'processing';
+      console.log(`[TranscribeSelected] Estado cambiado a 'processing' para ${resource.name}`);
+
+      // 🔍 Verificar si es un recurso de tamizaje (ya tiene transcripción generada)
+      const isScreeningResource = ['screening_response', 'screening'].includes(resource.type.toLowerCase());
+
+      if (isScreeningResource) {
+        console.log(`[TranscribeSelected] ℹ️ Recurso ${resource.name} es de tipo tamizaje, ya tiene transcripción generada`);
+        console.log(`[TranscribeSelected] Tipo: ${resource.type} - Saltando transcripción`);
+
+        // Si ya tiene transcripción, marcar como completado sin procesar
+        if (resource.transcription && resource.transcription.length > 0) {
+          resource.transcriptionStatus = 'completed';
+          successCount++;
+          console.log(`[TranscribeSelected] ✅ Recurso de tamizaje ya transcrito (transcripción existente)`);
+        } else {
+          console.warn(`[TranscribeSelected] ⚠️ Recurso de tamizaje sin transcripción: ${resource.name}`);
+          resource.transcriptionStatus = 'error';
+          resource.transcription = 'Error: Recurso de tamizaje sin datos de transcripción';
+          errorCount++;
+        }
         continue;
       }
 
+      if (!resource.file) {
+        console.warn(`[TranscribeSelected] Recurso ${resource.name} (ID: ${resource.id}) no tiene archivo asociado`);
+        resource.transcriptionStatus = 'error';
+        resource.transcription = 'No hay archivo asociado al recurso para transcribir.';
+        skippedCount++;
+        continue;
+      }
+
+      console.log(`[TranscribeSelected] Archivo válido encontrado: ${resource.file.name} (${resource.file.size} bytes)`);
+
       try {
+        console.log(`[TranscribeSelected] Llamando a transcribeResource para ${resource.name}`);
         await transcribeResource(resource);
         resource.transcriptionStatus = 'completed';
-      } catch (error) {
-        console.error(`Error transcribiendo ${resource.name}:`, error);
+        successCount++;
+        console.log(`[TranscribeSelected] ✅ Recurso ${resource.name} transcrito exitosamente`);
+      } catch (error: any) {
+        errorCount++;
+        console.error(`[TranscribeSelected] ❌ Error transcribiendo ${resource.name}:`, error);
+        console.error(`[TranscribeSelected] Error message:`, error.message);
+        console.error(`[TranscribeSelected] Error stack:`, error.stack);
+
+        // 🔍 Llamar a función de diagnóstico detallado
+        diagnoseTranscriptionError(resource, error);
+
         resource.transcriptionStatus = 'error';
-        resource.transcription = `Error al transcribir: ${error}`;
+        resource.transcription = `Error al transcribir: ${error.message || error}`;
       }
     }
-    
+
+    console.log('[TranscribeSelected] Resumen de transcripción:');
+    console.log(`[TranscribeSelected] - Total procesados: ${processedCount}`);
+    console.log(`[TranscribeSelected] - Exitosos: ${successCount}`);
+    console.log(`[TranscribeSelected] - Fallidos: ${errorCount}`);
+    console.log(`[TranscribeSelected] - Omitidos (sin archivo): ${skippedCount}`);
+
     const successful = selectedResourcesInfo.filter(r => r.transcriptionStatus === 'completed').length;
     const failed = selectedResourcesInfo.filter(r => r.transcriptionStatus === 'error').length;
-    
+
+    console.log(`[TranscribeSelected] Enviando mensaje de resumen al chat`);
     messages.value.push({
       id: messageIdCounter++,
       role: 'assistant',
@@ -3099,77 +3701,208 @@ const transcribeSelectedResources = async () => {
     });
 
     await scrollToBottom();
-    
-  } catch (error) {
-    console.error('Error en transcripción masiva:', error);
+    console.log('[TranscribeSelected] Transcripción masiva completada exitosamente');
+
+  } catch (error: any) {
+    console.error('[TranscribeSelected] ❌ Error crítico en transcripción masiva:', error);
+    console.error('[TranscribeSelected] Error message:', error.message);
+    console.error('[TranscribeSelected] Error stack:', error.stack);
+
     messages.value.push({
       id: messageIdCounter++,
       role: 'assistant',
-      content: `❌ **Error en transcripción**\n\nNo se pudieron transcribir los recursos seleccionados.\n\n**Error:** ${error}`,
+      content: `❌ **Error en transcripción**\n\nNo se pudieron transcribir los recursos seleccionados.\n\n**Error:** ${error.message || error}`,
       resources: [...selectedResources.value]
     });
   } finally {
     isTranscribing.value = false;
+    console.log('[TranscribeSelected] Estado isTranscribing desactivado (finally)');
   }
+};
+
+// ✅ FUNCIÓN DE DIAGNÓSTICO DETALLADO PARA ERRORES DE TRANSCRIPCIÓN
+const diagnoseTranscriptionError = (resource: Resource, error: any): void => {
+  console.group(`🔍 [Diagnóstico] Error en transcripción de: ${resource.name}`);
+
+  // Información del recurso
+  console.log('📄 Información del recurso:');
+  console.log('  - ID:', resource.id);
+  console.log('  - Nombre:', resource.name);
+  console.log('  - Tipo:', resource.type);
+  console.log('  - Descripción:', resource.description);
+  console.log('  - URL:', resource.url || 'No disponible');
+
+  // Información del archivo
+  if (resource.file) {
+    console.log('📁 Información del archivo:');
+    console.log('  - Nombre:', resource.file.name);
+    console.log('  - Tipo MIME:', resource.file.type);
+    console.log('  - Tamaño:', resource.file.size, 'bytes');
+    console.log('  - Última modificación:', new Date(resource.file.lastModified).toISOString());
+  } else {
+    console.warn('⚠️ No hay archivo asociado al recurso');
+  }
+
+  // Análisis del error
+  console.log('❌ Información del error:');
+  console.log('  - Tipo de error:', typeof error);
+  console.log('  - Constructor:', error?.constructor?.name || 'N/A');
+  console.log('  - Mensaje:', error?.message || 'Sin mensaje');
+  console.log('  - Stack trace:', error?.stack || 'No disponible');
+
+  // Información adicional del error
+  if (error?.cause) {
+    console.log('  - Causa:', error.cause);
+  }
+  if (error?.code) {
+    console.log('  - Código:', error.code);
+  }
+  if (error?.response) {
+    console.log('  - Respuesta HTTP:', error.response);
+  }
+
+  // Intentar diagnosticar el tipo de error específico
+  const errorMessage = error?.message?.toLowerCase() || '';
+  const errorType = resource.type.toUpperCase();
+
+  console.log('🔧 Diagnóstico específico:');
+
+  if (errorType === 'PDF') {
+    if (errorMessage.includes('invalid') || errorMessage.includes('corrupted')) {
+      console.error('  → El archivo PDF parece estar corrupto o no es un PDF válido');
+    } else if (errorMessage.includes('password') || errorMessage.includes('encrypted')) {
+      console.error('  → El PDF está protegido con contraseña o encriptado');
+    } else if (errorMessage.includes('structure')) {
+      console.error('  → El PDF tiene una estructura inválida o incompleta');
+    } else {
+      console.error('  → Error desconocido en procesamiento PDF');
+    }
+  } else if (['WORD', 'DOC', 'DOCX'].includes(errorType)) {
+    if (errorMessage.includes('zip') || errorMessage.includes('archive')) {
+      console.error('  → El archivo DOCX está corrupto (es un ZIP inválido)');
+    } else if (errorMessage.includes('xml') || errorMessage.includes('parse')) {
+      console.error('  → Error al parsear el XML interno del documento');
+    } else {
+      console.error('  → Error desconocido en procesamiento DOCX');
+    }
+  } else if (['IMAGE', 'PNG', 'JPG', 'JPEG'].includes(errorType)) {
+    if (errorMessage.includes('tesseract')) {
+      console.error('  → Error en el motor OCR (Tesseract.js)');
+    } else if (errorMessage.includes('load') || errorMessage.includes('decode')) {
+      console.error('  → No se pudo cargar o decodificar la imagen');
+    } else {
+      console.error('  → Error desconocido en procesamiento de imagen (OCR)');
+    }
+  } else if (errorType === 'TXT') {
+    console.error('  → Error al leer archivo de texto (codificación incompatible)');
+  } else {
+    console.error('  → Tipo de archivo no soportado para diagnóstico específico');
+  }
+
+  // Recomendaciones
+  console.log('💡 Recomendaciones:');
+  console.log('  1. Verificar que el archivo no esté corrupto');
+  console.log('  2. Intentar abrir el archivo en otro programa para confirmar validez');
+  console.log('  3. Si es PDF: asegurar que no esté protegido con contraseña');
+  console.log('  4. Si es imagen: verificar que sea un formato soportado (PNG, JPG, JPEG)');
+  console.log('  5. Reintentar la transcripción con una copia del archivo');
+
+  console.groupEnd();
 };
 
 // ✅ FUNCIÓN DE TRANSCRIPCIÓN CON PERSISTENCIA
 const transcribeResource = async (resource: Resource): Promise<void> => {
+  console.log(`[Transcription] Iniciando transcripción para recurso ID: ${resource.id}`);
+  console.log(`[Transcription] Nombre: ${resource.name}`);
+  console.log(`[Transcription] Tipo: ${resource.type}`);
+  console.log(`[Transcription] Archivo: ${resource.file?.name || 'Sin archivo'}`);
+
   if (!resource.file) {
+    console.error(`[Transcription] Error: No hay archivo asociado al recurso ${resource.id}`);
     throw new Error('No hay archivo asociado al recurso');
   }
 
   const type = resource.type.toUpperCase();
-  
-  if (type === 'PDF') {
-    resource.transcription = await transcribePDF(resource.file);
-  } else if (['WORD', 'DOC', 'DOCX'].includes(type)) {
-    resource.transcription = await transcribeDOCX(resource.file);
-  } else if (type === 'TXT') {
-    resource.transcription = await transcribeTXT(resource.file);
-  } else if (['IMAGE', 'PNG', 'JPG', 'JPEG'].includes(type)) {
-    resource.transcription = await transcribeImage(resource.file);
-  } else {
-    throw new Error(`Tipo de archivo no soportado: ${resource.type}`);
-  }
-  
-  // ✅ GUARDAR TRANSCRIPCIÓN EN INDEXEDDB
+  console.log(`[Transcription] Tipo procesado: ${type}`);
+
   try {
-    const existingResource = await getAllResources().then(resources => 
+    console.log(`[Transcription] Procesando archivo tipo ${type}...`);
+
+    if (type === 'PDF') {
+      console.log(`[Transcription] Llamando transcribePDF para ${resource.name}`);
+      resource.transcription = await transcribePDF(resource.file);
+      console.log(`[Transcription] PDF transcrito exitosamente`);
+    } else if (['WORD', 'DOC', 'DOCX'].includes(type)) {
+      console.log(`[Transcription] Llamando transcribeDOCX para ${resource.name}`);
+      resource.transcription = await transcribeDOCX(resource.file);
+      console.log(`[Transcription] DOCX transcrito exitosamente`);
+    } else if (type === 'TXT') {
+      console.log(`[Transcription] Llamando transcribeTXT para ${resource.name}`);
+      resource.transcription = await transcribeTXT(resource.file);
+      console.log(`[Transcription] TXT transcrito exitosamente`);
+    } else if (['IMAGE', 'PNG', 'JPG', 'JPEG'].includes(type)) {
+      console.log(`[Transcription] Llamando transcribeImage (OCR) para ${resource.name}`);
+      resource.transcription = await transcribeImage(resource.file);
+      console.log(`[Transcription] Imagen transcrita exitosamente`);
+    } else {
+      console.error(`[Transcription] Tipo de archivo no soportado: ${resource.type}`);
+      throw new Error(`Tipo de archivo no soportado: ${resource.type}`);
+    }
+
+    console.log(`[Transcription] Transcripción completada para ${resource.name}`);
+    console.log(`[Transcription] Longitud del texto: ${resource.transcription?.length || 0} caracteres`);
+
+  } catch (transcriptionError: any) {
+    console.error(`[Transcription] Error durante la transcripción de ${resource.name}:`, transcriptionError);
+    console.error(`[Transcription] Mensaje de error: ${transcriptionError.message}`);
+    throw transcriptionError;
+  }
+
+  // ✅ GUARDAR TRANSCRIPCIÓN EN INDEXEDDB
+  console.log(`[Transcription] Guardando transcripción en IndexedDB para recurso ${resource.id}`);
+
+  try {
+    const existingResource = await getAllResources().then(resources =>
       resources.find(r => r.id === resource.id)
     );
-    
+
     if (existingResource) {
+      console.log(`[Transcription] Recurso existente encontrado, actualizando...`);
       const updatedResource = {
         ...existingResource,
         transcription: resource.transcription,
         transcriptionStatus: resource.transcriptionStatus
       };
       await saveResource(updatedResource);
-      console.log(`✅ Transcripción guardada para recurso ${resource.id}`);
+      console.log(`[Transcription] ✅ Transcripción guardada exitosamente para recurso ${resource.id}`);
+    } else {
+      console.warn(`[Transcription] No se encontró recurso existente con ID ${resource.id}`);
     }
-  } catch (error) {
-    console.error('Error al guardar transcripción:', error);
+  } catch (error: any) {
+    console.error(`[Transcription] Error al guardar transcripción en IndexedDB:`, error);
+    console.error(`[Transcription] Detalle del error:`, error.message);
   }
+
+  console.log(`[Transcription] Proceso completado para recurso: ${resource.name}`);
 };
 
 const transcribePDF = async (file: File): Promise<string> => {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    
+
     let fullText = '';
-    
+
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       const page = await pdf.getPage(pageNum);
       const textContent = await page.getTextContent();
       const pageText = textContent.items
         .map((item: any) => item.str)
         .join(' ');
-      
+
       fullText += `\n--- Página ${pageNum} ---\n${pageText}\n`;
     }
-    
+
     return fullText.trim();
   } catch (error) {
     console.error('Error en transcripción de PDF:', error);
@@ -3181,11 +3914,11 @@ const transcribeDOCX = async (file: File): Promise<string> => {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const result = await mammoth.extractRawText({ arrayBuffer });
-    
+
     if (result.messages.length > 0) {
       console.warn('Advertencias al procesar DOCX:', result.messages);
     }
-    
+
     return result.value;
   } catch (error) {
     console.error('Error en transcripción de DOCX:', error);
@@ -3212,7 +3945,7 @@ const transcribeImage = async (file: File): Promise<string> => {
         logger: (m: any) => console.log(m)
       }
     );
-    
+
     return result.data.text;
   } catch (error) {
     console.error('Error en OCR de imagen:', error);
@@ -3241,7 +3974,7 @@ const chatWithAI = async () => {
 
   // Activar estado de carga
   isThinking.value = true;
-  
+
   try {
     // Obtener recursos seleccionados con sus transcripciones
     const selectedResourcesInfo = selectedResources.value
@@ -3257,7 +3990,7 @@ const chatWithAI = async () => {
       };
     });
 
-    const contextWithTranscriptions = resourcesWithTranscriptions.map(resource => 
+    const contextWithTranscriptions = resourcesWithTranscriptions.map(resource =>
       `=== RECURSO: ${resource.name} ===\n` +
       `Tipo: ${resource.type}\n` +
       `Descripción: ${resource.description}\n` +
@@ -3267,7 +4000,7 @@ const chatWithAI = async () => {
 
     // Llamar a Gemini AI
     const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
-    
+
     const prompt = `Eres un asistente experto especializado en análisis de documentos académicos. Tu tarea es responder preguntas específicas basándote únicamente en el contenido completo de los recursos transcritos.
 
 Tienes acceso a las transcripciones completas de los siguientes recursos:
@@ -3301,7 +4034,7 @@ Proporciona una respuesta completa y detallada basada en el contenido transcribi
 
   } catch (error) {
     console.error('Error en chat con Gemini AI:', error);
-    
+
     // Respuesta de fallback
     const selectedResourcesNames = selectedResources.value
       .map((id) => getResourceById(id)?.name)
@@ -3317,7 +4050,7 @@ Proporciona una respuesta completa y detallada basada en el contenido transcribi
   }
 
   isThinking.value = false;
-  
+
   // Scroll al final
   nextTick(() => {
     messagesEnd.value?.scrollIntoView({ behavior: 'smooth' });
@@ -3329,7 +4062,7 @@ Proporciona una respuesta completa y detallada basada en el contenido transcribi
 const viewTranscription = async (resource: Resource) => {
   currentTranscription.value = resource;
   showTranscriptionModal.value = true;
-  
+
   // Cargar highlights del recurso
   if (resource.id) {
     await loadHighlightsForResource(resource.id);
@@ -3338,7 +4071,7 @@ const viewTranscription = async (resource: Resource) => {
 
 const copyTranscription = async () => {
   if (!currentTranscription.value?.transcription) return;
-  
+
   try {
     await navigator.clipboard.writeText(currentTranscription.value.transcription);
     alert('Transcripción copiada al portapapeles');
@@ -3349,7 +4082,7 @@ const copyTranscription = async () => {
 
 const copyTranscriptionText = async (text?: string) => {
   if (!text) return;
-  
+
   try {
     await navigator.clipboard.writeText(text);
     alert('Transcripción copiada al portapapeles');
@@ -3360,7 +4093,7 @@ const copyTranscriptionText = async (text?: string) => {
 
 const downloadTranscription = () => {
   if (!currentTranscription.value?.transcription) return;
-  
+
   const blob = new Blob([currentTranscription.value.transcription], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -3390,11 +4123,13 @@ const scrollToBottom = async () => {
 </script>
 
 <style scoped>
-.modal-enter-active, .modal-leave-active {
+.modal-enter-active,
+.modal-leave-active {
   transition: opacity 0.3s ease;
 }
 
-.modal-enter-from, .modal-leave-to {
+.modal-enter-from,
+.modal-leave-to {
   opacity: 0;
 }
 

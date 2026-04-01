@@ -18,6 +18,7 @@ import AudioMixerPage from "../pages/AudioMixer/AudioMixerPage.vue";
 
 import CreateScreeningPage from "../presentation/pages/screening/CreateScreeningPage.vue";
 import ResourceNoteBookPage from "../pages/notebook/ResourceNoteBookPage.vue";
+import ScreeningResponsesListPage from "../pages/screening/ScreeningResponsesListPage.vue";
 
 import ClinicalPicturesListPage from "../pages/clinical/ClinicalPicturesListPage.vue";
 import ClinicalPictureDetailPage from "../pages/clinical/ClinicalPictureDetailPage.vue";
@@ -66,7 +67,10 @@ const routes = [
   { path: "/audio-mixer", name: "audio-mixer", component: AudioMixerPage },
 
   // ? User Registration
-  { path: "/user-registration", name: "user-registration", component: UserRegistrationPage }
+  { path: "/user-registration", name: "user-registration", component: UserRegistrationPage },
+
+  // ? Screening Responses List
+  { path: "/screening-responses", name: "screening-responses", component: ScreeningResponsesListPage }
 ];
 
 export const router = createRouter({
