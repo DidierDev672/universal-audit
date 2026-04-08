@@ -96,6 +96,82 @@
             </svg>
           </RouterLink>
 
+          <!-- Asignar Cuestionarios de Tinnitus -->
+          <RouterLink to="/tinnitus-assignment" @click="activeItem = 'asignar-cuestionarios-tinnitus'" :class="[
+            'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
+            activeItem === 'asignar-cuestionarios-tinnitus'
+              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+              : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
+          ]">
+            <div :class="[
+              'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
+              activeItem === 'asignar-cuestionarios-tinnitus'
+                ? 'bg-white/20 backdrop-blur-sm'
+                : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
+            ]">
+              <svg :class="[
+                'w-6 h-6 transition-transform',
+                activeItem === 'asignar-cuestionarios-tinnitus' ? 'text-white scale-110' : 'text-emerald-600'
+              ]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
+            </div>
+
+            <div class="flex-1 text-left">
+              <span class="font-semibold block">Asignar Cuestionarios</span>
+              <p :class="[
+                'text-xs mt-0.5',
+                activeItem === 'asignar-cuestionarios-tinnitus' ? 'text-white/80' : 'text-gray-500'
+              ]">
+                Asignar a pacientes
+              </p>
+            </div>
+
+            <svg v-if="activeItem === 'asignar-cuestionarios-tinnitus'" class="w-5 h-5 text-white animate-pulse"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </RouterLink>
+
+          <!-- Ver Respuestas de Tinnitus -->
+          <RouterLink to="/tinnitus-responses" @click="activeItem = 'ver-respuestas-tinnitus'" :class="[
+            'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
+            activeItem === 'ver-respuestas-tinnitus'
+              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+              : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
+          ]">
+            <div :class="[
+              'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
+              activeItem === 'ver-respuestas-tinnitus'
+                ? 'bg-white/20 backdrop-blur-sm'
+                : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
+            ]">
+              <svg :class="[
+                'w-6 h-6 transition-transform',
+                activeItem === 'ver-respuestas-tinnitus' ? 'text-white scale-110' : 'text-emerald-600'
+              ]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+
+            <div class="flex-1 text-left">
+              <span class="font-semibold block">Ver Respuestas Tinnitus</span>
+              <p :class="[
+                'text-xs mt-0.5',
+                activeItem === 'ver-respuestas-tinnitus' ? 'text-white/80' : 'text-gray-500'
+              ]">
+                Respuestas de pacientes
+              </p>
+            </div>
+
+            <svg v-if="activeItem === 'ver-respuestas-tinnitus'" class="w-5 h-5 text-white animate-pulse" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </RouterLink>
+
           <!-- Crear Tamizaje -->
           <RouterLink to="/hearing-screening-form" :class="[
             'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',

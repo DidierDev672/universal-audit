@@ -25,6 +25,9 @@ import ClinicalPictureDetailPage from "../pages/clinical/ClinicalPictureDetailPa
 import PatientScreeningAssignmentPage from "../pages/patientScreening/PatientScreeningAssignmentPage.vue";
 import UserRegistrationPage from "../pages/User/UserRegistrationPage.vue";
 
+import TinnitusQuestionnaireAssignmentPage from "../pages/screening/TinnitusQuestionnaireAssignmentPage.vue";
+import TinnitusResponsesListPage from "../pages/screening/TinnitusResponsesListPage.vue";
+
 const routes = [
   { path: '/', redirect: '/research' },
   {  path: "/research", name: "home", component: DashBoardResearch },
@@ -70,7 +73,9 @@ const routes = [
   { path: "/user-registration", name: "user-registration", component: UserRegistrationPage },
 
   // ? Screening Responses List
-  { path: "/screening-responses", name: "screening-responses", component: ScreeningResponsesListPage }
+  { path: "/screening-responses", name: "screening-responses", component: ScreeningResponsesListPage },
+  { path: '/tinnitus-assignment', name: "asignar cuestionario", component: TinnitusQuestionnaireAssignmentPage },
+  { path: '/tinnitus-responses', name: "respuestas tinnitus", component: TinnitusResponsesListPage }
 ];
 
 export const router = createRouter({

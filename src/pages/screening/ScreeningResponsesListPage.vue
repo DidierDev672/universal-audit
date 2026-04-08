@@ -5,6 +5,25 @@ import { useGenAI } from '../../shared/service/useGenAi';
 
 const isAnalyzing = ref(false);
 const showAnalysisModal = ref(false);
+const showClinicalNoteModal = ref(false);
+const currentClinicalNote = ref<{
+  responseId: string;
+  id_patient: string;
+  id_screening: string;
+  patientName: string;
+  screeningTitle: string;
+  title: string;
+  description: string;
+} | null>(null);
+const isSavingNote = ref(false);
+const showViewNotesModal = ref(false);
+const patientNotes = ref<ClinicalNote[]>([]);
+const currentViewingPatient = ref<{ id: string; name: string } | null>(null);
+const isLoadingNotes = ref(false);
+const showEditNoteModal = ref(false);
+const currentEditingNote = ref<ClinicalNote | null>(null);
+const isUpdatingNote = ref(false);
+const isDeletingNote = ref(false);
 const currentAnalysis = ref<{
   patientName: string;
   screeningTitle: string;
@@ -72,6 +91,17 @@ interface Screening {
   id: string;
   title: string;
   description?: string;
+}
+
+interface ClinicalNote {
+  id: string;
+  idPatient: string;
+  idScreening: string;
+  idDoctor: string;
+  titleNote: string;
+  descriptionNote: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Cargar pacientes
@@ -290,6 +320,330 @@ const closeAnalysisModal = () => {
   currentAnalysis.value = null;
 };
 
+// Funciones para crear notas clínicas
+const openClinicalNoteModal = (response: ScreeningResponse) => {
+  currentClinicalNote.value = {
+    responseId: response.id,
+    id_patient: response.id_patient,
+    id_screening: response.id_screening,
+    patientName: getPatientName(response.id_patient),
+    screeningTitle: getScreeningTitle(response.id_screening),
+    title: '',
+    description: ''
+  };
+  showClinicalNoteModal.value = true;
+};
+
+const closeClinicalNoteModal = () => {
+  showClinicalNoteModal.value = false;
+  currentClinicalNote.value = null;
+};
+
+// Función para mostrar alertas UX
+const showValidationAlert = (message: string, type: 'error' | 'warning' = 'error') => {
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 ${type === 'error' ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+    }`;
+  alertDiv.innerHTML = `
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+        d="${type === 'error' ? 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' : 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'}" />
+    </svg>
+    <span class="font-medium">${message}</span>
+  `;
+  document.body.appendChild(alertDiv);
+  setTimeout(() => {
+    alertDiv.remove();
+  }, 4000);
+};
+
+const saveClinicalNote = async () => {
+  if (!currentClinicalNote.value) return;
+
+  // Validación de campos obligatorios
+  if (!currentClinicalNote.value.title.trim()) {
+    showValidationAlert('El título de la nota es obligatorio');
+    return;
+  }
+
+  if (!currentClinicalNote.value.description.trim()) {
+    showValidationAlert('La descripción de la nota es obligatoria');
+    return;
+  }
+
+  isSavingNote.value = true;
+
+  try {
+    const { id_patient, id_screening, title, description } = currentClinicalNote.value;
+
+    // Validar que el paciente existe
+    console.log(`🔍 Validando paciente: ${id_patient}`);
+    try {
+      const patientResponse = await axios.get(`http://localhost:3000/api/v1/patients/${id_patient}`, {
+        timeout: 10000
+      });
+      if (!patientResponse.data) {
+        showValidationAlert(`El paciente no existe en el sistema.`, 'error');
+        isSavingNote.value = false;
+        return;
+      }
+      console.log('✅ Paciente verificado');
+    } catch (patientError: any) {
+      if (patientError.response?.status === 404) {
+        showValidationAlert('El paciente no existe en el sistema. No se puede crear la nota.', 'error');
+      } else {
+        showValidationAlert('Error al verificar el paciente. Intente nuevamente.', 'error');
+      }
+      console.error('❌ Error validando paciente:', patientError);
+      isSavingNote.value = false;
+      return;
+    }
+
+    // Validar que el tamizaje existe
+    console.log(`🔍 Validando tamizaje: ${id_screening}`);
+    try {
+      const screeningResponse = await axios.get(`http://localhost:3000/api/v1/screenings/${id_screening}`, {
+        timeout: 10000
+      });
+      if (!screeningResponse.data) {
+        showValidationAlert('El tamizaje no existe en el sistema. No se puede crear la nota.', 'error');
+        isSavingNote.value = false;
+        return;
+      }
+      console.log('✅ Tamizaje verificado');
+    } catch (screeningError: any) {
+      if (screeningError.response?.status === 404) {
+        showValidationAlert('El tamizaje no existe en el sistema. No se puede crear la nota.', 'error');
+      } else {
+        showValidationAlert('Error al verificar el tamizaje. Intente nuevamente.', 'error');
+      }
+      console.error('❌ Error validando tamizaje:', screeningError);
+      isSavingNote.value = false;
+      return;
+    }
+
+    // TODO: Obtener el ID del doctor del sistema de autenticación
+    // Por ahora, usar un valor placeholder que debe ser reemplazado
+    const id_doctor = id_patient; // Reemplazar con el ID real del doctor logueado
+    const note_type = 'CLINICAL_NOTE';
+    // Estructura esperada por el endpoint
+    const noteData = {
+      id_patient,
+      id_screening,
+      id_doctor,
+      note_type,
+      title_note: title.trim(),
+      description_note: description.trim()
+    };
+
+    console.log('📤 Enviando nota clínica al servidor:', noteData);
+
+    // Consumir el endpoint
+    const response = await axios.post('http://localhost:3000/api/v1/screening-notes', noteData, {
+      timeout: 30000,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('✅ Nota clínica guardada exitosamente:', response.data);
+
+    // Mostrar mensaje de éxito
+    const successDiv = document.createElement('div');
+    successDiv.className = 'fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 bg-emerald-100 text-emerald-800 border border-emerald-200';
+    successDiv.innerHTML = `
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <span class="font-medium">Nota clínica creada exitosamente</span>
+    `;
+    document.body.appendChild(successDiv);
+    setTimeout(() => successDiv.remove(), 3000);
+
+    closeClinicalNoteModal();
+  } catch (error: any) {
+    console.error('❌ Error al guardar nota clínica:', error);
+    showValidationAlert(
+      error.response?.data?.message || 'Error al guardar la nota clínica. Intente nuevamente.',
+      'error'
+    );
+  } finally {
+    isSavingNote.value = false;
+  }
+};
+
+// Funciones para ver notas clínicas del paciente
+const openViewNotesModal = async (response: ScreeningResponse) => {
+  currentViewingPatient.value = {
+    id: response.id_patient,
+    name: getPatientName(response.id_patient)
+  };
+  showViewNotesModal.value = true;
+  await loadPatientNotes(response.id_patient);
+};
+
+const closeViewNotesModal = () => {
+  showViewNotesModal.value = false;
+  patientNotes.value = [];
+  currentViewingPatient.value = null;
+};
+
+const loadPatientNotes = async (patientId: string) => {
+  isLoadingNotes.value = true;
+  try {
+    console.log(`🔍 Cargando notas del paciente: ${patientId}`);
+    const response = await axios.get(`http://localhost:3000/api/v1/screening-notes/patient/${patientId}`, {
+      timeout: 30000
+    });
+
+    // Handle both array response and wrapped response formats
+    const data = response.data;
+    patientNotes.value = Array.isArray(data) ? data : (data?.data || []);
+    console.log(`✅ ${patientNotes.value.length} notas cargadas para el paciente ${patientId}`);
+  } catch (error: any) {
+    console.error('❌ Error cargando notas del paciente:', error);
+    showValidationAlert(
+      error.response?.data?.message || 'Error al cargar las notas clínicas del paciente.',
+      'error'
+    );
+    patientNotes.value = [];
+  } finally {
+    isLoadingNotes.value = false;
+  }
+};
+
+const formatNoteDate = (date: string) => {
+  return new Date(date).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+// Funciones para editar notas clínicas
+const openEditNoteModal = (note: ClinicalNote) => {
+  currentEditingNote.value = { ...note }; // Copia para no mutar la original
+  showEditNoteModal.value = true;
+};
+
+const closeEditNoteModal = () => {
+  showEditNoteModal.value = false;
+  currentEditingNote.value = null;
+};
+
+const updateClinicalNote = async () => {
+  if (!currentEditingNote.value) return;
+
+  // Validación de campos obligatorios
+  if (!currentEditingNote.value.titleNote.trim()) {
+    showValidationAlert('El título de la nota es obligatorio');
+    return;
+  }
+
+  if (!currentEditingNote.value.descriptionNote.trim()) {
+    showValidationAlert('La descripción de la nota es obligatoria');
+    return;
+  }
+
+  isUpdatingNote.value = true;
+
+  try {
+    const { id, titleNote, descriptionNote } = currentEditingNote.value;
+
+    // Estructura esperada por el endpoint
+    const noteData = {
+      titleNote: titleNote.trim(),
+      descriptionNote: descriptionNote.trim()
+    };
+
+    console.log('📤 Actualizando nota clínica:', noteData);
+
+    // Consumir el endpoint PUT
+    const response = await axios.put(`http://localhost:3000/api/v1/screening-notes/${id}`, noteData, {
+      timeout: 30000,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('✅ Nota clínica actualizada exitosamente:', response.data);
+
+    // Actualizar la lista de notas
+    if (currentViewingPatient.value) {
+      await loadPatientNotes(currentViewingPatient.value.id);
+    }
+
+    // Mostrar mensaje de éxito
+    const successDiv = document.createElement('div');
+    successDiv.className = 'fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 bg-emerald-100 text-emerald-800 border border-emerald-200';
+    successDiv.innerHTML = `
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <span class="font-medium">Nota clínica actualizada exitosamente</span>
+    `;
+    document.body.appendChild(successDiv);
+    setTimeout(() => successDiv.remove(), 3000);
+
+    closeEditNoteModal();
+  } catch (error: any) {
+    console.error('❌ Error al actualizar nota clínica:', error);
+    showValidationAlert(
+      error.response?.data?.message || 'Error al actualizar la nota clínica. Intente nuevamente.',
+      'error'
+    );
+  } finally {
+    isUpdatingNote.value = false;
+  }
+};
+
+// Función para eliminar notas clínicas
+const deleteClinicalNote = async (noteId: string) => {
+  // Confirmación antes de eliminar
+  const confirmed = confirm('¿Está seguro de que desea eliminar esta nota clínica? Esta acción no se puede deshacer.');
+  if (!confirmed) return;
+
+  isDeletingNote.value = true;
+
+  try {
+    console.log(`🗑️ Eliminando nota clínica: ${noteId}`);
+
+    // Consumir el endpoint DELETE
+    await axios.delete(`http://localhost:3000/api/v1/screening-notes/${noteId}`, {
+      timeout: 30000
+    });
+
+    console.log('✅ Nota clínica eliminada exitosamente');
+
+    // Actualizar la lista de notas
+    if (currentViewingPatient.value) {
+      await loadPatientNotes(currentViewingPatient.value.id);
+    }
+
+    // Mostrar mensaje de éxito
+    const successDiv = document.createElement('div');
+    successDiv.className = 'fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 bg-emerald-100 text-emerald-800 border border-emerald-200';
+    successDiv.innerHTML = `
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <span class="font-medium">Nota clínica eliminada exitosamente</span>
+    `;
+    document.body.appendChild(successDiv);
+    setTimeout(() => successDiv.remove(), 3000);
+  } catch (error: any) {
+    console.error('❌ Error al eliminar nota clínica:', error);
+    showValidationAlert(
+      error.response?.data?.message || 'Error al eliminar la nota clínica. Intente nuevamente.',
+      'error'
+    );
+  } finally {
+    isDeletingNote.value = false;
+  }
+};
+
 onMounted(() => {
   loadPatients();
   loadScreenings();
@@ -379,6 +733,26 @@ onMounted(() => {
         <div v-for="response in filteredResponses" :key="response.id"
           class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all">
           <div class="flex items-start gap-4">
+            <!-- Botón Crear Nota Clínica (lado izquierdo) -->
+            <button @click.stop="openClinicalNoteModal(response)"
+              class="shrink-0 w-10 h-10 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 rounded-lg flex items-center justify-center transition-all"
+              title="Crear Nota Clínica">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+
+            <!-- Botón Ver Notas del Paciente (lado izquierdo) -->
+            <button @click.stop="openViewNotesModal(response)"
+              class="shrink-0 w-10 h-10 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-all"
+              title="Ver Notas del Paciente">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </button>
+
             <div
               class="w-12 h-12 rounded-full bg-linear-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-semibold shrink-0">
               {{ response.id.slice(0, 2).toUpperCase() }}
@@ -552,6 +926,322 @@ onMounted(() => {
               <button @click="closeAnalysisModal"
                 class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all">
                 Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Modal de Crear Nota Clínica -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showClinicalNoteModal && currentClinicalNote"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeClinicalNoteModal"></div>
+
+          <!-- Modal Content -->
+          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4 rounded-t-2xl">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold text-white">Crear Nota Clínica</h2>
+                    <p class="text-white/80 text-sm">Documenta información relevante del paciente</p>
+                  </div>
+                </div>
+                <button @click="closeClinicalNoteModal" class="text-white/80 hover:text-white transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6">
+              <!-- Patient & Screening Info -->
+              <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                <div class="grid grid-cols-1 gap-3">
+                  <div>
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Paciente</p>
+                    <p class="text-base font-semibold text-gray-900">{{ currentClinicalNote.patientName }}</p>
+                  </div>
+                  <div>
+                    <p class="text-xs text-gray-500 uppercase tracking-wide">Tamizaje</p>
+                    <p class="text-base font-semibold text-gray-900">{{ currentClinicalNote.screeningTitle }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Form -->
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Título de la Nota <span class="text-red-500">*</span>
+                  </label>
+                  <input v-model="currentClinicalNote.title" type="text"
+                    placeholder="Ej: Síntomas destacados, Recomendaciones, etc."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                    required />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Descripción <span class="text-red-500">*</span>
+                  </label>
+                  <textarea v-model="currentClinicalNote.description" rows="4"
+                    placeholder="Escribe aquí los detalles clínicos, observaciones o recomendaciones..."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none"
+                    required></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-4 rounded-b-2xl flex justify-end gap-3">
+              <button @click="closeClinicalNoteModal"
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all">
+                Cancelar
+              </button>
+              <button @click="saveClinicalNote" :disabled="isSavingNote"
+                class="px-6 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg font-medium hover:from-emerald-700 hover:to-teal-700 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg v-if="isSavingNote" class="w-5 h-5 animate-spin" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                {{ isSavingNote ? 'Guardando...' : 'Guardar Nota' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+    <!-- Modal de Ver Notas Clínicas del Paciente -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showViewNotesModal && currentViewingPatient"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeViewNotesModal"></div>
+
+          <!-- Modal Content -->
+          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 rounded-t-2xl">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold text-white">Notas Clínicas del Paciente</h2>
+                    <p class="text-white/80 text-sm">{{ currentViewingPatient.name }}</p>
+                  </div>
+                </div>
+                <button @click="closeViewNotesModal" class="text-white/80 hover:text-white transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6">
+              <!-- Loading State -->
+              <div v-if="isLoadingNotes" class="flex flex-col items-center justify-center py-12">
+                <svg class="w-10 h-10 text-blue-600 animate-spin mb-4" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <p class="text-gray-600">Cargando notas clínicas...</p>
+              </div>
+
+              <!-- Empty State -->
+              <div v-else-if="patientNotes.length === 0"
+                class="flex flex-col items-center justify-center py-12 text-center">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                  <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h4 class="text-lg font-semibold text-gray-800 mb-2">No hay notas clínicas</h4>
+                <p class="text-gray-600">Este paciente no tiene notas clínicas registradas.</p>
+              </div>
+
+              <!-- Notes List -->
+              <div v-else class="space-y-4">
+                <div class="flex items-center justify-between mb-4">
+                  <p class="text-sm text-gray-600">
+                    Total de notas: <span class="font-semibold text-gray-900">{{ patientNotes.length }}</span>
+                  </p>
+                </div>
+
+                <div v-for="note in patientNotes" :key="note.id"
+                  class="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all">
+                  <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                      <span class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium uppercase">
+                        Nota Clínica
+                      </span>
+                      <span class="text-xs text-gray-500">
+                        {{ formatNoteDate(note.createdAt) }}
+                      </span>
+                    </div>
+                    <!-- Botones Editar y Eliminar -->
+                    <div class="flex items-center gap-2">
+                      <button @click="openEditNoteModal(note)" :disabled="isDeletingNote"
+                        class="p-1.5 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg transition-all disabled:opacity-50"
+                        title="Editar Nota">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button @click="deleteClinicalNote(note.id)" :disabled="isDeletingNote"
+                        class="p-1.5 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-all disabled:opacity-50"
+                        title="Eliminar Nota">
+                        <svg v-if="isDeletingNote" class="w-4 h-4 animate-spin" fill="none" stroke="currentColor"
+                          viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <h3 class="font-semibold text-gray-900 mb-2">{{ note.titleNote }}</h3>
+                  <p class="text-gray-700 text-sm leading-relaxed">{{ note.descriptionNote }}</p>
+
+                  <div class="mt-3 pt-3 border-t border-gray-100 flex items-center gap-4 text-xs text-gray-500">
+                    <div class="flex items-center gap-1">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>Paciente: {{ getPatientName(note.idPatient) }}</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                      <span>Tamizaje: {{ getScreeningTitle(note.idScreening) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-4 rounded-b-2xl flex justify-end">
+              <button @click="closeViewNotesModal"
+                class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all">
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+    <!-- Modal de Editar Nota Clínica -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showEditNoteModal && currentEditingNote"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeEditNoteModal"></div>
+
+          <!-- Modal Content -->
+          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4 rounded-t-2xl">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold text-white">Editar Nota Clínica</h2>
+                    <p class="text-white/80 text-sm">Modifica la información de la nota</p>
+                  </div>
+                </div>
+                <button @click="closeEditNoteModal" class="text-white/80 hover:text-white transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6">
+              <!-- Form -->
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Título de la Nota <span class="text-red-500">*</span>
+                  </label>
+                  <input v-model="currentEditingNote.titleNote" type="text"
+                    placeholder="Ej: Síntomas destacados, Recomendaciones, etc."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                    required />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Descripción <span class="text-red-500">*</span>
+                  </label>
+                  <textarea v-model="currentEditingNote.descriptionNote" rows="4"
+                    placeholder="Escribe aquí los detalles clínicos, observaciones o recomendaciones..."
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none resize-none"
+                    required></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-4 rounded-b-2xl flex justify-end gap-3">
+              <button @click="closeEditNoteModal"
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all">
+                Cancelar
+              </button>
+              <button @click="updateClinicalNote" :disabled="isUpdatingNote"
+                class="px-6 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium hover:from-amber-600 hover:to-orange-600 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg v-if="isUpdatingNote" class="w-5 h-5 animate-spin" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                {{ isUpdatingNote ? 'Actualizando...' : 'Actualizar Nota' }}
               </button>
             </div>
           </div>
