@@ -60,6 +60,44 @@
             </svg>
           </RouterLink>
 
+          <!-- Calendario de Investigaciones -->
+          <RouterLink to="/calendar" @click="activeItem = 'calendario'" :class="[
+            'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
+            activeItem === 'calendario'
+              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+              : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
+          ]">
+            <div :class="[
+              'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
+              activeItem === 'calendario'
+                ? 'bg-white/20 backdrop-blur-sm'
+                : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
+            ]">
+              <svg :class="[
+                'w-6 h-6 transition-transform',
+                activeItem === 'calendario' ? 'text-white scale-110' : 'text-emerald-600'
+              ]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+
+            <div class="flex-1 text-left">
+              <span class="font-semibold block">Calendario</span>
+              <p :class="[
+                'text-xs mt-0.5',
+                activeItem === 'calendario' ? 'text-white/80' : 'text-gray-500'
+              ]">
+                Gestión de tareas e investigaciones
+              </p>
+            </div>
+
+            <svg v-if="activeItem === 'calendario'" class="w-5 h-5 text-white animate-pulse" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </RouterLink>
+
           <!-- Crear Cuestionarios para Tinnitus -->
           <RouterLink to="/tinnitus-questionnaire" :class="[
             'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
@@ -459,6 +497,44 @@
               </p>
             </div>
             <svg v-if="activeItem === 'crear-usuario-sistema'" class="w-5 h-5 text-white animate-pulse" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </RouterLink>
+
+          <!-- Perfil de Usuario -->
+          <RouterLink to="/patient-profile" @click="activeItem = 'perfil-usuario'" :class="[
+            'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
+            activeItem === 'perfil-usuario'
+              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+              : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
+          ]">
+            <div :class="[
+              'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
+              activeItem === 'perfil-usuario'
+                ? 'bg-white/20 backdrop-blur-sm'
+                : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
+            ]">
+              <svg :class="[
+                'w-6 h-6 transition-transform',
+                activeItem === 'perfil-usuario' ? 'text-white scale-110' : 'text-emerald-600'
+              ]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+
+            <div class="flex-1 text-left">
+              <span class="font-semibold block">Perfil de Usuario</span>
+              <p :class="[
+                'text-xs mt-0.5',
+                activeItem === 'perfil-usuario' ? 'text-white/80' : 'text-gray-500'
+              ]">
+                Ver información personal
+              </p>
+            </div>
+
+            <svg v-if="activeItem === 'perfil-usuario'" class="w-5 h-5 text-white animate-pulse" fill="none"
               stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>

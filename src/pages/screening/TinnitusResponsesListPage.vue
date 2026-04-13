@@ -41,6 +41,16 @@ interface Questionnaire {
   description?: string;
 }
 
+interface ClinicalNote {
+  id: string;
+  idPatient: string;
+  idTinnitusQuestionnaires: string;
+  idTinnitusResponse: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Estado
 const responses = ref<TinnitusResponse[]>([]);
 const patients = ref<Map<string, Patient>>(new Map());
@@ -49,6 +59,20 @@ const isLoading = ref(false);
 const searchQuery = ref('');
 const selectedResponse = ref<TinnitusResponse | null>(null);
 const showDetailModal = ref(false);
+
+// Estado para notas clínicas
+const showClinicalNoteModal = ref(false);
+const clinicalNoteForm = ref({
+  description: ''
+});
+const isSavingNote = ref(false);
+const selectedResponseForNote = ref<TinnitusResponse | null>(null);
+
+// Estado para visualizar notas clínicas
+const showViewNotesModal = ref(false);
+const clinicalNotes = ref<ClinicalNote[]>([]);
+const isLoadingNotes = ref(false);
+const selectedResponseForView = ref<TinnitusResponse | null>(null);
 
 // Computed
 const filteredResponses = computed(() => {
@@ -149,6 +173,100 @@ const viewResponseDetail = (response: TinnitusResponse) => {
 const closeDetailModal = () => {
   showDetailModal.value = false;
   selectedResponse.value = null;
+};
+
+// Funciones para notas clínicas
+const openClinicalNoteModal = (response: TinnitusResponse) => {
+  selectedResponseForNote.value = response;
+  clinicalNoteForm.value.description = '';
+  showClinicalNoteModal.value = true;
+};
+
+const closeClinicalNoteModal = () => {
+  showClinicalNoteModal.value = false;
+  selectedResponseForNote.value = null;
+  clinicalNoteForm.value.description = '';
+};
+
+const saveClinicalNote = async () => {
+  if (!clinicalNoteForm.value.description.trim()) {
+    showAlert('La descripción de la nota es requerida', 'error');
+    return;
+  }
+
+  if (!selectedResponseForNote.value) {
+    showAlert('No se ha seleccionado una respuesta válida', 'error');
+    return;
+  }
+
+  isSavingNote.value = true;
+  try {
+    const noteData = {
+      id_patient: selectedResponseForNote.value.idPatient,
+      id_tinnitus_questionnaires: selectedResponseForNote.value.idTinnitusQuestionnaires,
+      id_tinnitus_response: selectedResponseForNote.value.id,
+      description: clinicalNoteForm.value.description
+    };
+
+    await axios.post('http://localhost:3000/api/v1/tinnitus-notes', noteData, {
+      timeout: 30000,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    showAlert('Nota clínica guardada exitosamente', 'success');
+    closeClinicalNoteModal();
+  } catch (error) {
+    console.error('Error al guardar nota clínica:', error);
+    showAlert('Error al guardar la nota clínica', 'error');
+  } finally {
+    isSavingNote.value = false;
+  }
+};
+
+// Funciones para visualizar notas clínicas
+const openViewNotesModal = async (response: TinnitusResponse) => {
+  selectedResponseForView.value = response;
+  showViewNotesModal.value = true;
+  await loadClinicalNotes(response.id);
+};
+
+const closeViewNotesModal = () => {
+  showViewNotesModal.value = false;
+  selectedResponseForView.value = null;
+  clinicalNotes.value = [];
+};
+
+const loadClinicalNotes = async (responseId: string) => {
+  isLoadingNotes.value = true;
+  try {
+    const response = await axios.get(`http://localhost:3000/api/v1/tinnitus-notes/response/${responseId}`, {
+      timeout: 30000
+    });
+    clinicalNotes.value = response.data || [];
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      clinicalNotes.value = [];
+    } else {
+      console.error('Error al cargar notas clínicas:', error);
+      showAlert('Error al cargar las notas clínicas', 'error');
+    }
+  } finally {
+    isLoadingNotes.value = false;
+  }
+};
+
+// Formatear fecha
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleString('es-ES', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 };
 
 // Mostrar alerta
@@ -289,8 +407,8 @@ onMounted(() => {
             </div>
           </div>
 
-          <!-- View Button -->
-          <div class="mt-4 pt-4 border-t border-gray-100">
+          <!-- Action Buttons -->
+          <div class="mt-4 pt-4 border-t border-gray-100 space-y-2">
             <button
               class="w-full py-2 bg-teal-50 text-teal-700 rounded-lg font-medium hover:bg-teal-100 transition-all flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,6 +418,22 @@ onMounted(() => {
                   d="M2.458 12C3.732 7.943 7.523 5 12 5c8.837 0 8.837 0 8.837 0m-8.837 14c-4.477 0-8.268-2.943-9.542-7 0 0 0 0 0 0m0 0c1.274-4.057 5.065-7 9.542-7 8.837 0 8.837 0 8.837 0" />
               </svg>
               Ver Detalle
+            </button>
+            <button @click.stop="openClinicalNoteModal(response)"
+              class="w-full py-2 bg-blue-50 text-blue-700 rounded-lg font-medium hover:bg-blue-100 transition-all flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Agregar Nota Clínica
+            </button>
+            <button @click.stop="openViewNotesModal(response)"
+              class="w-full py-2 bg-purple-50 text-purple-700 rounded-lg font-medium hover:bg-purple-100 transition-all flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Ver Notas
             </button>
           </div>
         </div>
@@ -398,8 +532,180 @@ onMounted(() => {
             </div>
 
             <!-- Footer -->
-            <div class="bg-gray-50 px-6 py-4 flex justify-end">
+            <div class="bg-gray-50 px-6 py-4 flex justify-between">
+              <button @click="openClinicalNoteModal(selectedResponse)"
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Agregar Nota Clínica
+              </button>
               <button @click="closeDetailModal"
+                class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all">
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Clinical Note Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showClinicalNoteModal && selectedResponseForNote"
+          class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeClinicalNoteModal"></div>
+
+          <!-- Modal Content -->
+          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold text-white">Nueva Nota Clínica</h2>
+                    <p class="text-blue-100 text-sm">{{ selectedResponseForNote.questionnaireTitle }}</p>
+                  </div>
+                </div>
+                <button @click="closeClinicalNoteModal" class="text-white/80 hover:text-white transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+              <!-- Patient Info -->
+              <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <p class="text-xs text-gray-500 uppercase font-medium mb-1">Paciente</p>
+                <p class="font-semibold text-gray-900">{{ selectedResponseForNote.patientName }}</p>
+              </div>
+
+              <!-- Description Field -->
+              <div class="space-y-2">
+                <label for="clinicalNoteDescription" class="block text-sm font-medium text-gray-700">
+                  Descripción de la Nota Clínica <span class="text-red-500">*</span>
+                </label>
+                <textarea id="clinicalNoteDescription" v-model="clinicalNoteForm.description" rows="6"
+                  placeholder="Ingrese la descripción de la nota clínica..."
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"></textarea>
+                <p class="text-xs text-gray-500">
+                  {{ clinicalNoteForm.description.length }} caracteres
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3">
+              <button @click="closeClinicalNoteModal"
+                class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all">
+                Cancelar
+              </button>
+              <button @click="saveClinicalNote" :disabled="isSavingNote || !clinicalNoteForm.description.trim()"
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg v-if="isSavingNote" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
+                </svg>
+                <span>{{ isSavingNote ? 'Guardando...' : 'Guardar Nota' }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- View Notes Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showViewNotesModal && selectedResponseForView"
+          class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeViewNotesModal"></div>
+
+          <!-- Modal Content -->
+          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 class="text-xl font-bold text-white">Notas Clínicas</h2>
+                    <p class="text-purple-100 text-sm">{{ selectedResponseForView.questionnaireTitle }}</p>
+                  </div>
+                </div>
+                <button @click="closeViewNotesModal" class="text-white/80 hover:text-white transition-colors">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+              <!-- Patient Info -->
+              <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                <p class="text-xs text-gray-500 uppercase font-medium mb-1">Paciente</p>
+                <p class="font-semibold text-gray-900">{{ selectedResponseForView.patientName }}</p>
+              </div>
+
+              <!-- Loading State -->
+              <div v-if="isLoadingNotes" class="flex items-center justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                <span class="ml-3 text-gray-600">Cargando notas...</span>
+              </div>
+
+              <!-- Empty State -->
+              <div v-else-if="clinicalNotes.length === 0" class="text-center py-8">
+                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <p class="text-gray-500">No hay notas clínicas registradas</p>
+              </div>
+
+              <!-- Notes List -->
+              <div v-else class="space-y-4">
+                <div v-for="note in clinicalNotes" :key="note.id"
+                  class="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                  <p class="text-gray-800 text-sm leading-relaxed">{{ note.description }}</p>
+                  <div class="mt-3 pt-3 border-t border-purple-200 flex items-center justify-between">
+                    <span class="text-xs text-purple-600 font-medium">
+                      {{ formatDate(note.createdAt) }}
+                    </span>
+                    <span class="text-xs text-gray-500">
+                      ID: {{ note.id.substring(0, 8) }}...
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-4 flex justify-end">
+              <button @click="closeViewNotesModal"
                 class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-all">
                 Cerrar
               </button>

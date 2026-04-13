@@ -12,6 +12,8 @@ import Research from "../pages/Research/Research.vue";
 import DetailtResearch from "../pages/Research/DetailtResearch.vue";
 import HearingScreeningForm from "../pages/Hearing/HearingScreeningForm.vue";
 import PatientRegistrationForm from "../pages/Patient/PatientRegistrationForm.vue";
+import PatientProfilePage from "../pages/Patient/PatientProfilePage.vue";
+import CalendarPage from "../pages/Calendar/CalendarPage.vue";
 
 import AddSoundForm from "../pages/sound/AddSoundForm.vue";
 import AudioLibraryPage from "../pages/sound/AudioLibraryPage.vue";
@@ -83,7 +85,13 @@ const routes = [
       // ? Screening Responses List
       { path: "/screening-responses", name: "screening-responses", component: ScreeningResponsesListPage },
       { path: '/tinnitus-assignment', name: "asignar cuestionario", component: TinnitusQuestionnaireAssignmentPage },
-      { path: '/tinnitus-responses', name: "respuestas tinnitus", component: TinnitusResponsesListPage }
+      { path: '/tinnitus-responses', name: "respuestas tinnitus", component: TinnitusResponsesListPage },
+
+      // ? Patient Profile
+      { path: '/patient-profile', name: "patient-profile", component: PatientProfilePage },
+
+      // ? Calendar
+      { path: '/calendar', name: "calendar", component: CalendarPage }
     ]
   }
 ];

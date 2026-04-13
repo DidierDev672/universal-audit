@@ -470,7 +470,7 @@ const handleSubmit = async () => {
 
       // Guardar token en localStorage
       localStorage.setItem("auth_token", body.token);
-
+      localStorage.setItem("id", body?.patientLogin?.idPatient);
       // Guardar usuario en el store
       authStore.setToken(body.token);
       authStore.setUser({
