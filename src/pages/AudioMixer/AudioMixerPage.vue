@@ -1,738 +1,551 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50 p-6">
-        <div class="max-w-7xl mx-auto space-y-6">
-
-            <!-- Header -->
-            <div class="bg-white rounded-3xl p-8 shadow-xl border border-purple-100">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h1 class="text-3xl font-bold text-gray-800">Mezclador de Sonidos 🎚️</h1>
-                            <p class="text-gray-600">Crea tus propias mezclas terapéuticas</p>
-                        </div>
-                    </div>
-
-                    <!-- Controles Maestros -->
-                    <div class="hidden md:flex items-center gap-3">
-                        <button @click="playAll" :disabled="isRecording"
-                            class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-600 hover:to-emerald-700 transition-all shadow-md disabled:opacity-50 flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            Reproducir Todo
-                        </button>
-
-                        <button @click="stopAll" :disabled="isRecording"
-                            class="px-6 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl font-semibold hover:from-red-600 hover:to-rose-700 transition-all shadow-md disabled:opacity-50 flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M6 6h12v12H6z" />
-                            </svg>
-                            Detener Todo
-                        </button>
-                    </div>
-                </div>
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50 p-6 relative overflow-hidden">
+        <!-- Background Pattern - Estilo WhatsApp (iconos pequeños 24px) -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+            <!-- Fila 1 -->
+            <div class="floating-icon absolute top-[5%] left-[5%] text-purple-200" style="animation-delay: 0s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[8%] left-[15%] text-pink-200" style="animation-delay: 1s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[3%] left-[25%] text-indigo-200" style="animation-delay: 2s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                    <path
+                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[6%] left-[35%] text-rose-200" style="animation-delay: 3s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[4%] left-[45%] text-violet-200" style="animation-delay: 4s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[7%] left-[55%] text-purple-200" style="animation-delay: 5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                    <path
+                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[5%] left-[65%] text-fuchsia-200" style="animation-delay: 6s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                    <path
+                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[8%] left-[75%] text-pink-200" style="animation-delay: 7s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[3%] left-[85%] text-indigo-200" style="animation-delay: 8s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[6%] left-[95%] text-rose-200" style="animation-delay: 9s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
             </div>
 
-            <!-- Mobile Master Controls -->
-            <div class="md:hidden bg-white rounded-2xl p-4 shadow-md border border-purple-100">
-                <div class="grid grid-cols-2 gap-3">
-                    <button @click="playAll" :disabled="isRecording"
-                        class="px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <!-- Fila 2 -->
+            <div class="floating-icon absolute top-[20%] left-[10%] text-violet-200" style="animation-delay: 1.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[22%] left-[20%] text-purple-200" style="animation-delay: 2.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[18%] left-[30%] text-pink-200" style="animation-delay: 3.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                    <path
+                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[21%] left-[40%] text-indigo-200" style="animation-delay: 4.5s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[19%] left-[50%] text-fuchsia-200" style="animation-delay: 5.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[23%] left-[60%] text-rose-200" style="animation-delay: 6.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[17%] left-[70%] text-violet-200" style="animation-delay: 7.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[20%] left-[80%] text-purple-200" style="animation-delay: 8.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                    <path
+                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[24%] left-[90%] text-pink-200" style="animation-delay: 0.5s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+            </div>
+
+            <!-- Fila 3 -->
+            <div class="floating-icon absolute top-[35%] left-[5%] text-indigo-200" style="animation-delay: 2s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[38%] left-[15%] text-fuchsia-200" style="animation-delay: 3s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[33%] left-[25%] text-violet-200" style="animation-delay: 4s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                    <path
+                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[36%] left-[35%] text-purple-200" style="animation-delay: 5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[32%] left-[45%] text-rose-200" style="animation-delay: 6s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[39%] left-[55%] text-fuchsia-200" style="animation-delay: 7s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[31%] left-[65%] text-violet-200" style="animation-delay: 8s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[36%] left-[75%] text-purple-200" style="animation-delay: 9s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                    <path
+                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[34%] left-[85%] text-pink-200" style="animation-delay: 1s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[38%] left-[95%] text-indigo-200" style="animation-delay: 2s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+            </div>
+
+            <!-- Fila 4 -->
+            <div class="floating-icon absolute top-[50%] left-[8%] text-pink-200" style="animation-delay: 3.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                    <path
+                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[53%] left-[18%] text-rose-200" style="animation-delay: 4.5s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[48%] left-[28%] text-indigo-200" style="animation-delay: 5.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[52%] left-[38%] text-violet-200" style="animation-delay: 6.5s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[47%] left-[48%] text-purple-200" style="animation-delay: 7.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[54%] left-[58%] text-fuchsia-200" style="animation-delay: 8.5s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[49%] left-[68%] text-pink-200" style="animation-delay: 0.8s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[55%] left-[78%] text-rose-200" style="animation-delay: 1.8s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[51%] left-[88%] text-indigo-200" style="animation-delay: 2.8s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                    <path
+                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+            </div>
+
+            <!-- Fila 5 -->
+            <div class="floating-icon absolute top-[65%] left-[12%] text-violet-200" style="animation-delay: 3s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                    <path
+                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[68%] left-[22%] text-purple-200" style="animation-delay: 4s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[62%] left-[32%] text-pink-200" style="animation-delay: 5s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[70%] left-[42%] text-fuchsia-200" style="animation-delay: 6s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[64%] left-[52%] text-rose-200" style="animation-delay: 7s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[71%] left-[62%] text-indigo-200" style="animation-delay: 8s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[66%] left-[72%] text-violet-200" style="animation-delay: 0.3s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[73%] left-[82%] text-purple-200" style="animation-delay: 1.3s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                    <path
+                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[68%] left-[92%] text-pink-200" style="animation-delay: 2.3s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+            </div>
+
+            <!-- Fila 6 -->
+            <div class="floating-icon absolute top-[80%] left-[7%] text-fuchsia-200" style="animation-delay: 4.2s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C8.5 2 6 4.5 6 8c0 2.5 1.5 4 3 5.5S11 16 11 18c0 1.5-.5 2-1.5 2S8 19.5 8 18c0-.5.2-1 .5-1.3.3-.3.5-.7.5-1.2 0-1-.8-1.5-1.5-1.5S6 14.5 6 15.5c0 1.3.5 2.5 1.5 3.3.8.7 1.5 1.7 1.5 2.7 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-2-1-3.5-2.5-5C13.5 11.5 13 10.5 13 9c0-1.5 1-2.5 2-2.5s2 1 2 2.5c0 .5-.2 1-.5 1.3-.3.3-.5.7-.5 1.2 0 1 .8 1.5 1.5 1.5s1.5-.5 1.5-1.5c0-1.3-.5-2.5-1.5-3.3-.8-.7-1.5-1.7-1.5-2.7C17 4.5 14.5 2 12 2z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[83%] left-[17%] text-rose-200" style="animation-delay: 5.2s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[78%] left-[27%] text-violet-200" style="animation-delay: 6.2s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[85%] left-[37%] text-indigo-200" style="animation-delay: 7.2s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[81%] left-[47%] text-purple-200" style="animation-delay: 8.2s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[87%] left-[57%] text-pink-200" style="animation-delay: 0.6s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[82%] left-[67%] text-fuchsia-200" style="animation-delay: 1.6s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[88%] left-[77%] text-rose-200" style="animation-delay: 2.6s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                    <path
+                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[84%] left-[87%] text-violet-200" style="animation-delay: 3.6s;">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
+                    <path
+                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                </svg>
+            </div>
+            <div class="floating-icon absolute top-[90%] left-[95%] text-indigo-200" style="animation-delay: 4.6s;">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
+            </div>
+        </div>
+        <div class="p-6 space-y-6">
+            <!-- Header -->
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-800">Audio Mixer</h2>
+                <p class="text-sm text-gray-400 mt-0.5">{{ colors.length }} familias de colores</p>
+            </div>
+
+            <!-- Search -->
+            <div class="relative">
+                <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                </svg>
+                <input v-model="search" type="text" placeholder="Buscar color..." class="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl
+                 focus:ring-2 focus:ring-purple-400 focus:border-transparent
+                 outline-none w-48 bg-white" />
+            </div>
+        </div>
+
+        <!-- Color Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            <div v-for="item in filtered" :key="item.id" class="group bg-white border border-gray-100 rounded-2xl p-4
+               hover:border-gray-200 hover:shadow-sm transition-all duration-200 cursor-pointer"
+                @click="selectColor(item)" :class="{ 'ring-2 ring-offset-1': selected?.id === item.id }" :style="selected?.id === item.id
+                    ? { '--tw-ring-color': item.color[4] }
+                    : {}">
+                <!-- Color name + play button -->
+                <div class="flex items-center justify-betweenmb-3">
+                    <span class="text-sm font-medium text-gray-700 capitalize">{{ item.id }} </span>
+                    <button v-if="item.sound" @click.stop="playSound(item)" class="w-7 h-7 rounded-full flex items-center justify-center
+                   transition-all duration-150 hover:scale-110 active:scale-95"
+                        :style="{ background: item.color[4] + '22', color: item.color[6] }" title="Reproducir sonido">
+                        <svg v-if="playing !== item.id" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M8 5v14l11-7z" />
                         </svg>
-                        Reproducir
+                        <!-- Animación de audio -->
+                        <span v-else class="flex gap-px items-end h-3.5">
+                            <span v-for="n in 3" :key="n" class="w-0.5 rounded-full animate-bounce"
+                                :style="{ background: item.color[6], animationDelay: (n * 80) + 'ms', height: (8 + n * 2) + 'px' }" />
+                        </span>
                     </button>
-
-                    <button @click="stopAll" :disabled="isRecording"
-                        class="px-4 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M6 6h12v12H6z" />
-                        </svg>
-                        Detener
-                    </button>
+                    <span v-else class="text-xs text-gray-300 italic">sin audio</span>
                 </div>
-            </div>
+                <!-- Swatches strip -->
+                <div class="flex rounded-xl overflow-hidden gap-px">
+                    <div v-for="(hex, idx) in item.color" :key="idx"
+                        class="flex-1 h-10 transition-transform duration-150 hover:scale-y-110 cursor-default"
+                        :style="{ background: hex }" :title="hex"></div>
 
-            <!-- Grid de Sonidos -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-                <!-- Sonido Amarillo -->
-                <div
-                    class="bg-white rounded-3xl overflow-hidden shadow-xl border-4 border-yellow-200 transform hover:scale-105 transition-all duration-300">
-                    <div
-                        class="h-32 bg-gradient-to-br from-yellow-400 via-amber-400 to-orange-400 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
-                        <div class="relative h-full flex items-center justify-center">
-                            <div class="text-center">
-                                <div
-                                    class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                                    </svg>
-                                </div>
-                                <h3 class="text-white font-bold text-lg">☀️ Sol</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-6 space-y-4">
-                        <button @click="toggleSound('yellow')" :disabled="isRecording"
-                            class="w-full py-4 bg-gradient-to-r from-yellow-400 to-amber-500 text-white rounded-xl font-bold text-lg hover:from-yellow-500 hover:to-amber-600 transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
-                            <svg v-if="!sounds.yellow.isPlaying" class="w-6 h-6" fill="currentColor"
-                                viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            <svg v-else class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                            </svg>
-                            {{ sounds.yellow.isPlaying ? 'Pausar' : 'Reproducir' }}
-                        </button>
-
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <label class="text-sm font-bold text-gray-700 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                                    </svg>
-                                    Volumen
-                                </label>
-                                <span class="text-lg font-bold text-yellow-600">{{ Math.round(sounds.yellow.volume *
-                                    100) }}%</span>
-                            </div>
-                            <input v-model.number="sounds.yellow.volume" type="range" min="0" max="1" step="0.01"
-                                @input="updateVolume('yellow')"
-                                class="w-full h-3 bg-yellow-100 rounded-full appearance-none cursor-pointer slider-yellow" />
-                        </div>
-
-                        <audio ref="audioYellow" :src="sounds.yellow.url" loop preload="auto"></audio>
-                    </div>
-                </div>
-
-                <!-- Sonido Verde -->
-                <div
-                    class="bg-white rounded-3xl overflow-hidden shadow-xl border-4 border-green-200 transform hover:scale-105 transition-all duration-300">
-                    <div
-                        class="h-32 bg-gradient-to-br from-green-400 via-emerald-400 to-teal-400 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
-                        <div class="relative h-full flex items-center justify-center">
-                            <div class="text-center">
-                                <div
-                                    class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <h3 class="text-white font-bold text-lg">🌿 Naturaleza</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-6 space-y-4">
-                        <button @click="toggleSound('green')" :disabled="isRecording"
-                            class="w-full py-4 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-xl font-bold text-lg hover:from-green-500 hover:to-emerald-600 transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
-                            <svg v-if="!sounds.green.isPlaying" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            <svg v-else class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                            </svg>
-                            {{ sounds.green.isPlaying ? 'Pausar' : 'Reproducir' }}
-                        </button>
-
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <label class="text-sm font-bold text-gray-700 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                                    </svg>
-                                    Volumen
-                                </label>
-                                <span class="text-lg font-bold text-green-600">{{ Math.round(sounds.green.volume * 100)
-                                }}%</span>
-                            </div>
-                            <input v-model.number="sounds.green.volume" type="range" min="0" max="1" step="0.01"
-                                @input="updateVolume('green')"
-                                class="w-full h-3 bg-green-100 rounded-full appearance-none cursor-pointer slider-green" />
-                        </div>
-
-                        <audio ref="audioGreen" :src="sounds.green.url" loop preload="auto"></audio>
-                    </div>
-                </div>
-
-                <!-- Sonido Rojo -->
-                <div
-                    class="bg-white rounded-3xl overflow-hidden shadow-xl border-4 border-red-200 transform hover:scale-105 transition-all duration-300">
-                    <div class="h-32 bg-gradient-to-br from-red-400 via-rose-400 to-pink-400 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
-                        <div class="relative h-full flex items-center justify-center">
-                            <div class="text-center">
-                                <div
-                                    class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                                    </svg>
-                                </div>
-                                <h3 class="text-white font-bold text-lg">🔥 Fuego</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-6 space-y-4">
-                        <button @click="toggleSound('red')" :disabled="isRecording"
-                            class="w-full py-4 bg-gradient-to-r from-red-400 to-rose-500 text-white rounded-xl font-bold text-lg hover:from-red-500 hover:to-rose-600 transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
-                            <svg v-if="!sounds.red.isPlaying" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            <svg v-else class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                            </svg>
-                            {{ sounds.red.isPlaying ? 'Pausar' : 'Reproducir' }}
-                        </button>
-
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <label class="text-sm font-bold text-gray-700 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                                    </svg>
-                                    Volumen
-                                </label>
-                                <span class="text-lg font-bold text-red-600">{{ Math.round(sounds.red.volume * 100)
-                                }}%</span>
-                            </div>
-                            <input v-model.number="sounds.red.volume" type="range" min="0" max="1" step="0.01"
-                                @input="updateVolume('red')"
-                                class="w-full h-3 bg-red-100 rounded-full appearance-none cursor-pointer slider-red" />
-                        </div>
-
-                        <audio ref="audioRed" :src="sounds.red.url" loop preload="auto"></audio>
-                    </div>
-                </div>
-
-                <!-- Sonido Naranja -->
-                <div
-                    class="bg-white rounded-3xl overflow-hidden shadow-xl border-4 border-orange-200 transform hover:scale-105 transition-all duration-300">
-                    <div
-                        class="h-32 bg-gradient-to-br from-orange-400 via-amber-400 to-yellow-400 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
-                        <div class="relative h-full flex items-center justify-center">
-                            <div class="text-center">
-                                <div
-                                    class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                    </svg>
-                                </div>
-                                <h3 class="text-white font-bold text-lg">⚡ Energía</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-6 space-y-4">
-                        <button @click="toggleSound('orange')" :disabled="isRecording"
-                            class="w-full py-4 bg-gradient-to-r from-orange-400 to-amber-500 text-white rounded-xl font-bold text-lg hover:from-orange-500 hover:to-amber-600 transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
-                            <svg v-if="!sounds.orange.isPlaying" class="w-6 h-6" fill="currentColor"
-                                viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            <svg v-else class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                            </svg>
-                            {{ sounds.orange.isPlaying ? 'Pausar' : 'Reproducir' }}
-                        </button>
-
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <label class="text-sm font-bold text-gray-700 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                                    </svg>
-                                    Volumen
-                                </label>
-                                <span class="text-lg font-bold text-orange-600">{{ Math.round(sounds.orange.volume *
-                                    100) }}%</span>
-                            </div>
-                            <input v-model.number="sounds.orange.volume" type="range" min="0" max="1" step="0.01"
-                                @input="updateVolume('orange')"
-                                class="w-full h-3 bg-orange-100 rounded-full appearance-none cursor-pointer slider-orange" />
-                        </div>
-
-                        <audio ref="audioOrange" :src="sounds.orange.url" loop preload="auto"></audio>
-                    </div>
-                </div>
-
-                <!-- Sonido Azul -->
-                <div
-                    class="bg-white rounded-3xl overflow-hidden shadow-xl border-4 border-blue-200 transform hover:scale-105 transition-all duration-300">
-                    <div class="h-32 bg-gradient-to-br from-blue-400 via-cyan-400 to-sky-400 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
-                        <div class="relative h-full flex items-center justify-center">
-                            <div class="text-center">
-                                <div
-                                    class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
-                                    </svg>
-                                </div>
-                                <h3 class="text-white font-bold text-lg">💎 Cristal</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-6 space-y-4">
-                        <button @click="toggleSound('blue')" :disabled="isRecording"
-                            class="w-full py-4 bg-gradient-to-r from-blue-400 to-cyan-500 text-white rounded-xl font-bold text-lg hover:from-blue-500 hover:to-cyan-600 transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
-                            <svg v-if="!sounds.blue.isPlaying" class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            <svg v-else class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                            </svg>
-                            {{ sounds.blue.isPlaying ? 'Pausar' : 'Reproducir' }}
-                        </button>
-
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <label class="text-sm font-bold text-gray-700 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                                    </svg>
-                                    Volumen
-                                </label>
-                                <span class="text-lg font-bold text-blue-600">{{ Math.round(sounds.blue.volume * 100)
-                                }}%</span>
-                            </div>
-                            <input v-model.number="sounds.blue.volume" type="range" min="0" max="1" step="0.01"
-                                @input="updateVolume('blue')"
-                                class="w-full h-3 bg-blue-100 rounded-full appearance-none cursor-pointer slider-blue" />
-                        </div>
-
-                        <audio ref="audioBlue" :src="sounds.blue.url" loop preload="auto"></audio>
-                    </div>
-                </div>
-
-                <!-- Sonido Morado -->
-                <div
-                    class="bg-white rounded-3xl overflow-hidden shadow-xl border-4 border-purple-200 transform hover:scale-105 transition-all duration-300">
-                    <div
-                        class="h-32 bg-gradient-to-br from-purple-400 via-violet-400 to-fuchsia-400 relative overflow-hidden">
-                        <div class="absolute inset-0 bg-white/20 backdrop-blur-sm"></div>
-                        <div class="relative h-full flex items-center justify-center">
-                            <div class="text-center">
-                                <div
-                                    class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-2">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                    </svg>
-                                </div>
-                                <h3 class="text-white font-bold text-lg">✨ Mágico</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-6 space-y-4">
-                        <button @click="toggleSound('purple')" :disabled="isRecording"
-                            class="w-full py-4 bg-gradient-to-r from-purple-400 to-fuchsia-500 text-white rounded-xl font-bold text-lg hover:from-purple-500 hover:to-fuchsia-600 transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2">
-                            <svg v-if="!sounds.purple.isPlaying" class="w-6 h-6" fill="currentColor"
-                                viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            <svg v-else class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-                            </svg>
-                            {{ sounds.purple.isPlaying ? 'Pausar' : 'Reproducir' }}
-                        </button>
-
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <label class="text-sm font-bold text-gray-700 flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                                    </svg>
-                                    Volumen
-                                </label>
-                                <span class="text-lg font-bold text-purple-600">{{ Math.round(sounds.purple.volume *
-                                    100) }}%</span>
-                            </div>
-                            <input v-model.number="sounds.purple.volume" type="range" min="0" max="1" step="0.01"
-                                @input="updateVolume('purple')"
-                                class="w-full h-3 bg-purple-100 rounded-full appearance-none cursor-pointer slider-purple" />
-                        </div>
-
-                        <audio ref="audioPurple" :src="sounds.purple.url" loop preload="auto"></audio>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Controles de Grabación -->
-            <div class="bg-white rounded-3xl p-8 shadow-xl border border-purple-100">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                    <div
-                        class="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-500 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                        </svg>
-                    </div>
-                    Grabar Mezcla
-                </h2>
-
-                <div class="space-y-4">
-                    <div v-if="!isRecording" class="flex flex-col md:flex-row gap-4">
-                        <button @click="startRecording" :disabled="!hasPlayingSounds"
-                            class="flex-1 px-8 py-5 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-2xl font-bold text-xl hover:from-red-600 hover:to-pink-600 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3">
-                            <div class="w-4 h-4 bg-white rounded-full animate-pulse"></div>
-                            Iniciar Grabación
-                        </button>
-
-                        <div v-if="!hasPlayingSounds" class="text-center md:hidden">
-                            <p class="text-sm text-gray-500">⚠️ Reproduce al menos un sonido para grabar</p>
-                        </div>
-                    </div>
-
-                    <div v-else class="space-y-4">
-                        <div class="bg-gradient-to-r from-red-50 to-pink-50 rounded-2xl p-6 border-2 border-red-200">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-4">
-                                    <div
-                                        class="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-                                        <div class="w-6 h-6 bg-white rounded-sm"></div>
-                                    </div>
-                                    <div>
-                                        <p class="text-lg font-bold text-red-700">🔴 Grabando...</p>
-                                        <p class="text-3xl font-bold text-gray-800">{{ recordingTime }}s</p>
-                                    </div>
-                                </div>
-
-                                <button @click="stopRecording"
-                                    class="px-8 py-4 bg-gradient-to-r from-gray-700 to-gray-900 text-white rounded-xl font-bold hover:from-gray-800 hover:to-black transition-all shadow-md flex items-center gap-2">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M6 6h12v12H6z" />
-                                    </svg>
-                                    Detener
-                                </button>
-                            </div>
-                        </div>
-
-                        <p class="text-sm text-gray-600 text-center">⚠️ Los controles están deshabilitados durante la
-                            grabación</p>
-                    </div>
-
-                    <!-- Vista Previa de Grabación -->
-                    <div v-if="recordedAudioURL"
-                        class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border-2 border-green-200">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            ✅ Mezcla Grabada Exitosamente
-                        </h3>
-
-                        <audio :src="recordedAudioURL" controls class="w-full mb-4 rounded-xl"></audio>
-
-                        <button @click="downloadRecording"
-                            class="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-bold hover:from-green-600 hover:to-emerald-600 transition-all shadow-md flex items-center justify-center gap-2">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Descargar Mezcla
-                        </button>
-                    </div>
-
-                    <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
-                        <p class="text-sm text-blue-800 flex items-start gap-2">
-                            <svg class="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span><strong>Instrucciones:</strong> Reproduce los sonidos que desees mezclar, ajusta sus
-                                volúmenes y haz clic en "Iniciar Grabación" para capturar tu mezcla
-                                personalizada.</span>
-                        </p>
+                    <!--  Hex previw on hover -->
+                    <div class="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="w-4 h-4 rounded-full border border-gray-100 flex-shrink-0"
+                            :style="{ background: item.color[5] }"></div>
                     </div>
                 </div>
             </div>
 
+            <!-- Panel de detalle -->
+            <Transition enter-active-class="transition-all duration-300" enter-from-class="opacity-0 translate-y-2"
+                leave-active-class="transition-all duration-200" leave-to-class="opacity-0 translate-y-2">
+                <div v-if="selected" class="bg-white w-full border border-gray-100 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg" :style="{ background: selected.color[5] }" />
+                            <div>
+                                <h3 class="font-semibold text-gray-800 capitalize">{{ selected.id }}</h3>
+                                <p class="text-xs text-gray-400">{{ selected.color.length }} variantes</p>
+                            </div>
+                        </div>
+                        <button @click="selected = null"
+                            class="text-gray-300 hover:text-gray-500 transition-colors text-lg leading-none">✕</button>
+                    </div>
+
+                    <!-- Swatches detallados -->
+                    <div class="grid grid-cols-11 gap-1.5">
+                        <div v-for="(hex, idx) in selected.color" :key="idx" class="group/swatch relative">
+                            <div class="h-12 rounded-lg cursor-pointer hover:scale-105 transition-transform duration-150 border border-black/5"
+                                :style="{ background: hex }" @click="copyHex(hex)" :title="'Copiar ' + hex" />
+                            <div class="text-center mt-1">
+                                <span class="text-xs text-gray-400">{{ shadeLabel(idx) }}</span>
+                            </div>
+                            <!-- Tooltip de hex -->
+                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white
+                     text-xs rounded px-2 py-1 whitespace-nowrap pointer-events-none
+                     opacity-0 group-hover/swatch:opacity-100 transition-opacity z-10">
+                                {{ hex }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Toast de copiado -->
+                    <Transition enter-active-class="transition-all duration-200" enter-from-class="opacity-0 scale-95"
+                        leave-to-class="opacity-0 scale-95">
+                        <div v-if="copied" class="mt-4 text-sm text-center py-2 rounded-xl"
+                            :style="{ background: selected.color[1], color: selected.color[7] }">
+                            ✓ <strong>{{ copied }}</strong> copiado al portapapeles
+                        </div>
+                    </Transition>
+                </div>
+            </Transition>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed } from 'vue';
 
-type SoundColor = 'yellow' | 'green' | 'red' | 'orange' | 'blue' | 'purple';
-
-interface Sound {
-    url: string;
-    volume: number;
-    isPlaying: boolean;
+interface Color {
+    id: string;
+    color: string[];
+    sound?: string[];
 }
 
-// Audio Elements Refs
-const audioYellow = ref<HTMLAudioElement | null>(null);
-const audioGreen = ref<HTMLAudioElement | null>(null);
-const audioRed = ref<HTMLAudioElement | null>(null);
-const audioOrange = ref<HTMLAudioElement | null>(null);
-const audioBlue = ref<HTMLAudioElement | null>(null);
-const audioPurple = ref<HTMLAudioElement | null>(null);
+const colors = ref<Color[]>([
+    { id: 'yellow', color: ['#FEFCE8', '#FEF9C3', '#FEF08A', '#FDE047', '#FACC15', '#EAB308', '#CA8A04', '#A16207', '#854D0E', '#713F12', '#422006'], sound: ['/sounds/yellow.mp3'] },
+    { id: 'amber', color: ['#FFFBEB', '#FEF3C7', '#FDE68A', '#FCD34D', '#FBBF24', '#F59E0B', '#D97706', '#B45309', '#92400E', '#78350F', '#451A03'], sound: ['/sounds/amber.mp3'] },
+    { id: 'green', color: ['#F0FDF4', '#DCFCE7', '#BBF7D0', '#86EFAC', '#4ADE80', '#22C55E', '#16A34A', '#15803D', '#166534', '#14532D', '#052E16'], sound: ['/sounds/green.mp3'] },
+    { id: 'emeral   d', color: ['#ECFDF5', '#D1FAE5', '#A7F3D0', '#6EE7B7', '#34D399', '#10B981', '#059669', '#047857', '#065F46', '#064E3B', '#022C22'], sound: ['/sounds/emerald.mp3'] },
+    { id: 'lime', color: ['#F7FEE7', '#ECFCCB', '#D9F99D', '#BEF264', '#A3E635', '#84CC16', '#65A30D', '#4D7C0F', '#7F6212', '#365314', '#1A2E05'], sound: [] },
+    { id: 'red', color: ['#FEF2F2', '#FEE2E2', '#FECACA', '#FCA5A5', '#F87171', '#EF4444', '#DC2626', '#B91C1C', '#991B1B', '#7F1D1D', '#450A0A'], sound: ['/sounds/red.mp3'] },
+    { id: 'orange', color: ['#FFF7ED', '#FFEDD5', '#FED7AA', '#FDBA74', '#FB923C', '#F97316', '#EA580C', '#C2410C', '#9A3412', '#7C2D12', '#431407'], sound: ['/sounds/orange.mp3'] },
+    { id: 'pink', color: ['#FDF2F8', '#FCE7F3', '#FBCFE8', '#F9A8D4', '#F472B6', '#EC4899', '#DB2777', '#BE185D', '#9D174D', '#831843', '#500724'], sound: ['/sounds/pink.mp3'] },
+    { id: 'rose', color: ['#FFF1F2', '#FFE4E6', '#FECDD3', '#FDA4AF', '#FB7185', '#F43F5E', '#E11D48', '#BE123C', '#9F1239', '#881337', '#4C0519'], sound: ['/sounds/rose.mp3'] },
+    { id: 'blue', color: ['#EFF6FF', '#DBEAFE', '#BFDBFE', '#93C5FD', '#60A5FA', '#3B82F6', '#2563EB', '#1D4ED8', '#1E40AF', '#1E3A8A', '#172554'], sound: ['/sounds/blue.mp3'] },
+    { id: 'sky', color: ['#F0F9FF', '#E0F2FE', '#BAE6FD', '#7DD3FC', '#38BDF8', '#0EA5E9', '#0284C7', '#0369A1', '#075985', '#0C4A6E', '#082F49'], sound: ['/sounds/sky.mp3'] },
+    { id: 'cyan', color: ['#ECFEFF', '#CFFAFE', '#A5F3FC', '#67E8F9', '#22D3EE', '#06B6D4', '#0891B2', '#0E7490', '#155E75', '#164E63', '#083344'], sound: ['/sounds/cyan.mp3'] },
+    { id: 'fuchsia', color: ['#FDF4FF', '#FAE8FF', '#F5D0FE', '#F0ABFC', '#E879F9', '#D946EF', '#C026D3', '#A21CAF', '#86198F', '#701A75', '#4A044E'], sound: ['/sounds/fuchsia.mp3'] },
+    { id: 'purple', color: ['#F5F3FF', '#EDE9FE', '#DDD6FE', '#C4B5FD', '#A78BFA', '#8B5CF6', '#7C3AED', '#6D28D9', '#5B21B6', '#4C1D95', '#370764'], sound: ['/sounds/purple.mp3'] },
+    { id: 'indigo', color: ['#EEF2FF', '#E0E7FF', '#C7D2FE', '#A5B4FC', '#818CF8', '#6366F1', '#4F46E5', '#4338CA', '#3730A3', '#312E81', '#1E1B4B'], sound: ['/sounds/indigo.mp3'] },
+    { id: 'violet', color: ['#F5F3FF', '#EDE9FE', '#DDD6FE', '#C4B5FD', '#A78BFA', '#8B5CF6', '#7C3AED', '#6D28D9', '#5B21B6', '#4C1D95', '#2E1065'], sound: ['/sounds/violet.mp3'] }
+]);
+const SHADE_LABELS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
+const shadeLabel = (idx: number) => SHADE_LABELS[idx] ?? idx
 
-// Sounds State
-const sounds = ref<Record<SoundColor, Sound>>({
-    yellow: { url: '/sounds/yellow.mp3', volume: 0.5, isPlaying: false },
-    green: { url: '/sounds/green.mp3', volume: 0.5, isPlaying: false },
-    red: { url: '/sounds/red.mp3', volume: 0.5, isPlaying: false },
-    orange: { url: '/sounds/orange.mp3', volume: 0.5, isPlaying: false },
-    blue: { url: '/sounds/blue.mp3', volume: 0.5, isPlaying: false },
-    purple: { url: '/sounds/purple.mp3', volume: 0.5, isPlaying: false },
-});
+const search = ref('')
+const selected = ref<Color | null>(null)
+const playing = ref<string | null>(null)
+const copied = ref<string | null>(null)
 
-// Recording State
-const isRecording = ref(false);
-const recordingTime = ref(0);
-const recordedAudioURL = ref<string>('');
-const mediaRecorder = ref<MediaRecorder | null>(null);
-const audioChunks = ref<Blob[]>([]);
-const recordingInterval = ref<number | null>(null);
+const filtered = computed(() =>
+    search.value.trim()
+        ? colors.value.filter(c => c.id.includes(search.value.toLowerCase()))
+        : colors.value
+)
 
-// Computed
-const hasPlayingSounds = computed(() => {
-    return Object.values(sounds.value).some(sound => sound.isPlaying);
-});
+function selectColor(item: Color) {
+    selected.value = selected.value?.id === item.id ? null : item
+    copied.value = null
+}
 
-// Audio Element Mapping
-const getAudioElement = (color: SoundColor): HTMLAudioElement | null => {
-    const map = {
-        yellow: audioYellow.value,
-        green: audioGreen.value,
-        red: audioRed.value,
-        orange: audioOrange.value,
-        blue: audioBlue.value,
-        purple: audioPurple.value,
-    };
-    return map[color];
-};
+function playSound(item: Color) {
+    if (!item.sound) return
+    playing.value = item.id
+    const audio = new Audio(item.sound)
+    audio.play().catch(() => { })
+    audio.onended = () => { playing.value = null }
+    setTimeout(() => { playing.value = null }, 4000)
+}
 
-// Methods
-const toggleSound = (color: SoundColor) => {
-    const audio = getAudioElement(color);
-    if (!audio) return;
-
-    if (sounds.value[color].isPlaying) {
-        audio.pause();
-        sounds.value[color].isPlaying = false;
-    } else {
-        audio.volume = sounds.value[color].volume;
-        audio.play();
-        sounds.value[color].isPlaying = true;
-    }
-};
-
-const updateVolume = (color: SoundColor) => {
-    const audio = getAudioElement(color);
-    if (!audio) return;
-    audio.volume = sounds.value[color].volume;
-};
-
-const playAll = () => {
-    const colors: SoundColor[] = ['yellow', 'green', 'red', 'orange', 'blue', 'purple'];
-    colors.forEach(color => {
-        const audio = getAudioElement(color);
-        if (audio && !sounds.value[color].isPlaying) {
-            audio.volume = sounds.value[color].volume;
-            audio.play();
-            sounds.value[color].isPlaying = true;
-        }
-    });
-};
-
-const stopAll = () => {
-    const colors: SoundColor[] = ['yellow', 'green', 'red', 'orange', 'blue', 'purple'];
-    colors.forEach(color => {
-        const audio = getAudioElement(color);
-        if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
-            sounds.value[color].isPlaying = false;
-        }
-    });
-};
-
-const startRecording = async () => {
+async function copyHex(hex: string) {
     try {
-        const audioContext = new AudioContext();
-        const destination = audioContext.createMediaStreamDestination();
-
-        const colors: SoundColor[] = ['yellow', 'green', 'red', 'orange', 'blue', 'purple'];
-        colors.forEach(color => {
-            const audio = getAudioElement(color);
-            if (audio && sounds.value[color].isPlaying) {
-                const source = audioContext.createMediaElementSource(audio);
-                const gainNode = audioContext.createGain();
-                gainNode.gain.value = sounds.value[color].volume;
-
-                source.connect(gainNode);
-                gainNode.connect(destination);
-                gainNode.connect(audioContext.destination);
-            }
-        });
-
-        mediaRecorder.value = new MediaRecorder(destination.stream);
-        audioChunks.value = [];
-
-        mediaRecorder.value.ondataavailable = (event) => {
-            if (event.data.size > 0) {
-                audioChunks.value.push(event.data);
-            }
-        };
-
-        mediaRecorder.value.onstop = () => {
-            const audioBlob = new Blob(audioChunks.value, { type: 'audio/webm' });
-            recordedAudioURL.value = URL.createObjectURL(audioBlob);
-        };
-
-        mediaRecorder.value.start();
-        isRecording.value = true;
-        recordingTime.value = 0;
-
-        recordingInterval.value = window.setInterval(() => {
-            recordingTime.value++;
-        }, 1000);
-
-    } catch (error) {
-        console.error('Error al iniciar grabación:', error);
-        alert('Error al iniciar la grabación. Asegúrate de que al menos un sonido esté reproduciéndose.');
+        await navigator.clipboard.writeText(hex)
+        copied.value = hex
+        setTimeout(() => { copied.value = null }, 2000)
+    } catch {
+        copied.value = hex
+        setTimeout(() => { copied.value = null }, 2000)
     }
-};
-
-const stopRecording = () => {
-    if (mediaRecorder.value && isRecording.value) {
-        mediaRecorder.value.stop();
-        isRecording.value = false;
-
-        if (recordingInterval.value) {
-            clearInterval(recordingInterval.value);
-            recordingInterval.value = null;
-        }
-    }
-};
-
-const downloadRecording = () => {
-    if (!recordedAudioURL.value) return;
-
-    const link = document.createElement('a');
-    link.href = recordedAudioURL.value;
-    link.download = `mezcla-${Date.now()}.webm`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-};
-
-// Cleanup
-onUnmounted(() => {
-    if (recordingInterval.value) {
-        clearInterval(recordingInterval.value);
-    }
-    if (recordedAudioURL.value) {
-        URL.revokeObjectURL(recordedAudioURL.value);
-    }
-});
+}
 </script>
 
 <style scoped>
-/* Custom range sliders */
-.slider-yellow::-webkit-slider-thumb {
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.5);
+/* Animación de flotación suave para los íconos de fondo */
+.floating-icon {
+    animation: float 20s ease-in-out infinite;
 }
 
-.slider-green::-webkit-slider-thumb {
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #34d399, #10b981);
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(52, 211, 153, 0.5);
-}
+@keyframes float {
 
-.slider-red::-webkit-slider-thumb {
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #f87171, #ef4444);
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(248, 113, 113, 0.5);
-}
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
 
-.slider-orange::-webkit-slider-thumb {
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #fb923c, #f97316);
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(251, 146, 60, 0.5);
-}
+    25% {
+        transform: translateY(-20px) rotate(2deg);
+    }
 
-.slider-blue::-webkit-slider-thumb {
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #60a5fa, #3b82f6);
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(96, 165, 250, 0.5);
-}
+    50% {
+        transform: translateY(-10px) rotate(-1deg);
+    }
 
-.slider-purple::-webkit-slider-thumb {
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(167, 139, 250, 0.5);
+    75% {
+        transform: translateY(-30px) rotate(1deg);
+    }
 }
 </style>
