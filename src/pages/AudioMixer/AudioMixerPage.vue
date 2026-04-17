@@ -1,418 +1,228 @@
 <template>
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50 p-6 relative overflow-hidden">
-        <!-- Background Pattern - Estilo WhatsApp (iconos pequeños 24px) -->
+
+        <!-- ── Background floating icons ── -->
         <div class="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
-            <!-- Fila 1 -->
-            <div class="floating-icon absolute top-[5%] left-[5%] text-purple-200" style="animation-delay: 0s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[8%] left-[15%] text-pink-200" style="animation-delay: 1s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[3%] left-[25%] text-indigo-200" style="animation-delay: 2s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                    <path
-                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[6%] left-[35%] text-rose-200" style="animation-delay: 3s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[4%] left-[45%] text-violet-200" style="animation-delay: 4s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[7%] left-[55%] text-purple-200" style="animation-delay: 5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                    <path
-                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[5%] left-[65%] text-fuchsia-200" style="animation-delay: 6s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
-                    <path
-                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[8%] left-[75%] text-pink-200" style="animation-delay: 7s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[3%] left-[85%] text-indigo-200" style="animation-delay: 8s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[6%] left-[95%] text-rose-200" style="animation-delay: 9s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                </svg>
-            </div>
-
-            <!-- Fila 2 -->
-            <div class="floating-icon absolute top-[20%] left-[10%] text-violet-200" style="animation-delay: 1.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[22%] left-[20%] text-purple-200" style="animation-delay: 2.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[18%] left-[30%] text-pink-200" style="animation-delay: 3.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                    <path
-                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[21%] left-[40%] text-indigo-200" style="animation-delay: 4.5s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[19%] left-[50%] text-fuchsia-200" style="animation-delay: 5.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[23%] left-[60%] text-rose-200" style="animation-delay: 6.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[17%] left-[70%] text-violet-200" style="animation-delay: 7.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[20%] left-[80%] text-purple-200" style="animation-delay: 8.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
-                    <path
-                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[24%] left-[90%] text-pink-200" style="animation-delay: 0.5s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                </svg>
-            </div>
-
-            <!-- Fila 3 -->
-            <div class="floating-icon absolute top-[35%] left-[5%] text-indigo-200" style="animation-delay: 2s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[38%] left-[15%] text-fuchsia-200" style="animation-delay: 3s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[33%] left-[25%] text-violet-200" style="animation-delay: 4s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
-                    <path
-                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[36%] left-[35%] text-purple-200" style="animation-delay: 5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[32%] left-[45%] text-rose-200" style="animation-delay: 6s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[39%] left-[55%] text-fuchsia-200" style="animation-delay: 7s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[31%] left-[65%] text-violet-200" style="animation-delay: 8s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[36%] left-[75%] text-purple-200" style="animation-delay: 9s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                    <path
-                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[34%] left-[85%] text-pink-200" style="animation-delay: 1s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[38%] left-[95%] text-indigo-200" style="animation-delay: 2s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                </svg>
-            </div>
-
-            <!-- Fila 4 -->
-            <div class="floating-icon absolute top-[50%] left-[8%] text-pink-200" style="animation-delay: 3.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                    <path
-                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[53%] left-[18%] text-rose-200" style="animation-delay: 4.5s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[48%] left-[28%] text-indigo-200" style="animation-delay: 5.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[52%] left-[38%] text-violet-200" style="animation-delay: 6.5s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[47%] left-[48%] text-purple-200" style="animation-delay: 7.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[54%] left-[58%] text-fuchsia-200" style="animation-delay: 8.5s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[49%] left-[68%] text-pink-200" style="animation-delay: 0.8s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[55%] left-[78%] text-rose-200" style="animation-delay: 1.8s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[51%] left-[88%] text-indigo-200" style="animation-delay: 2.8s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
-                    <path
-                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                </svg>
-            </div>
-
-            <!-- Fila 5 -->
-            <div class="floating-icon absolute top-[65%] left-[12%] text-violet-200" style="animation-delay: 3s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
-                    <path
-                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[68%] left-[22%] text-purple-200" style="animation-delay: 4s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[62%] left-[32%] text-pink-200" style="animation-delay: 5s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[70%] left-[42%] text-fuchsia-200" style="animation-delay: 6s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[64%] left-[52%] text-rose-200" style="animation-delay: 7s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[71%] left-[62%] text-indigo-200" style="animation-delay: 8s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[66%] left-[72%] text-violet-200" style="animation-delay: 0.3s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[73%] left-[82%] text-purple-200" style="animation-delay: 1.3s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                    <path
-                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[68%] left-[92%] text-pink-200" style="animation-delay: 2.3s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                </svg>
-            </div>
-
-            <!-- Fila 6 -->
-            <div class="floating-icon absolute top-[80%] left-[7%] text-fuchsia-200" style="animation-delay: 4.2s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 2C8.5 2 6 4.5 6 8c0 2.5 1.5 4 3 5.5S11 16 11 18c0 1.5-.5 2-1.5 2S8 19.5 8 18c0-.5.2-1 .5-1.3.3-.3.5-.7.5-1.2 0-1-.8-1.5-1.5-1.5S6 14.5 6 15.5c0 1.3.5 2.5 1.5 3.3.8.7 1.5 1.7 1.5 2.7 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-2-1-3.5-2.5-5C13.5 11.5 13 10.5 13 9c0-1.5 1-2.5 2-2.5s2 1 2 2.5c0 .5-.2 1-.5 1.3-.3.3-.5.7-.5 1.2 0 1 .8 1.5 1.5 1.5s1.5-.5 1.5-1.5c0-1.3-.5-2.5-1.5-3.3-.8-.7-1.5-1.7-1.5-2.7C17 4.5 14.5 2 12 2z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[83%] left-[17%] text-rose-200" style="animation-delay: 5.2s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[78%] left-[27%] text-violet-200" style="animation-delay: 6.2s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[85%] left-[37%] text-indigo-200" style="animation-delay: 7.2s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[81%] left-[47%] text-purple-200" style="animation-delay: 8.2s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[87%] left-[57%] text-pink-200" style="animation-delay: 0.6s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[82%] left-[67%] text-fuchsia-200" style="animation-delay: 1.6s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h6V3H9z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[88%] left-[77%] text-rose-200" style="animation-delay: 2.6s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
-                    <path
-                        d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[84%] left-[87%] text-violet-200" style="animation-delay: 3.6s;">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
-                    <path
-                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
-                </svg>
-            </div>
-            <div class="floating-icon absolute top-[90%] left-[95%] text-indigo-200" style="animation-delay: 4.6s;">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                </svg>
-            </div>
+            <div v-for="icon in backgroundIcons" :key="icon.id" class="floating-icon absolute" :class="icon.colorClass"
+                :style="{ top: icon.top, left: icon.left, animationDelay: icon.delay }" v-html="icon.svg" />
         </div>
-        <div class="p-6 space-y-6">
+
+        <!-- ── Main content ── -->
+        <div class="relative z-10 space-y-6">
+
             <!-- Header -->
             <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold text-gray-800">Audio Mixer</h2>
-                <p class="text-sm text-gray-400 mt-0.5">{{ colors.length }} familias de colores</p>
-            </div>
-
-            <!-- Search -->
-            <div class="relative">
-                <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-                </svg>
-                <input v-model="search" type="text" placeholder="Buscar color..." class="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl
-                 focus:ring-2 focus:ring-purple-400 focus:border-transparent
-                 outline-none w-48 bg-white" />
-            </div>
-        </div>
-
-        <!-- Color Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            <div v-for="item in filtered" :key="item.id" class="group bg-white border border-gray-100 rounded-2xl p-4
-               hover:border-gray-200 hover:shadow-sm transition-all duration-200 cursor-pointer"
-                @click="selectColor(item)" :class="{ 'ring-2 ring-offset-1': selected?.id === item.id }" :style="selected?.id === item.id
-                    ? { '--tw-ring-color': item.color[4] }
-                    : {}">
-                <!-- Color name + play button -->
-                <div class="flex items-center justify-betweenmb-3">
-                    <span class="text-sm font-medium text-gray-700 capitalize">{{ item.id }} </span>
-                    <button v-if="item.sound" @click.stop="playSound(item)" class="w-7 h-7 rounded-full flex items-center justify-center
-                   transition-all duration-150 hover:scale-110 active:scale-95"
-                        :style="{ background: item.color[4] + '22', color: item.color[6] }" title="Reproducir sonido">
-                        <svg v-if="playing !== item.id" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z" />
-                        </svg>
-                        <!-- Animación de audio -->
-                        <span v-else class="flex gap-px items-end h-3.5">
-                            <span v-for="n in 3" :key="n" class="w-0.5 rounded-full animate-bounce"
-                                :style="{ background: item.color[6], animationDelay: (n * 80) + 'ms', height: (8 + n * 2) + 'px' }" />
-                        </span>
-                    </button>
-                    <span v-else class="text-xs text-gray-300 italic">sin audio</span>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800">Audio Mixer</h2>
+                    <p class="text-sm text-gray-400 mt-0.5">{{ colors.length }} familias de colores</p>
                 </div>
-                <!-- Swatches strip -->
-                <div class="flex rounded-xl overflow-hidden gap-px">
-                    <div v-for="(hex, idx) in item.color" :key="idx"
-                        class="flex-1 h-10 transition-transform duration-150 hover:scale-y-110 cursor-default"
-                        :style="{ background: hex }" :title="hex"></div>
 
-                    <!--  Hex previw on hover -->
-                    <div class="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div class="w-4 h-4 rounded-full border border-gray-100 flex-shrink-0"
-                            :style="{ background: item.color[5] }"></div>
+                <!-- Search -->
+                <div class="relative">
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                    </svg>
+                    <input v-model="search" type="text" placeholder="Buscar color..." class="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl
+                   focus:ring-2 focus:ring-purple-400 focus:border-transparent
+                   outline-none w-48 bg-white" />
+                </div>
+            </div>
+
+            <!-- ── Panel de selecciones (solo si hay selecciones) ── -->
+            <div v-if="colorStore.hasSelections" class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-4">
+
+                <div class="flex items-center justify-between">
+                    <h4 class="text-sm font-medium text-gray-700">
+                        Colores seleccionados ({{ colorStore.selectionCount }})
+                    </h4>
+                    <button @click="colorStore.clearSelections()"
+                        class="text-xs text-red-500 hover:text-red-600 transition-colors">
+                        Limpiar todo
+                    </button>
+                </div>
+
+                <!-- Gradient visual -->
+                <div v-if="colorStore.selectedColors.length > 0" class="h-4 rounded-full w-full"
+                    :style="{ background: selectedColorsGradient }" />
+
+                <!-- Chips de colores seleccionados -->
+                <div class="flex flex-wrap gap-2">
+                    <div v-for="color in colorStore.selectedColors" :key="color.id"
+                        class="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-gray-200 shadow-sm">
+                        <div class="w-4 h-4 rounded-full" :style="{ background: color.color[5] }" />
+                        <span class="text-sm text-gray-700 capitalize">{{ color.id }}</span>
+                        <button @click="removeFromSelection(color.id)"
+                            class="text-gray-400 hover:text-red-500 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Controles de audio mixer -->
+                <div v-if="selectedColorsWithSound.length > 0"
+                    class="bg-white rounded-lg p-3 border border-gray-200 space-y-3">
+
+                    <!-- Fila: Play + Volumen -->
+                    <div class="flex items-center gap-3">
+                        <button @click="toggleMixerPlayback"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 flex-shrink-0"
+                            :class="isMixerPlaying
+                                ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                                : 'bg-purple-100 text-purple-600 hover:bg-purple-200'">
+                            <svg v-if="!isMixerPlaying" class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                            <svg v-else class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                            </svg>
+                        </button>
+
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs text-gray-600 font-medium">Mixer de Sonidos</span>
+                                <span class="text-xs text-gray-400">{{ Math.round(mixerVolume * 100) }}%</span>
+                            </div>
+                            <input type="range" v-model.number="mixerVolume" min="0" max="1" step="0.01"
+                                @input="updateMixerVolume"
+                                class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-500" />
+                        </div>
+                    </div>
+
+                    <!-- Equalizador Principal (sección independiente) -->
+                    <div class="pt-3 border-t border-gray-100">
+                        <p class="text-xs text-gray-600 font-medium mb-2">Equalizador</p>
+                        <div class="grid grid-cols-3 gap-2 mb-3">
+                            <!-- Bass -->
+                            <div class="bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs text-gray-500">Bass</span>
+                                    <span class="text-xs text-gray-400">{{ Math.round(equalizer.bass) }}%</span>
+                                </div>
+                                <input type="range" v-model.number="equalizer.bass" min="0" max="100" step="1"
+                                    @input="updateEqualizer"
+                                    class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500" />
+                            </div>
+                            <!-- Stereo -->
+                            <div class="bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs text-gray-500">Stereo</span>
+                                    <span class="text-xs text-gray-400">{{ Math.round(equalizer.stereo) }}%</span>
+                                </div>
+                                <input type="range" v-model.number="equalizer.stereo" min="0" max="100" step="1"
+                                    @input="updateEqualizer"
+                                    class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-500" />
+                            </div>
+                            <!-- Sound -->
+                            <div class="bg-gray-50 rounded-lg p-2">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-xs text-gray-500">Sound</span>
+                                    <span class="text-xs text-gray-400">{{ Math.round(equalizer.sound) }}%</span>
+                                </div>
+                                <input type="range" v-model.number="equalizer.sound" min="0" max="100" step="1"
+                                    @input="updateEqualizer"
+                                    class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500" />
+                            </div>
+                        </div>
+
+                        <!-- Barras de frecuencia -->
+                        <div class="flex items-end justify-center gap-4 h-32 bg-gray-50 rounded-lg p-3">
+                            <div v-for="band in frequencyBands" :key="band.key"
+                                class="flex flex-col items-center gap-1">
+                                <div class="relative h-20 w-8 bg-gray-200 rounded-full overflow-hidden">
+                                    <input type="range" v-model.number="frequencies[band.key]" min="-12" max="12"
+                                        step="0.5" @input="updateFrequencies"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        style="writing-mode: vertical-lr; direction: rtl;" />
+                                    <div class="absolute bottom-0 left-0 right-0 transition-all duration-150"
+                                        :class="band.barClass"
+                                        :style="{ height: getFrequencyHeight(frequencies[band.key] || 0) }" />
+                                </div>
+                                <span class="text-xs text-gray-500">{{ band.label }}</span>
+                                <span class="text-xs text-gray-400">{{ frequencies[band.key] }}dB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de sonidos incluidos -->
+                    <div class="pt-3 border-t border-gray-100">
+                        <p class="text-xs text-gray-500 mb-2">Sonidos incluidos:</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span v-for="color in selectedColorsWithSound" :key="color.id"
+                                class="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">
+                                <div class="w-2 h-2 rounded-full" :style="{ background: color.color[5] }" />
+                                {{ color.id }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Panel de detalle -->
+            <!-- ── Color Grid (siempre visible) ── -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div v-for="item in filtered" :key="item.id" class="group bg-white border border-gray-100 rounded-2xl p-4
+                 hover:border-gray-200 hover:shadow-sm transition-all duration-200 cursor-pointer"
+                    @click="selectColor(item)" :class="{ 'ring-2 ring-offset-1': selected?.id === item.id }"
+                    :style="selected?.id === item.id ? { '--tw-ring-color': item.color[4] } : {}">
+                    <!-- Nombre + botón de audio -->
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm font-medium text-gray-700 capitalize">{{ item.id }}</span>
+                        <button v-if="item.sound && item.sound.length > 0" @click.stop="playSound(item)" class="w-7 h-7 rounded-full flex items-center justify-center
+                     transition-all duration-150 hover:scale-110 active:scale-95"
+                            :style="{ background: item.color[4] + '22', color: item.color[6] }"
+                            title="Reproducir sonido">
+                            <svg v-if="playing !== item.id" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                            <span v-else class="flex gap-px items-end h-3.5">
+                                <span v-for="n in 3" :key="n" class="w-0.5 rounded-full animate-bounce"
+                                    :style="{ background: item.color[6], animationDelay: (n * 80) + 'ms', height: (8 + n * 2) + 'px' }" />
+                            </span>
+                        </button>
+                        <span v-else class="text-xs text-gray-300 italic">sin audio</span>
+                    </div>
+
+                    <!-- Swatches strip -->
+                    <div class="flex rounded-xl overflow-hidden gap-px">
+                        <div v-for="(hex, idx) in item.color" :key="idx"
+                            class="flex-1 h-10 transition-transform duration-150 hover:scale-y-110 cursor-default"
+                            :style="{ background: hex }" :title="hex" />
+                    </div>
+
+                    <!-- Hex del tono 500 en hover -->
+                    <div class="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="w-4 h-4 rounded-full border border-gray-100"
+                            :style="{ background: item.color[5] }" />
+                        <span class="text-xs text-gray-400 font-mono">{{ item.color[5] }}</span>
+                    </div>
+
+                    <!-- Botón agregar / quitar de la selección -->
+                    <button @click.stop="toggleColorSelection(item)"
+                        class="mt-3 w-full px-3 py-1.5 text-sm rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                        :class="colorStore.isColorSelected(item.id)
+                            ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                            : 'bg-purple-50 text-purple-600 hover:bg-purple-100'">
+                        <svg v-if="colorStore.isColorSelected(item.id)" class="w-4 h-4" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        {{ colorStore.isColorSelected(item.id) ? 'Quitar selección' : 'Agregar a selección' }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── Panel de detalle del color seleccionado (fuera del v-for) ── -->
             <Transition enter-active-class="transition-all duration-300" enter-from-class="opacity-0 translate-y-2"
                 leave-active-class="transition-all duration-200" leave-to-class="opacity-0 translate-y-2">
-                <div v-if="selected" class="bg-white w-full border border-gray-100 rounded-2xl p-6 shadow-sm">
+                <div v-if="selected" class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center justify-between mb-5">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-lg" :style="{ background: selected.color[5] }" />
@@ -433,10 +243,9 @@
                             <div class="text-center mt-1">
                                 <span class="text-xs text-gray-400">{{ shadeLabel(idx) }}</span>
                             </div>
-                            <!-- Tooltip de hex -->
                             <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white
-                     text-xs rounded px-2 py-1 whitespace-nowrap pointer-events-none
-                     opacity-0 group-hover/swatch:opacity-100 transition-opacity z-10">
+                          text-xs rounded px-2 py-1 whitespace-nowrap pointer-events-none
+                          opacity-0 group-hover/swatch:opacity-100 transition-opacity z-10">
                                 {{ hex }}
                             </div>
                         </div>
@@ -452,24 +261,27 @@
                     </Transition>
                 </div>
             </Transition>
+
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
+import { useColorSelectionStore } from '../../core/audioMixer/presentation/store/colorSelectionStore'
 
 interface Color {
-    id: string;
-    color: string[];
-    sound?: string[];
+    id: string
+    color: string[]
+    sound?: string[]
 }
 
+// ── Data ──────────────────────────────────────────────────────────────────────
 const colors = ref<Color[]>([
     { id: 'yellow', color: ['#FEFCE8', '#FEF9C3', '#FEF08A', '#FDE047', '#FACC15', '#EAB308', '#CA8A04', '#A16207', '#854D0E', '#713F12', '#422006'], sound: ['/sounds/yellow.mp3'] },
     { id: 'amber', color: ['#FFFBEB', '#FEF3C7', '#FDE68A', '#FCD34D', '#FBBF24', '#F59E0B', '#D97706', '#B45309', '#92400E', '#78350F', '#451A03'], sound: ['/sounds/amber.mp3'] },
     { id: 'green', color: ['#F0FDF4', '#DCFCE7', '#BBF7D0', '#86EFAC', '#4ADE80', '#22C55E', '#16A34A', '#15803D', '#166534', '#14532D', '#052E16'], sound: ['/sounds/green.mp3'] },
-    { id: 'emeral   d', color: ['#ECFDF5', '#D1FAE5', '#A7F3D0', '#6EE7B7', '#34D399', '#10B981', '#059669', '#047857', '#065F46', '#064E3B', '#022C22'], sound: ['/sounds/emerald.mp3'] },
+    { id: 'emerald', color: ['#ECFDF5', '#D1FAE5', '#A7F3D0', '#6EE7B7', '#34D399', '#10B981', '#059669', '#047857', '#065F46', '#064E3B', '#022C22'], sound: ['/sounds/emerald.mp3'] },
     { id: 'lime', color: ['#F7FEE7', '#ECFCCB', '#D9F99D', '#BEF264', '#A3E635', '#84CC16', '#65A30D', '#4D7C0F', '#7F6212', '#365314', '#1A2E05'], sound: [] },
     { id: 'red', color: ['#FEF2F2', '#FEE2E2', '#FECACA', '#FCA5A5', '#F87171', '#EF4444', '#DC2626', '#B91C1C', '#991B1B', '#7F1D1D', '#450A0A'], sound: ['/sounds/red.mp3'] },
     { id: 'orange', color: ['#FFF7ED', '#FFEDD5', '#FED7AA', '#FDBA74', '#FB923C', '#F97316', '#EA580C', '#C2410C', '#9A3412', '#7C2D12', '#431407'], sound: ['/sounds/orange.mp3'] },
@@ -481,50 +293,202 @@ const colors = ref<Color[]>([
     { id: 'fuchsia', color: ['#FDF4FF', '#FAE8FF', '#F5D0FE', '#F0ABFC', '#E879F9', '#D946EF', '#C026D3', '#A21CAF', '#86198F', '#701A75', '#4A044E'], sound: ['/sounds/fuchsia.mp3'] },
     { id: 'purple', color: ['#F5F3FF', '#EDE9FE', '#DDD6FE', '#C4B5FD', '#A78BFA', '#8B5CF6', '#7C3AED', '#6D28D9', '#5B21B6', '#4C1D95', '#370764'], sound: ['/sounds/purple.mp3'] },
     { id: 'indigo', color: ['#EEF2FF', '#E0E7FF', '#C7D2FE', '#A5B4FC', '#818CF8', '#6366F1', '#4F46E5', '#4338CA', '#3730A3', '#312E81', '#1E1B4B'], sound: ['/sounds/indigo.mp3'] },
-    { id: 'violet', color: ['#F5F3FF', '#EDE9FE', '#DDD6FE', '#C4B5FD', '#A78BFA', '#8B5CF6', '#7C3AED', '#6D28D9', '#5B21B6', '#4C1D95', '#2E1065'], sound: ['/sounds/violet.mp3'] }
-]);
+    { id: 'violet', color: ['#F5F3FF', '#EDE9FE', '#DDD6FE', '#C4B5FD', '#A78BFA', '#8B5CF6', '#7C3AED', '#6D28D9', '#5B21B6', '#4C1D95', '#2E1065'], sound: ['/sounds/violet.mp3'] },
+])
+
+// ── Background icons (generados en script, sin hardcodear 60 divs en el template) ──
+const ICON_SVGS = [
+    `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`,
+    `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
+    `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`,
+    `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`,
+    `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>`,
+]
+const ICON_COLORS = ['text-purple-200', 'text-pink-200', 'text-indigo-200', 'text-violet-200', 'text-fuchsia-200', 'text-rose-200']
+
+const backgroundIcons = Array.from({ length: 60 }, (_, i) => ({
+    id: i,
+    svg: ICON_SVGS[i % ICON_SVGS.length],
+    colorClass: ICON_COLORS[i % ICON_COLORS.length],
+    top: `${5 + (Math.floor(i / 10) * 15 + (i % 3) * 2)}%`,
+    left: `${(i % 10) * 10 + (i % 3)}%`,
+    delay: `${(i * 0.9) % 10}s`,
+}))
+
+// ── Frequency bands config ────────────────────────────────────────────────────
+const frequencyBands = [
+    { key: 'hz60', label: '60Hz', barClass: 'bg-gradient-to-t from-blue-600 to-blue-400' },
+    { key: 'hz230', label: '230Hz', barClass: 'bg-gradient-to-t from-green-600 to-green-400' },
+    { key: 'hz910', label: '910Hz', barClass: 'bg-gradient-to-t from-yellow-600 to-yellow-400' },
+    { key: 'hz3600', label: '3.6k', barClass: 'bg-gradient-to-t from-orange-600 to-orange-400' },
+    { key: 'hz14000', label: '14k', barClass: 'bg-gradient-to-t from-purple-600 to-purple-400' },
+] as const
+
+// ── State ─────────────────────────────────────────────────────────────────────
 const SHADE_LABELS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
-const shadeLabel = (idx: number) => SHADE_LABELS[idx] ?? idx
+const shadeLabel = (idx: number) => SHADE_LABELS[idx] ?? String(idx)
 
 const search = ref('')
 const selected = ref<Color | null>(null)
 const playing = ref<string | null>(null)
 const copied = ref<string | null>(null)
 
+const colorStore = useColorSelectionStore()
+
+const isMixerPlaying = ref(false)
+const mixerVolume = ref(0.5)
+const activeAudioElements = ref<HTMLAudioElement[]>([])
+const audioContext = ref<AudioContext | null>(null)
+const audioSources = ref<MediaElementAudioSourceNode[]>([])
+const equalizerFilters = ref<BiquadFilterNode[]>([])
+
+const equalizer = ref({ bass: 50, stereo: 50, sound: 50 })
+const frequencies = ref<Record<string, number>>({
+    hz60: 0, hz230: 0, hz910: 0, hz3600: 0, hz14000: 0,
+})
+
+// ── Computed ──────────────────────────────────────────────────────────────────
 const filtered = computed(() =>
     search.value.trim()
         ? colors.value.filter(c => c.id.includes(search.value.toLowerCase()))
         : colors.value
 )
 
+const selectedColorsWithSound = computed(() =>
+    colorStore.selectedColors.filter(c => c.sound && c.sound.length > 0)
+)
+
+const selectedColorsGradient = computed(() => {
+    const selected = colorStore.selectedColors
+    if (selected.length === 0) return ''
+    const stops = selected.map(c => c.color[5])
+    return stops.length === 1 ? stops[0] : `linear-gradient(to right, ${stops.join(', ')})`
+})
+
+// ── Methods ───────────────────────────────────────────────────────────────────
 function selectColor(item: Color) {
     selected.value = selected.value?.id === item.id ? null : item
     copied.value = null
 }
 
+function toggleColorSelection(item: Color) {
+    colorStore.toggleColor(item)
+}
+
+function removeFromSelection(colorId: string) {
+    colorStore.removeColor(colorId)
+}
+
 function playSound(item: Color) {
-    if (!item.sound) return
+    if (!item.sound || item.sound.length === 0) return
     playing.value = item.id
-    const audio = new Audio(item.sound)
+    const audio = new Audio(item.sound[0])
     audio.play().catch(() => { })
     audio.onended = () => { playing.value = null }
     setTimeout(() => { playing.value = null }, 4000)
 }
 
 async function copyHex(hex: string) {
-    try {
-        await navigator.clipboard.writeText(hex)
-        copied.value = hex
-        setTimeout(() => { copied.value = null }, 2000)
-    } catch {
-        copied.value = hex
-        setTimeout(() => { copied.value = null }, 2000)
+    try { await navigator.clipboard.writeText(hex) } catch { /* fallback silent */ }
+    copied.value = hex
+    setTimeout(() => { copied.value = null }, 2000)
+}
+
+function toggleMixerPlayback() {
+    isMixerPlaying.value ? pauseMixer() : playMixer()
+}
+
+function playMixer() {
+    pauseMixer()
+    const sounds = selectedColorsWithSound.value
+    if (sounds.length === 0) return
+
+    isMixerPlaying.value = true
+
+    if (!audioContext.value) {
+        audioContext.value = new (window.AudioContext || (window as any).webkitAudioContext)()
     }
+
+    createEqualizerFilters()
+
+    sounds.forEach(color => {
+        const audio = new Audio(color.sound![0])
+        audio.volume = mixerVolume.value
+        audio.loop = true
+        activeAudioElements.value.push(audio)
+
+        if (audioContext.value) {
+            const source = audioContext.value.createMediaElementSource(audio)
+            audioSources.value.push(source)
+            connectEqualizerChain(source)
+        }
+
+        audio.play().catch(() => { })
+    })
+}
+
+function pauseMixer() {
+    activeAudioElements.value.forEach(a => { a.pause(); a.currentTime = 0 })
+    activeAudioElements.value = []
+    audioSources.value = []
+    equalizerFilters.value = []
+    isMixerPlaying.value = false
+}
+
+function createEqualizerFilters() {
+    if (!audioContext.value) return
+    equalizerFilters.value = [60, 230, 910, 3600, 14000].map(freq => {
+        const f = audioContext.value!.createBiquadFilter()
+        f.type = 'peaking'
+        f.frequency.value = freq
+        f.Q.value = 1
+        f.gain.value = 0
+        return f
+    })
+}
+
+function connectEqualizerChain(source: MediaElementAudioSourceNode) {
+    if (!audioContext.value) return
+    if (equalizerFilters.value.length === 0) {
+        source.connect(audioContext.value.destination)
+        return
+    }
+    let prev: AudioNode = source
+    equalizerFilters.value.forEach(f => { prev.connect(f); prev = f })
+    prev.connect(audioContext.value.destination)
+}
+
+function updateMixerVolume() {
+    activeAudioElements.value.forEach(a => { a.volume = mixerVolume.value })
+}
+
+function updateEqualizer() {
+    const f = equalizerFilters.value
+    if (f.length < 5) return
+    f[0]!.gain.value = (equalizer.value?.bass || 50 - 50) / 5
+    f[1]!.gain.value = (equalizer.value?.bass || 50 - 50) / 8
+    f[2]!.gain.value = (equalizer.value?.stereo || 50 - 50) / 5
+    f[3]!.gain.value = (equalizer.value?.stereo || 50 - 50) / 8
+    f[4]!.gain.value = (equalizer.value?.sound || 50 - 50) / 5
+}
+
+function updateFrequencies() {
+    const f = equalizerFilters.value
+    if (f.length < 5) return
+    f[0]!.gain.value = frequencies.value?.hz60 || 0
+    f[1]!.gain.value = frequencies.value?.hz230 || 0
+    f[2]!.gain.value = frequencies.value?.hz910 || 0
+    f[3]!.gain.value = frequencies.value?.hz3600 || 0
+    f[4]!.gain.value = frequencies.value?.hz14000 || 0
+}
+
+function getFrequencyHeight(value: number): string {
+    const pct = ((value + 12) / 24) * 100
+    return `${Math.max(5, Math.min(95, pct))}%`
 }
 </script>
 
 <style scoped>
-/* Animación de flotación suave para los íconos de fondo */
 .floating-icon {
     animation: float 20s ease-in-out infinite;
 }
