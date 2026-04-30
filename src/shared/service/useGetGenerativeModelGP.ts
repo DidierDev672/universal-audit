@@ -1,9 +1,14 @@
-import { useGenAI } from "./useGenAi";
+import { GoogleGenAI } from "@google/genai";
 
-export const useGetGenerativeModelGP = async (prompt: string) => {
-    const model = await useGenAI();
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    return text;
+
+export const useGetGenerativeModelGP = async (prompt: string) => {   
+    const ai = new GoogleGenAI({
+    apiKey: "AIzaSyApTMmcWmy6FqUKDNIfYUOLJQwyXP9xlQw"
+});
+    const result = await ai.models.generateContent({
+        model: 'gemini-3-flash-preview',
+        contents: prompt
+    });
+    const response = result.text;
+    return response;
 }

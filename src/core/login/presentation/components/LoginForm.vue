@@ -459,7 +459,7 @@ const handleSubmit = async () => {
         headers: {
           "Content-Type": "application/json"
         },
-        timeout: 10000
+        timeout: 30000
       }
     );
 
@@ -490,21 +490,32 @@ const handleSubmit = async () => {
           console.error("Error al redirigir:", error);
         });
     }
-  } catch (error: any) {
+  } catch (err: unknown) {
+    // Normalizar el error a un objeto con propiedades seguras
+    const error = err instanceof Error ? err : new Error(String(err));
+
     // Debug: Mostrar detalles del error en consola
-    console.error("Error en login:", error);
-    console.error("Response status:", error.response?.status);
-    console.error("Response data:", error.response?.data);
+    console.error("Error en login:", error.message);
+    console.error("Error stack:", error.stack);
+
+    // Manejar errores de Axios de forma segura
+    const axiosError = err as any;
+    if (axiosError.response) {
+      console.error("Response status:", axiosError.response.status);
+      console.error("Response data:", axiosError.response.data);
+    }
     console.error("Request payload:", { email: form.value.email, password: "***" });
 
     // Flujo de error
-    if (error.response?.status === 401) {
+    if (axiosError.code === "ECONNABORTED" || axiosError.code === "ETIMEDOUT" || error.message?.includes("timeout")) {
+      errorMessage.value = "El servidor está tardando demasiado en responder. Verifica que el servidor esté corriendo en http://localhost:3000";
+    } else if (axiosError.response?.status === 401) {
       // Mostrar mensaje específico del servidor si existe, o mensaje genérico
-      const serverMessage = error.response?.data?.message || error.response?.data?.error;
+      const serverMessage = axiosError.response?.data?.message || axiosError.response?.data?.error;
       errorMessage.value = serverMessage || "Credenciales incorrectas. Por favor verifica tu correo y contraseña.";
-    } else if (error.response?.data?.message) {
-      errorMessage.value = error.response.data.message;
-    } else if (error.code === "ERR_NETWORK") {
+    } else if (axiosError.response?.data?.message) {
+      errorMessage.value = axiosError.response.data.message;
+    } else if (axiosError.code === "ERR_NETWORK") {
       errorMessage.value = "No se pudo conectar con el servidor. Verifica que el servidor esté corriendo en http://localhost:3000";
     } else {
       errorMessage.value = "Error al iniciar sesión. Por favor intenta nuevamente.";

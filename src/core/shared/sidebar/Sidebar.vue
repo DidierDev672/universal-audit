@@ -303,7 +303,7 @@
             </div>
 
             <div class="flex-1 text-left">
-              <span class="font-semibold block">Mezclador de audio</span>
+              <span class="font-semibold block">Mezclador de audio (Alfa)</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'audio-mixer' ? 'text-white/80' : 'text-gray-500'
