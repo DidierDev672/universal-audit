@@ -156,13 +156,17 @@
                   d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
               </svg>
             </div>
-            <h3 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              Mis Notas
-            </h3>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Mis Notas ({{ MyNotes.length }})
+              </h3>
+            </div>
+
+            <p v-if="saveError" class="text-xs text-red-500 mb-3 bg-red-50 p-2 rounded-lg">{{ saveError }}</p>
 
             <div v-if="MyNotes.length === 0" class="text-center py-8 text-gray-400">
               <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,19 +176,102 @@
               <p class="text-sm">Selecciona texto para crear notas</p>
             </div>
 
-            <div v-else class="space-y-3">
-              <div v-for="note in MyNotes" :key="note.id" @click="openNoteDetail(note)"
-                class="border border-gray-200 rounded-xl p-3 hover:border-indigo-300 transition-colors cursor-pointer group"
+            <div v-else class="relative">
+              <!-- Iconos de investigación cientifica/médica en el fondo -->
+              <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+                <!-- Microscopio -->
+                <svg class="sci-icon" style="width:28px;top:4%;left:8%;animation-delay:0s;animation-duration:16s"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 3h6l1 4H8L9 3zM7 7v2a5 5 0 005 5 5 5 0 005-5V7M12 14v4m-4 2h8" />
+                </svg>
+                <!-- ADN / doble hélice -->
+                <svg class="sci-icon" style="width:22px;top:15%;left:82%;animation-delay:-5s;animation-duration:20s"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M7 3c0 4 10 4 10 8S7 15 7 19M17 3c0 4-10 4-10 8s10 4 10 8M10 6h4M10 18h4" />
+                </svg>
+
+                <!-- Átomo -->
+                <svg class="sci-icon" style="width:32px;top:30%;left:5%;animation-delay:-3s;animation-duration:24s"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
+                  <circle cx="12" cy="12" r="1.5" />
+                  <ellipse cx="12" cy="12" rx="10" ry="4" />
+                  <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)" />
+                  <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)" />
+                </svg>
+
+                <!-- Frasco / beaker -->
+                <svg class="sci-icon" style="width:20px;top:45%;left:88%;animation-delay:-8s;animation-duration:18s"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 3h6m-5 0v6l-4 9a1 1 0 001 1h10a1 1 0 001-1l-4-9V3m-5 9h6" />
+                </svg>
+
+                <!-- Corazón médico / pulso -->
+                <svg class="sci-icon" style="width:24px;top:58%;left:14%;animation-delay:-11s;animation-duration:14s"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h3l2-6 4 12 3-9 2 3h4" />
+                </svg>
+
+                <!-- Molécula -->
+                <svg class="sci-icon" style="width:26px;top:72%;left:75%;animation-delay:-2s;animation-duration:22s"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
+                  <circle cx="12" cy="12" r="2" />
+                  <circle cx="5" cy="7" r="1.5" />
+                  <circle cx="19" cy="7" r="1.5" />
+                  <circle cx="5" cy="17" r="1.5" />
+                  <circle cx="19" cy="17" r="1.5" />
+                  <line x1="12" y1="10" x2="6" y2="8" />
+                  <line x1="12" y1="10" x2="18" y2="8" />
+                  <line x1="12" y1="14" x2="6" y2="16" />
+                  <line x1="12" y1="14" x2="18" y2="16" />
+                </svg>
+
+                <!-- Cruz médica -->
+                <svg class="sci-icon" style="width:18px;top:85%;left:35%;animation-delay:-6s;animation-duration:19s"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />
+                  <rect x="8" y="8" width="8" height="8" rx="1" />
+                </svg>
+
+                <!-- Portapapeles / documento de investigación -->
+                <svg class="sci-icon" style="width:20px;top:92%;left:70%;animation-delay:-9s;animation-duration:15s"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 12h6m-6 4h4" />
+                </svg>
+              </div>
+              <div v-for="note in MyNotes" :key="note.id"
+                class="border border-gray-200 rounded-xl p-3 hover:border-indigo-300 transition-colors group"
                 :class="getHighlightColor(note.color)">
                 <p class="text-xs text-gray-500 mb-1 font-medium">Texto seleccionado:</p>
-                <p class="text-sm text-gray-700 italic mb-2 line-clamp-2">"{{ note.text }}"</p>
+                <p class="text-sm text-gray-700 italic mb-2 line-clamp-2 cursor-pointer" @click="openNoteDetail(note)">
+                  "{{ note.text }}"</p>
                 <div class="flex justify-between items-center mt-2">
-                  <span class="text-xs text-gray-400">{{ new Date(note.startOffset).toLocaleDateString('es-ES')
-                  }}</span>
-                  <button @click.stop="deleteNote(note.id)"
-                    class="text-xs text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity">
-                    Eliminar
-                  </button>
+                  <span class="text-xs text-gray-400">{{ new Date(note.startOffset ||
+                    note.startOffset).toLocaleDateString('es-ES') || 'Fecha no disponible'
+                    }}</span>
+                  <div class="flex items-center gap-2">
+                    <button @click.stop="saveSingleNote(note)" :disabled="savingNoteId === note.id"
+                      class="text-xs text-indigo-500 hover:text-indigo-700 disabled:opacity-50 transition-opacity flex items-center gap-1">
+                      <svg v-if="savingNoteId !== note.id" class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                      </svg>
+                      <svg v-else class="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      {{ savingNoteId === note.id ? 'Guardando...' : 'Guardar' }}
+                    </button>
+                    <button @click.stop="deleteNote(note.id)"
+                      class="text-xs text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity">
+                      Eliminar
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -322,9 +409,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick, watch, h } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import MarkdownIt from 'markdown-it';
-import { useHighlightsStore, type Note } from '../../core/research/presentation/store/highlightsStore';
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import { useHighlightsStore } from '../../core/research/presentation/store/highlightsStore';
 
 interface HighlightColor {
   name: string;
@@ -352,7 +441,7 @@ const props = defineProps<{
   isOpen: boolean;
   investigacion: {
     id: number;
-    id_resource: number;
+    id_resource: number | string;
     content_resource: string;
     created_at?: string;
   } | null;
@@ -390,6 +479,7 @@ const selectedModalColor = ref<HighlightColor | null>(null);
 const modalNoteContent = ref('');
 
 const MyNotes = ref<NoteHighlight[]>([]);
+const isLoadingNotes = ref(false);
 
 // Modal para ver detalle de nota
 const showNoteDetailModal = ref(false);
@@ -397,6 +487,114 @@ const selectedNoteForDetail = ref<NoteHighlight | null>(null);
 
 // Edición de notas
 const noteEdits = ref<Record<string, string>>({});
+
+// Guardar notas en backend
+const isSavingNotes = ref(false);
+const savingNoteId = ref<string | null>(null);
+const saveError = ref<string | null>(null);
+
+const saveSingleNote = async (note: NoteHighlight) => {
+  if (!props.investigacion?.id_resource) return;
+
+  savingNoteId.value = note.id;
+  saveError.value = null;
+
+  try {
+    const researchId = props.investigacion.id_resource;
+    const notePayload = {
+      id: uuidv4(),
+      research_id: researchId,
+      id_note: String(uuidv4()),
+      text: note.text,
+      color: note.color,
+      color_name: note.color.replace('bg-', '').replace('-200', '').replace('-100', ''),
+      startOffset: note.startOffset,
+      endOffset: note.endOffset
+    };
+
+    console.log('[SaveSingleNote] Payload:', notePayload);
+    const response = await axios.post('http://localhost:3000/api/v1/research-notes', notePayload);
+    console.log('[SaveSingleNote] Note saved:', response.data);
+  } catch (error: any) {
+    console.error('[SaveSingleNote] Error:', error);
+    const errorMsg = error.response?.data?.message || error.response?.data?.error || error.message;
+    saveError.value = `Error ${error.response?.status}: ${errorMsg}`;
+    alert('Error al guardar la nota: ' + errorMsg);
+  } finally {
+    savingNoteId.value = null;
+  }
+};
+
+const fetchExistingNotes = async () => {
+  if (!props.investigacion?.id_resource) return;
+
+  isLoadingNotes.value = true;
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/api/v1/research-notes/research/${props.investigacion.id_resource}`
+    );
+
+    if (response.data && Array.isArray(response.data)) {
+      const existingNotes = response.data.map((note: any) => ({
+        id: note.idNote || note.id,
+        text: note.text,
+        startOffset: note.createdAt,
+        endOffset: note.updatedAt,
+        color: note.color
+      }));
+
+      MyNotes.value = existingNotes;
+    }
+  } catch (error: any) {
+    console.error('[FetchNotes] Error fetching notes:', error);
+    if (error.response?.status !== 404) {
+      console.warn('[FetchNotes] Could not load existing notes');
+    }
+  } finally {
+    isLoadingNotes.value = false;
+  }
+};
+
+const saveNotesToBackend = async () => {
+  if (MyNotes.value.length === 0) {
+    alert('No hay notas para guardar');
+    return;
+  }
+
+  isSavingNotes.value = true;
+  saveError.value = null;
+
+  try {
+    const notesPayload = MyNotes.value.map(note => ({
+      id: props.investigacion?.id_resource || '',
+      research_id: props.investigacion?.id_resource || '',
+      id_note: note.id,
+      text: note.text,
+      color: note.color,
+      color_name: note.color.replace('bg-', '').replace('-200', '').replace('-100', ''),
+      startOffset: note.startOffset,
+      endOffset: note.endOffset
+    }));
+
+    // Enviar cada nota individualmente
+    for (const note of notesPayload) {
+      console.log('[SaveNotes] Sending note:', JSON.stringify(note, null, 2));
+      const response = await axios.post('http://localhost:3000/api/v1/research-notes', note);
+      console.log('[SaveNotes] Note saved:', response.data);
+    }
+    alert('Notas guardadas exitosamente');
+  } catch (error: any) {
+    console.error('[SaveNotes] Error:', error);
+    console.error('[SaveNotes] Error response data:', error.response?.data);
+    console.error('[SaveNotes] Error response status:', error.response?.status);
+    console.error('[SaveNotes] Error response headers:', error.response?.headers);
+    const errorMsg = error.response?.data?.message || error.response?.data?.error || JSON.stringify(error.response?.data) || error.message;
+    saveError.value = `Error ${error.response?.status}: ${errorMsg}`;
+    alert('Error al guardar las notas: ' + errorMsg);
+  } finally {
+    isSavingNotes.value = false;
+  }
+};
 
 // Computed
 const renderedContent = computed(() => {
@@ -412,7 +610,7 @@ const currentHighlights = computed(() => {
 });
 const currentNotes = computed(() => {
   const notes = highlightsStore.currentNotes;
-  console.log('[currentNotes]', notes.length, 'notes for investigacion', props.investigacion?.id, 'currentId in store:', highlightsStore.currentInvestigacionId);
+  fetchExistingNotes();
   return notes;
 });
 
@@ -429,6 +627,7 @@ watch(() => props.investigacion, (newInv) => {
 
 watch(() => props.isOpen, (isOpen) => {
   if (isOpen && props.investigacion?.id) {
+    fetchExistingNotes();
     nextTick(() => {
       applyHighlightsToDOM();
     });
@@ -455,7 +654,7 @@ const initializeNoteEdits = () => {
 const getHighlightColor = (highlightId?: string) => {
   if (highlightId == '' || highlightId == null) return '';
   const highlight = highlightsStore.highlights.find(h => h.color === highlightId);
-  if (!highlight) return '';
+  //if (!highlight) return '';
 
   const colorMap: Record<string, string> = {
     'bg-yellow-200': 'bg-yellow-50 border-yellow-300',
@@ -466,7 +665,7 @@ const getHighlightColor = (highlightId?: string) => {
     'bg-orange-200': 'bg-orange-50 border-orange-300'
   };
 
-  return colorMap[highlight.color] || 'bg-gray-50 border-gray-300';
+  return colorMap[highlight?.color ?? `${highlightId}`] || 'bg-gray-50 border-gray-300';
 };
 
 const handleTextSelection = () => {
@@ -810,8 +1009,10 @@ const createNoteFromModal = () => {
       endOffset: calculateOffset(range) + selectedText.value.length
     });
 
+    console.log('[CreateNoteFromModal] Highlight created:', highlight);
+
     MyNotes.value.push({
-      id: highlight.id,
+      id: String(props.investigacion?.id_resource),
       text: selectedText.value,
       startOffset: highlight.startOffset,
       endOffset: highlight.endOffset,
@@ -978,5 +1179,34 @@ export default {
   color: #6366f1;
   animation: float-drift 8s ease-in-out infinite;
   opacity: 0.07;
+}
+
+@keyframes sci-float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.05;
+  }
+
+  30% {
+    transform: translateY(-10px) rotate(6deg);
+    opacity: 0.09;
+  }
+
+  60% {
+    transform: translateY(-5px) rotate(-4deg);
+    opacity: 0.07;
+  }
+
+  100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.05;
+  }
+}
+
+.sci-icon {
+  position: absolute;
+  color: #6366f1;
+  animation: sci-float ease-in-out infinite;
+  opacity: 0.06;
 }
 </style>
