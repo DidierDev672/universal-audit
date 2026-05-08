@@ -151,6 +151,9 @@ const editingNoteContent = ref<string>('')
 const isEditingNote = ref<boolean>(false)
 const isDeletingNote = ref<string | number | null>(null)
 
+// Estado para fondo de iconos
+const backgroundIcons = ref<Array<{ id: number, icon: string, color: string, x: number, y: number, size: number, rotation: number }>>([])
+
 // Estado para agregar contexto a notas
 const addingContextToNoteId = ref<string | number | null>(null)
 const contextContent = ref<string>('')
@@ -922,15 +925,91 @@ const getSeverityLevel = (score: number): { label: string; color: string } => {
   return { label: 'Muy Severo', color: 'bg-red-100 text-red-700' };
 };
 
+// Iconos para el fondo
+const musicIcons = [
+  '🎵', // Nota musical
+  '♪',   // Corchea
+  '♫',   // Doble corchea
+  '🎧',   // Auriculares
+  '🔊',   // Parlante
+  '🎼',   // Clave de sol
+  '🎚️',   // Ecualizador
+  '💿',   // Disco de vinilo
+  '🎤',   // Micrófono
+  '🎶',   // Pentagrama musical
+  '👂',   // Oído
+  '🧠',   // Percepción
+  '👂🏻',  // Audición sana
+  '🛡️',   // Protección
+  '📊',   // Audigrama
+  '⚠️',   // Alerta auditiva
+  '🦻',   // Audífono
+  '🔬',   // Test auditivo
+  '🤫',   // Sin ruido
+  '😌',   // Bienestar
+  '〰️',   // Frecuencia
+];
+
+const iconColors = [
+  '#D97706',
+  '#FBBF24',
+  '#D6D3D1',
+  '#FB7185',
+  '#1E3A5F',
+  '#064E3B',
+  '#059669',
+  '#D1FAE5',
+  '#1E293B',
+  '#64748B',
+  '#374151',
+  '#9CA3AF'
+];
+
+// Generar posición aleatoria para iconos
+const generateRandomIcons = () => {
+  const icons = [];
+  const numberOfIcons = 25; // Número de iconos en el fondo
+
+  for (let i = 0; i < numberOfIcons; i++) {
+    icons.push({
+      id: i,
+      icon: musicIcons[Math.floor(Math.random() * musicIcons.length)],
+      color: iconColors[Math.floor(Math.random() * iconColors.length)],
+      x: Math.random() * 100, // Posición X en porcentaje
+      y: Math.random() * 100, // Posición Y en porcentaje
+      size: Math.random() * 20 + 12, // Tamaño entre 12px y 32px
+      rotation: Math.random() * 360 - 180 // Rotación aleatoria
+    });
+  }
+
+  backgroundIcons.value = icons;
+};
+
 onMounted(() => {
   loadResponses();
+  generateRandomIcons();
 });
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 relative overflow-hidden">
+    <!-- Background Icons -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div v-for="icon in backgroundIcons" :key="icon.id"
+        class="absolute transition-all duration-1000 ease-in-out opacity-10" :style="{
+          left: `${icon.x}%`,
+          top: `${icon.y}%`,
+          fontSize: `${icon.size}px`,
+          color: icon.color,
+          transform: `translate(-50%, -50%) rotate(${icon.rotation}deg)`,
+          animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`
+        }">
+        {{ icon.icon }}
+      </div>
+    </div>
+
     <!-- Header -->
-    <div class="bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg">
+    <div class="bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-lg relative z-10">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex items-center gap-4">
           <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -948,7 +1027,7 @@ onMounted(() => {
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
       <!-- Search Bar -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
         <div class="relative max-w-md">
@@ -986,80 +1065,83 @@ onMounted(() => {
         <div v-for="response in filteredResponses" :key="response.id"
           class="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg transition-all cursor-pointer"
           @click="viewResponseDetail(response)">
+          <!--Z Linea Superior: nombre (izq) . severidad  -->
           <!-- Card Header -->
           <div class="flex items-start justify-between mb-4">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+              <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
               <div>
-                <h3 class="font-semibold text-gray-900">{{ response.patientName }}</h3>
-                <p class="text-sm text-gray-500">{{ response.questionnaireTitle }}</p>
+                <h3 class="font-semibold text-gray-900 leading-snug">{{ response.patientName }}</h3>
+                <p class="text-xs text-gray-400 mt-0.5">{{ response.questionnaireTitle }}</p>
               </div>
             </div>
+
+            <span :class="getSeverityLevel(calculateTotalScore(response.answer)).color"
+              class="px-3 py-1 rounded-full text-xs font-medium shrink-0 ml-2">
+              {{ getSeverityLevel(calculateTotalScore(response.answer)).label }}
+            </span>
           </div>
 
           <!-- Score Badge -->
-          <div class="flex items-center gap-2 mb-4">
-            <span :class="getSeverityLevel(calculateTotalScore(response.answer)).color"
-              class="px-3 py-1 rounded-full text-xs font-medium">
-              {{ getSeverityLevel(calculateTotalScore(response.answer)).label }}
-            </span>
-            <span class="text-sm text-gray-600">
-              Puntuación: {{ calculateTotalScore(response.answer) }}
-            </span>
-          </div>
-
-          <!-- Summary -->
-          <div class="border-t border-gray-100 pt-4">
-            <p class="text-sm text-gray-600 mb-2">
-              <span class="font-medium">{{ response.answer?.length || 0 }}</span> preguntas respondidas
+          <!-- ② Z — DIAGONAL: puntuación + preview de respuestas — peso visual medio -->
+          <div class="border-l-2 border-gray-100 ml-5 pl-3.5 mb-4">
+            <p class="text-sm text-gray-500 mb-2">
+              <span class="font-semibold text-gray-800">
+                Puntuación: {{ calculateTotalScore(response.answer) }} Pts
+              </span>
+              · {{ response.answer?.length || 0 }} preguntas respondidas
             </p>
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-1.5">
               <span v-for="(ans, idx) in response.answer?.slice(0, 2)" :key="idx"
-                class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                class="text-xs bg-gray-50 border border-gray-100 text-gray-500 px-2 py-0.5 rounded-md">
                 {{ ans.title?.substring(0, 30) }}...
               </span>
-              <span v-if="(response.answer?.length || 0) > 2" class="text-xs text-gray-500">
+              <span v-if="(response.answer?.length || 0) > 2" class="text-xs text-gray-400 italic self-center">
                 +{{ response.answer.length - 2 }} más
               </span>
             </div>
           </div>
-
+          <!-- ③ Z — LÍNEA INFERIOR: acciones en grid 2 columnas — ancla final del ojo -->
           <!-- Action Buttons -->
-          <div class="mt-4 pt-4 border-t border-gray-100 space-y-2">
+          <div class="border-t border-gray-100 pt-4 grid grid-cols-2 gap-2">
+            <!-- Ver Detalle -->
             <button
-              class="w-full py-2 bg-teal-50 text-teal-700 rounded-lg font-medium hover:bg-teal-100 transition-all flex items-center justify-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="flex items-center justify-center gap-1.5 py-2 bg-teal-50 text-teal-700 rounded-lg text-xs font-medium hover:bg-teal-100 transition-all">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c8.837 0 8.837 0 8.837 0m-8.837 14c-4.477 0-8.268-2.943-9.542-7 0 0 0 0 0 0m0 0c1.274-4.057 5.065-7 9.542-7 8.837 0 8.837 0 8.837 0" />
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
               Ver Detalle
             </button>
+            <!-- Nota Clínica -->
             <button @click.stop="openClinicalNoteModal(response)"
-              class="w-full py-2 bg-blue-50 text-blue-700 rounded-lg font-medium hover:bg-blue-100 transition-all flex items-center justify-center gap-2">
+              class="flex items-center justify-center gap-1.5 py-2 bg-blue-50 text-blue-700 rounded-lg text-xs font-medium hover:bg-blue-100 transition-all">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
               Agregar Nota Clínica
             </button>
+            <!-- Analizar con IA — ancho completo, acción principal -->
             <button @click.stop="openAIAnalysisModal(response)"
-              class="w-full py-2 bg-gradient-to-r from-violet-50 to-purple-50 text-violet-700 rounded-lg font-medium hover:from-violet-100 hover:to-purple-100 transition-all flex items-center justify-center gap-2 border border-violet-200">
+              class="flex items-center justify-center gap-1.5 py-2 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 rounded-lg text-xs font-medium hover:from-amber-100 hover:to-orange-100 transition-all border border-amber-200">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
               Analizar con IA
             </button>
+            <!-- Ver Notas -->
             <button @click.stop="openViewAnalysisModal(response)"
-              class="w-full py-2 bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 rounded-lg font-medium hover:from-amber-100 hover:to-orange-100 transition-all flex items-center justify-center gap-2 border border-amber-200">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="flex items-center justify-center gap-1.5 py-2 bg-purple-50 text-purple-700 rounded-lg text-xs font-medium hover:bg-purple-100 transition-all">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -1274,14 +1356,14 @@ onMounted(() => {
           <!-- Backdrop -->
           <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeViewNotesModal"></div>
 
-      <!-- Modal Content -->
-      <div :class="[
-        'relative bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300',
-        isClinicalNotesModalExpanded ? 'w-full max-w-[95vw] max-h-[95vh]' : 'w-full max-w-lg max-h-[90vh]'
-      ]">
+          <!-- Modal Content -->
+          <div :class="[
+            'relative bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300',
+            isClinicalNotesModalExpanded ? 'w-full max-w-[95vw] max-h-[95vh]' : 'w-full max-w-lg max-h-[90vh]'
+          ]">
 
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -1316,7 +1398,8 @@ onMounted(() => {
                   <!-- Expand/Collapse Button -->
                   <button @click="toggleExpandClinicalNotesModal"
                     class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border border-white/40 bg-white/10 text-white hover:bg-white/20 transition-colors">
-                    <svg v-if="!isClinicalNotesModalExpanded" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg v-if="!isClinicalNotesModalExpanded" class="w-4 h-4" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                     </svg>
@@ -1766,7 +1849,7 @@ onMounted(() => {
                             <div class="flex items-center gap-1 mb-2">
                               <div class="w-4 h-px bg-gray-300"></div>
                               <span class="text-xs text-gray-500 font-medium">Contextos ({{ note.context.length
-                                }})</span>
+                              }})</span>
                             </div>
                             <div class="relative pl-3 border-l-2 border-gray-200 space-y-2">
                               <div v-for="(ctx, ctxIndex) in note.context" :key="ctx.id"
@@ -2108,5 +2191,18 @@ onMounted(() => {
 .modal-enter-from .relative,
 .modal-leave-to .relative {
   transform: scale(0.95);
+}
+
+/* Animación flotante para los iconos de fondo */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0px) rotate(var(--rotation));
+  }
+
+  50% {
+    transform: translate(-50%, -50%) translateY(-10px) rotate(calc(var(--rotation) + 5deg));
+  }
 }
 </style>
