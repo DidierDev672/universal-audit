@@ -136,7 +136,112 @@
         </div>
 
         <!-- Lista de Investigaciones Generadas -->
-        <div class="bg-white rounded-2xl border border-blue-100 shadow-sm p-8 mt-6">
+        <div class="relative min-h-screen bg-white rounded-md border border-gray-200 overflow-hidden p-6 mt-4">
+            <!-- Fondo con icons de salud auditiva y constelaciones -->
+            <div class="absolute inset-0 pointer-events-none opacity-30">
+                <!-- Patron de iconos de Salud Auditiva -->
+                <svg class="absolute w-32 h-32 top-20 left-10 text-indigo-400/40" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="0.5">
+                    <path
+                        d="M12 2C10.9 2 10 2.9 10 4V10C10 11.1 10.9 12 12 12C13.1 12 14 11.1 14 10V4C14 2.9 13.1 2 12 2Z" />
+                    <path
+                        d="M6 10C6 6.13 9.13 3 13 3C16.87 3 20 6.13 20 10V15C20 18.87 16.87 22 13 22C9.13 22 6 18.87 6 15V10Z" />
+                    <path d="M2 15V17C2 18.1 2.9 19 4 19" />
+                    <path d="M22 15V17C22 18.1 21.1 19 20 19" />
+                </svg>
+                <svg class="absolute w-20 h-20 bottom-60 left-1/4 text-cyan-400" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="0.5">
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="6" />
+                    <circle cx="12" cy="12" r="2" />
+                </svg>
+                <!-- Constelacionees - Estrellas conectadas -->
+                <svg class="absolute w-40 h-40 top-10 right-1/4 text-gray-400" viewBox="0 0 100 100">
+                    <circle cx="20" cy="20" r="1.5" fill="currentColor" />
+                    <circle cx="50" cy="15" r="1" fill="currentColor" />
+                    <circle cx="80" cy="30" r="1.5" fill="currentColor" />
+                    <circle cx="35" cy="50" r="1" fill="currentColor" />
+                    <circle cx="70" cy="60" r="1.5" fill="currentColor" />
+                    <circle cx="45" cy="80" r="1" fill="currentColor" />
+                    <line x1="20" y1="20" x2="50" y2="15" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="50" y1="15" x2="80" y2="30" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="35" y1="50" x2="70" y2="60" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="45" y1="80" x2="70" y2="60" stroke="currentColor" stroke-width="0.3" />
+                </svg>
+
+                <svg class="absolute w-32 h-32 bottom-20 right-10 text-gray-400" viewBox="0 0 100 100">
+                    <circle cx="15" cy="25" r="1.5" fill="currentColor" />
+                    <circle cx="40" cy="10" r="1" fill="currentColor" />
+                    <circle cx="65" cy="20" r="1.5" fill="currentColor" />
+                    <circle cx="85" cy="40" r="1" fill="currentColor" />
+                    <circle cx="75" cy="65" r="1.5" fill="currentColor" />
+                    <line x1="15" y1="25" x2="40" y2="10" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="40" y1="10" x2="65" y2="20" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="65" y1="20" x2="85" y2="40" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="75" y1="65" x2="85" y2="40" stroke="currentColor" stroke-width="0.3" />
+                </svg>
+
+                <svg class="absolute w-48 h-48 bottom-40 left-20 text-gray-500" viewBox="0 0 100 100">
+                    <circle cx="10" cy="50" r="1" fill="currentColor" />
+                    <circle cx="30" cy="30" r="1.5" fill="currentColor" />
+                    <circle cx="50" cy="50" r="1" fill="currentColor" />
+                    <circle cx="70" cy="20" r="1.5" fill="currentColor" />
+                    <circle cx="90" cy="45" r="1" fill="currentColor" />
+                    <line x1="10" y1="50" x2="30" y2="30" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="30" y1="30" x2="50" y2="50" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="50" y1="50" x2="70" y2="20" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="70" y1="20" x2="90" y2="45" stroke="currentColor" stroke-width="0.3" />
+                </svg>
+
+                <svg class="absolute w-40 h-40 top-80 right-1/2 text-gray-500" viewBox="0 0 100 100">
+                    <circle cx="20" cy="20" r="2" fill="currentColor" />
+                    <circle cx="50" cy="15" r="1.5" fill="currentColor" />
+                    <circle cx="80" cy="30" r="2" fill="currentColor" />
+                    <circle cx="35" cy="50" r="1.5" fill="currentColor" />
+                    <circle cx="70" cy="60" r="2" fill="currentColor" />
+                    <circle cx="45" cy="80" r="1.5" fill="currentColor" />
+                    <line x1="20" y1="20" x2="50" y2="15" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="50" y1="15" x2="80" y2="30" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="35" y1="50" x2="70" y2="60" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="45" y1="80" x2="70" y2="60" stroke="currentColor" stroke-width="0.3" />
+                </svg>
+
+                <svg class="absolute w-32 h-32 bottom-20 left-20 text-gray-400" viewBox="0 0 100 100">
+                    <circle cx="15" cy="25" r="2" fill="currentColor" />
+                    <circle cx="40" cy="10" r="1.5" fill="currentColor" />
+                    <circle cx="65" cy="20" r="2" fill="currentColor" />
+                    <circle cx="85" cy="40" r="1.5" fill="currentColor" />
+                    <circle cx="75" cy="65" r="2" fill="currentColor" />
+                    <line x1="15" y1="25" x2="40" y2="10" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="40" y1="10" x2="65" y2="20" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="65" y1="20" x2="85" y2="40" stroke="currentColor" stroke-width="0.3" />
+                    <line x1="75" y1="65" x2="85" y2="40" stroke="currentColor" stroke-width="0.3" />
+                </svg>
+
+                <!-- Iconos adicionales de salud auditiva dispersos -->
+                <svg class="absolute w-16 h-16 top-1/2 left-16 text-indigo-300/20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="0.5">
+                    <path
+                        d="M12 2C10.9 2 10 2.9 10 4V10C10 11.1 10.9 12 12 12C13.1 12 14 11.1 14 10V4C14 2.9 13.1 2 12 2Z" />
+                    <path
+                        d="M6 10C6 6.13 9.13 3 13 3C16.87 3 20 6.13 20 10V15C20 18.87 16.87 22 13 22C9.13 22 6 18.87 6 15V10Z" />
+                </svg>
+
+                <svg class="absolute w-14 h-14 bottom-1/3 right-1/3 text-purple-300" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="0.5">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M8 12 L16 12" />
+                    <path d="M12 8 L12 16" />
+                </svg>
+                <!-- Mas estrellas dispersas -->
+                <div class="absolute top-32 left-1/3 w-1 h-1 bg-blue-200 rounded-full opacity-40"></div>
+                <div class="absolute top-48 right-1/4 w-1.5 h-1.5 bg-blue-300 rounded-full opacity-50"></div>
+                <div class="absolute bottom-32 left-1/2 w-1 h-1 bg-blue-300 rounded-full opacity-30"></div>
+                <div class="absolute top-20 right-1/3 w-1 h-1 bg-blue-300 rounded-full opacity-40"></div>
+                <div class="absolute bottom-48 right-1/2 w-1.5 h-1.5 bg-blue-200 rounded-full opacity-35"></div>
+                <div class="absolute top-1/3 left-1/4 w-1 h-1 bg-blue-200 rounded-full opacity-45"></div>
+                <div class="absolute bottom-1/4 right-1/4 w-1 h-1 bg-blue-300 rounded-full opacity-30"></div>
+            </div>
             <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
                 <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
                     <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,12 +250,12 @@
                     </svg>
                 </div>
                 <div class="flex-1">
-                    <h2 class="text-xl font-bold text-gray-800">Investigaciones Generadas</h2>
+                    <h2 class="text-xl font-medium text-gray-800">Investigaciones Generadas</h2>
                     <p class="text-sm text-gray-500">Historial de investigaciones creadas por IA</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3">
                     <button @click="openNotesModal"
-                        class="flex items-center gap-2 px-3 py-2 bg-purple-50 hover:bg-purple-100 rounded-lg text-purple-600 transition-all">
+                        class="flex items-center gap-2 px-4 py-2.5 bg-purple-50 hover:bg-purple-100 rounded-lg text-purple-600 transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -179,25 +284,26 @@
             </div>
 
             <!-- Empty State -->
-            <div v-else-if="investigaciones.length === 0" class="text-center py-8">
-                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div v-else-if="investigaciones.length === 0" class="text-center py-12">
+                <div
+                    class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5 backdrop-blur-sm">
                     <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
                 </div>
                 <p class="text-gray-500">No hay investigaciones generadas aún</p>
-                <p class="text-sm text-gray-400 mt-1">Usa "Investigar por la IA" para crear una</p>
+                <p class="text-sm text-gray-400 mt-2">Usa "Investigar por la IA" para crear una</p>
             </div>
 
             <!-- List -->
             <div v-else class="space-y-3">
                 <div v-for="inv in investigaciones" :key="inv.id"
                     class="group border border-gray-200 rounded-xl p-4 hover:border-indigo-300 hover:shadow-sm transition-all cursor-pointer">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-md font-medium">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="px-2.5 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-md font-medium">
                                     ID: {{ inv.id_resource }}
                                 </span>
                                 <span v-if="inv.created_at" class="text-xs text-gray-400">
@@ -208,23 +314,20 @@
                                 stripHtml(inv.content_resource).substring(0,
                                     150) }}...</p>
                         </div>
-                        <div class="ml-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                        <div class="ml-4 cursor-pointer hover:text-indigo-600 hover:bg-indigo-50 rounded-lg p-2"
                             @click="viewInvestigacion(inv)">
-                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
                         </div>
-                        <button @click="openAnalysisModal"
-                            class="ml-4 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded-lg transition-colors">
-                            Ver detalles
-                        </button>
                     </div>
                 </div>
             </div>
-        </div> <!-- Agregado el cierre del div -->
+        </div>
+        <!-- Agregado el cierre del div -->
         <!-- Modal IA -->
         <ModalIAResearch v-if="showAIModal" :isOpen="showAIModal" :idResearch="research?.id || 0"
             :title="research?.title || ''" :description="research?.description || ''" @close="closeAIModal" />

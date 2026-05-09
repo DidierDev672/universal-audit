@@ -5,9 +5,9 @@
     isOpen ? 'translate-x-0' : '-translate-x-full'
   ]">
     <div class="flex flex-col h-full">
-      <!-- Logo & Brand -->
+      <!-- Logo & Brand - HEADER (Punto de anclaje) -->
       <div
-        class="px-6 py-6 border-b border-indigo-100 bg-linear-to-br from-emerald-600 via-teal-600 to-cyan-700 overflow-hidden">
+        class="px-6 py-6 border-b border-indigo-100 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 overflow-hidden relative">
         <!-- Background WhatsApp-style with music icons -->
         <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
           <!-- Nota musical - top left -->
@@ -113,21 +113,21 @@
         </div>
       </div>
 
-      <!-- Navigation -->
+      <!-- Navigation - SECCIÓN PRINCIPAL (Primera línea de Z) -->
       <nav class="flex-1 px-4 py-6 overflow-y-auto">
-        <div class="space-y-2">
-          <!-- Crear Investigación Auditiva -->
+        <div class="space-y-1">
+          <!-- 1. Crear Investigación Auditiva - ACCIÓN PRINCIPAL -->
           <RouterLink to="/research-form" :class="[
             'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
             activeItem === 'crear-investigacion-auditiva'
-              ? 'bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
               : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
           ]">
             <div :class="[
               'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
               activeItem === 'crear-investigacion-auditiva'
                 ? 'bg-white/20 backdrop-blur-sm'
-                : 'bg-linear-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
+                : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
             ]">
               <svg :class="[
                 'w-6 h-6 transition-transform',
@@ -138,7 +138,7 @@
               </svg>
             </div>
             <div class="flex-1 text-left">
-              <span class="font-semibold">Crear Investigación Auditiva</span>
+              <span class="font-semibold text-sm">Crear Investigación</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'crear-investigacion-auditiva' ? 'text-white/80' : 'text-gray-500'
@@ -152,7 +152,7 @@
             </svg>
           </RouterLink>
 
-          <!-- Calendario de Investigaciones -->
+          <!-- 2. Calendario de Investigaciones -->
           <RouterLink to="/calendar" @click="activeItem = 'calendario'" :class="[
             'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
             activeItem === 'calendario'
@@ -175,12 +175,12 @@
             </div>
 
             <div class="flex-1 text-left">
-              <span class="font-semibold block">Calendario</span>
+              <span class="font-semibold text-sm">Calendario</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'calendario' ? 'text-white/80' : 'text-gray-500'
               ]">
-                Gestión de tareas e investigaciones
+                Gestión de tareas
               </p>
             </div>
 
@@ -190,18 +190,18 @@
             </svg>
           </RouterLink>
 
-          <!-- Crear Cuestionarios para Tinnitus -->
+          <!-- 3. Crear Cuestionarios para Tinnitus -->
           <RouterLink to="/tinnitus-questionnaire" :class="[
             'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
             activeItem === 'crear-cuestionarios-tinnitus'
-              ? 'bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
               : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
           ]">
             <div :class="[
               'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
               activeItem === 'crear-cuestionarios-tinnitus'
                 ? 'bg-white/20 backdrop-blur-sm'
-                : 'bg-linear-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
+                : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
             ]">
               <svg :class="[
                 'w-6 h-6 transition-transform',
@@ -212,12 +212,12 @@
               </svg>
             </div>
             <div class="flex-1 text-left">
-              <span class="font-semibold">Crear Cuestionarios para Tinnitus</span>
+              <span class="font-semibold text-sm">Crear Cuestionarios</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'crear-cuestionarios-tinnitus' ? 'text-white/80' : 'text-gray-500'
               ]">
-                Cuestionarios especializados
+                Cuestionarios tinnitus
               </p>
             </div>
             <svg v-if="activeItem === 'crear-cuestionarios-tinnitus'" class="w-5 h-5 text-white animate-pulse"
@@ -249,7 +249,7 @@
             </div>
 
             <div class="flex-1 text-left">
-              <span class="font-semibold block">Asignar Cuestionarios</span>
+              <span class="font-semibold text-sm">Asignar Cuestionarios</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'asignar-cuestionarios-tinnitus' ? 'text-white/80' : 'text-gray-500'
@@ -264,7 +264,7 @@
             </svg>
           </RouterLink>
 
-          <!-- Ver Respuestas de Tinnitus -->
+          <!-- 4. Ver Respuestas de Tinnitus - SEGUNDA LÍNEA DE Z -->
           <RouterLink to="/tinnitus-responses" @click="activeItem = 'ver-respuestas-tinnitus'" :class="[
             'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
             activeItem === 'ver-respuestas-tinnitus'
@@ -287,7 +287,7 @@
             </div>
 
             <div class="flex-1 text-left">
-              <span class="font-semibold block">Ver Respuestas Tinnitus</span>
+              <span class="font-semibold text-sm">Ver Respuestas Cuestionario</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'ver-respuestas-tinnitus' ? 'text-white/80' : 'text-gray-500'
@@ -302,18 +302,18 @@
             </svg>
           </RouterLink>
 
-          <!-- Crear Tamizaje -->
+          <!-- 5. Crear Tamizaje -->
           <RouterLink to="/hearing-screening-form" :class="[
             'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
             activeItem === 'crear-tamizaje'
-              ? 'bg-linear-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
               : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
           ]">
             <div :class="[
               'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
               activeItem === 'crear-tamizaje'
                 ? 'bg-white/20 backdrop-blur-sm'
-                : 'bg-linear-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
+                : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200'
             ]">
               <svg :class="[
                 'w-6 h-6 transition-transform',
@@ -324,12 +324,12 @@
               </svg>
             </div>
             <div class="flex-1 text-left">
-              <span class="font-semibold">Crear Tamizaje</span>
+              <span class="font-semibold text-sm">Crear Tamizaje</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'crear-tamizaje' ? 'text-white/80' : 'text-gray-500'
               ]">
-                Nuevo tamizaje auditivo
+                Tamizaje auditivo
               </p>
             </div>
             <svg v-if="activeItem === 'crear-tamizaje'" class="w-5 h-5 text-white animate-pulse" fill="none"
@@ -358,7 +358,7 @@
               </svg>
             </div>
             <div class="flex-1 text-left">
-              <span class="font-semibold">Agregar sonidos</span>
+              <span class="font-semibold text-sm">Agregar sonidos</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'crear-tamizaje' ? 'text-white/80' : 'text-gray-500'
@@ -372,9 +372,7 @@
             </svg>
           </RouterLink>
           <RouterLink to="/audio-mixer" @click="activeItem = 'audio-mixer'" :class="[
-            /* Clases base del contenedor */
             'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
-            /* Estado Activo vs Inactivo */
             activeItem === 'audio-mixer'
               ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
               : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700'
@@ -395,7 +393,7 @@
             </div>
 
             <div class="flex-1 text-left">
-              <span class="font-semibold block">Mezclador de audio (Alfa)</span>
+              <span class="font-semibold text-sm">Mezclador de audio (Alfa)</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'audio-mixer' ? 'text-white/80' : 'text-gray-500'
@@ -431,7 +429,7 @@
             </div>
 
             <div class="flex-1 text-left">
-              <span class="font-semibold block">Cuaderno clínico</span>
+              <span class="font-semibold text-sm">Cuaderno clínico</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'notebook' ? 'text-white/80' : 'text-gray-500'
@@ -469,7 +467,7 @@
             </div>
 
             <div class="flex-1 text-left">
-              <span class="font-semibold block">Ver Cuadros Clínicos</span>
+              <span class="font-semibold text-sm">Ver Cuadros Clínicos</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'clinical-pictures' ? 'text-white/80' : 'text-gray-500'
@@ -507,7 +505,7 @@
             </div>
 
             <div class="flex-1 text-left">
-              <span class="font-semibold block">Ver Respuestas de Tamizaje</span>
+              <span class="font-semibold text-sm">Ver Respuestas de Tamizaje</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'screening-responses' ? 'text-white/80' : 'text-gray-500'
@@ -544,7 +542,7 @@
               </svg>
             </div>
             <div class="flex-1 text-left">
-              <span class="font-semibold">Crear Registro Paciente</span>
+              <span class="font-semibold text-sm">Crear Registro Paciente</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'crear-registro-paciente' ? 'text-white/80' : 'text-gray-500'
@@ -580,7 +578,7 @@
               </svg>
             </div>
             <div class="flex-1 text-left">
-              <span class="font-semibold">Crear Usuario</span>
+              <span class="font-semibold text-sm">Crear Usuario</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'crear-usuario-sistema' ? 'text-white/80' : 'text-gray-500'
@@ -617,7 +615,7 @@
             </div>
 
             <div class="flex-1 text-left">
-              <span class="font-semibold block">Perfil de Usuario</span>
+              <span class="font-semibold text-sm">Perfil de Usuario</span>
               <p :class="[
                 'text-xs mt-0.5',
                 activeItem === 'perfil-usuario' ? 'text-white/80' : 'text-gray-500'
@@ -633,8 +631,8 @@
           </RouterLink>
         </div>
 
-        <!-- Divider -->
-        <div class="my-6 border-t border-gray-200"></div>
+        <!-- Divider - QUIEBRE DE Z -->
+        <div class="my-6 border-t border-gray-300"></div>
 
         <!-- Info Card -->
         <div class="bg-linear-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border border-emerald-100">
@@ -655,7 +653,8 @@
         </div>
       </nav>
 
-      <div class="p-4 border-t border-indigo-100 bg-linear-to-br from-gray-50 to-indigo-50">
+      <!-- Footer - PIE DE PÁGINA (Cierre de Z) -->
+      <div class="p-4 border-t border-indigo-100 bg-gradient-to-br from-gray-50 to-indigo-50">
         <!-- Logout Button -->
         <button
           class="w-full flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all group">
@@ -664,7 +663,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          <span class="font-medium">Cerrar Sesión</span>
+          <span class="font-medium text-sm">Cerrar Sesión</span>
         </button>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 
 export const useGetGenerativeModelGP = async (prompt: string) => {   
     const ai = new GoogleGenAI({
-    apiKey: "AIzaSyCMfiy3nYhYyCjnJWWl_cdi1txShiCtYBQ"
+    apiKey: "AIzaSyB8fRJtuLeziB1NIewDWrZ95MinCEqVOfg"
 });
     const result = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
