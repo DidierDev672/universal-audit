@@ -29,6 +29,7 @@
     "tesseract.js": "^7.0.0",
     "uuid": "^13.0.1",
     "vue": "^3.5.25",
+    "vue-markdown-render": "^2.3.0",
     "vue-router": "^4.6.4",
     "xlsx": "^0.18.5"
   },

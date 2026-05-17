@@ -105,7 +105,6 @@ const loadQuestionnaires = async () => {
       timeout: 30000,
     });
     questionnaires.value = response.data || [];
-    console.log(`✅ ${questionnaires.value.length} cuestionarios de tinnitus cargados`);
   } catch (error) {
     console.error('❌ Error al cargar cuestionarios:', error);
     showAlert('Error al cargar los cuestionarios. Intente nuevamente.', 'error');
@@ -262,7 +261,7 @@ const updateQuestionnaireStatus = async (questionnaireId: string, newStatus: Que
   isUpdatingStatus.value = true;
   try {
     await axios.patch(
-      `http://localhost:3000/api/v1/questionnaires/${questionnaireId}`,
+      `http://localhost:3000/api/v1/tinnitus-assignments/${questionnaireId}`,
       { status: newStatus },
       { timeout: 30000 }
     );
@@ -683,32 +682,6 @@ onMounted(() => {
                   </svg>
                   <span>{{ formatRelativeDate(questionnaire.createdAt) }}</span>
                 </div>
-
-                <!-- Status Badge con los 3 estados -->
-                <span :class="[
-                  'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold',
-                  questionnaire.status === QuestionnaireStatus.Active
-                    ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                    : questionnaire.status === QuestionnaireStatus.Discontinued
-                      ? 'bg-red-100 text-red-700 border border-red-200'
-                      : 'bg-gray-100 text-gray-500 border border-gray-200'
-                ]" role="status" :aria-label="`Cuestionario ${getStatusLabel(questionnaire.status)}`">
-                  <span class="w-2 h-2 rounded-full" :class="{
-                    'bg-emerald-500': questionnaire.status === QuestionnaireStatus.Active,
-                    'bg-gray-400': questionnaire.status === QuestionnaireStatus.Inactive,
-                    'bg-red-500': questionnaire.status === QuestionnaireStatus.Discontinued
-                  }"></span>
-                  {{ getStatusLabel(questionnaire.status) }}
-                </span>
-
-                <span v-if="!isQuestionnaireSelectable(questionnaire.status)"
-                  class="text-amber-600 text-xs font-medium flex items-center gap-1">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                  {{ questionnaire.status === QuestionnaireStatus.Discontinued ? 'Descontinuado' : 'No asignable' }}
-                </span>
               </div>
             </div>
           </div>
