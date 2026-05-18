@@ -161,7 +161,7 @@
 import { ref, computed } from 'vue';
 import Statcard from '../layout/Statcard.vue';
 import Appointmentcard from './Appointmentcard.vue';
-import QuickActionButton from './Quickactionbutton.vue';
+import QuickActionButton from './QuickActionButton.vue';
 
 const todayAppointments = ref([
   {

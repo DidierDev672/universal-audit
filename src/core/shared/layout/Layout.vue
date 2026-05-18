@@ -84,13 +84,24 @@
 
             <!-- User Menu -->
             <div class="flex items-center gap-4">
-              <!-- Notifications -->
-              <button class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition">
+              <!-- Mensajes / notificaciones -->
+              <button
+                type="button"
+                class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                :class="showInbox ? 'bg-gray-100 text-gray-900' : ''"
+                aria-label="Bandeja de mensajes"
+                @click="toggleInbox"
+              >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
-                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                <span
+                  v-if="unreadMessagesCount > 0"
+                  class="absolute top-0.5 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white"
+                >
+                  {{ unreadMessagesCount > 9 ? '9+' : unreadMessagesCount }}
+                </span>
               </button>
 
               <!-- User Avatar -->
@@ -251,6 +262,29 @@
       <Footer />
     </div>
     <div v-if="isSidebarOpen" @click="toggleSidebar" class="lg:hidden fixed inset-0 bg-black/50 z-30"></div>
+
+    <Teleport to="body">
+      <Transition name="inbox-fade">
+        <div
+          v-if="showInbox"
+          class="fixed inset-0 z-[60] flex justify-end"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Bandeja de mensajes"
+        >
+          <div
+            class="absolute inset-0 bg-black/40 backdrop-blur-[1px]"
+            @click="closeInbox"
+          />
+          <div
+            class="relative flex h-full w-full max-w-5xl flex-col bg-white shadow-2xl"
+            @click.stop
+          >
+            <InboxView embedded @close="closeInbox" />
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -260,6 +294,8 @@ import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import Sidebar from '../sidebar/Sidebar.vue';
 import Footer from '../footer/Footer.vue';
+import InboxView from '../../../components/message/InboxView.vue';
+import { useInbox } from '../../../composables/useInbox';
 
 // ── Interfaces ─────────────────────────────────────────────────────────────
 interface FamilyMember {
@@ -305,7 +341,22 @@ const props = withDefaults(defineProps<Props>(), {
 
 const route = useRoute();
 const router = useRouter();
+const { notReading, loadMessages } = useInbox();
 const isSidebarOpen = ref(false);
+const showInbox = ref(false);
+
+const unreadMessagesCount = computed(() => notReading.value.length);
+
+const toggleInbox = async () => {
+  showInbox.value = !showInbox.value;
+  if (showInbox.value) {
+    await loadMessages();
+  }
+};
+
+const closeInbox = () => {
+  showInbox.value = false;
+};
 const currentPage = ref('dashboard');
 const patient = ref<Patient | null>(null);
 const isLoadingPatient = ref(false);
@@ -384,10 +435,31 @@ const goToProfile = () => {
 // ── Lifecycle ────────────────────────────────────────────────────────────────
 onMounted(() => {
   fetchPatientData();
+  loadMessages();
 });
 </script>
 
 <style scoped>
+.inbox-fade-enter-active,
+.inbox-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.inbox-fade-enter-active .relative,
+.inbox-fade-leave-active .relative {
+  transition: transform 0.25s ease;
+}
+
+.inbox-fade-enter-from,
+.inbox-fade-leave-to {
+  opacity: 0;
+}
+
+.inbox-fade-enter-from .relative,
+.inbox-fade-leave-to .relative {
+  transform: translateX(100%);
+}
+
 /* ── Animated Background Icons ─────────────────────────────────────────────── */
 .floating-icon {
   position: absolute;

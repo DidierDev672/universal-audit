@@ -1,8 +1,8 @@
 // Infrastructure - Screening Repository Adapter
 // Implements IScreeningRepository port
 
-import type { IScreeningRepository } from '../../core/screening/interface/repositories';
-import type { Screening, CreateScreeningRequest } from '../../core/screening/entities/screening';
+import type { IScreeningRepository } from '../../../core/screening/interface/repositories';
+import type { Screening, CreateScreeningRequest } from '../../../core/screening/entities/screening';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 

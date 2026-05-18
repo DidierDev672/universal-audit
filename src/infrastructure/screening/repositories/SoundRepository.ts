@@ -1,8 +1,8 @@
 // Infrastructure - Sound Repository Adapter
 // Implements ISoundRepository port
 
-import type { ISoundRepository } from '../../core/screening/interface/repositories';
-import type { Sound } from '../../core/screening/entities/screening';
+import type { ISoundRepository } from '../../../core/screening/interface/repositories';
+import type { Sound } from '../../../core/screening/entities/screening';
 import axios from 'axios';
 import { supabaseClientVue } from '../../../supabase';
 
@@ -18,11 +18,10 @@ export class SoundRepository implements ISoundRepository {
     try {
       // URL-encode the path to handle special characters like commas
       const encodedPath = encodeURIComponent(path);
-      const { data, error } = supabaseClientVue.storage
+      const { data } = supabaseClientVue.storage
         .from('audio-tamizaje')
         .getPublicUrl(encodedPath);
-      
-      if (error) throw error;
+
       return data.publicUrl;
     } catch (e) {
       console.error('Error getting public URL for path:', path, e);

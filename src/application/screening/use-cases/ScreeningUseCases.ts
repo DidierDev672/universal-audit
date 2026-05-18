@@ -1,8 +1,8 @@
 // Application Use Cases - Screening
 // SOLID: Single Responsibility, Dependency Inversion
 
-import type { IScreeningRepository, ISoundRepository } from '../../core/screening/interface/repositories';
-import type { Screening, Sound, CreateScreeningRequest } from '../../core/screening/entities/screening';
+import type { IScreeningRepository, ISoundRepository } from '../../../core/screening/interface/repositories';
+import type { Screening, Sound, CreateScreeningRequest } from '../../../core/screening/entities/screening';
 
 export class CreateScreeningUseCase {
   constructor(private readonly screeningRepository: IScreeningRepository) {}

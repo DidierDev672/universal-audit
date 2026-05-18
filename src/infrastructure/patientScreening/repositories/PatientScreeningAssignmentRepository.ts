@@ -2,12 +2,12 @@
 // Implements IPatientScreeningAssignmentRepository port
 // SOLID: Dependency Inversion - depends on abstractions
 
-import type { IPatientScreeningAssignmentRepository } from '../../core/patientScreening/interface/repositories';
+import type { IPatientScreeningAssignmentRepository } from '../../../core/patientScreening/interface/repositories';
 import type {
   PatientScreeningAssignment,
   CreateAssignmentRequest,
   UpdateAssignmentRequest,
-} from '../../core/patientScreening/entities/patientScreeningAssignment';
+} from '../../../core/patientScreening/entities/patientScreeningAssignment';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 

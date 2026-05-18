@@ -2,8 +2,8 @@
 // Implements IPatientRepository port
 // SOLID: Dependency Inversion - depends on abstractions
 
-import type { IPatientRepository } from '../../core/patientScreening/interface/repositories';
-import type { Patient } from '../../core/patientScreening/entities/patientScreeningAssignment';
+import type { IPatientRepository } from '../../../core/patientScreening/interface/repositories';
+import type { Patient } from '../../../core/patientScreening/entities/patientScreeningAssignment';
 import axios from 'axios';
 
 /**

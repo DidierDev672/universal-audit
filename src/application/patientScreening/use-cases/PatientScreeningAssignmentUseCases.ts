@@ -5,14 +5,14 @@
 import type {
   IPatientScreeningAssignmentRepository,
   IPatientRepository,
-} from '../../core/patientScreening/interface/repositories';
+} from '../../../core/patientScreening/interface/repositories';
 import type {
   PatientScreeningAssignment,
   CreateAssignmentRequest,
   UpdateAssignmentRequest,
   Patient,
-} from '../../core/patientScreening/entities/patientScreeningAssignment';
-import type { IScreeningRepository } from '../../core/screening/interface/repositories';
+} from '../../../core/patientScreening/entities/patientScreeningAssignment';
+import type { IScreeningRepository } from '../../../core/screening/interface/repositories';
 
 /**
  * Use case for assigning a screening to a patient
