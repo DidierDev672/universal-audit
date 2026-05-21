@@ -32,68 +32,160 @@ import TinnitusQuestionnaireAssignmentPage from "../pages/screening/TinnitusQues
 import TinnitusResponsesListPage from "../pages/screening/TinnitusResponsesListPage.vue";
 
 import Layout from "../core/shared/layout/Layout.vue";
+import N8nSendText from "../components/n8n/N8nSendText.vue";
+import AiDocumentUploader from "../components/AI/AiDocumentUploader.vue";
+import AiDocumentList from "../components/AI/AiDocumentList.vue";
+import AiDocumentAnalysisList from "../components/AI/AiDocumentAnalysisList.vue";
 
 const routes = [
-  { path: '/', name: 'root-login', component: LoginForm },
-  { path: '/login', name: 'login', component: LoginForm },
+  { path: "/", name: "root-login", component: LoginForm },
+  { path: "/login", name: "login", component: LoginForm },
   {
-    path: '/home',
-    name: 'layout',
+    path: "/home",
+    name: "layout",
     component: Layout,
-    redirect: '/research',
+    redirect: "/research",
     children: [
       { path: "/research", name: "home", component: DashBoardResearch },
-      { path: "/questionnaire", name: "questionnaire", component: TinnitusDashboard },
+      {
+        path: "/questionnaire",
+        name: "questionnaire",
+        component: TinnitusDashboard,
+      },
       { path: "/hearing", name: "hearing", component: HearingDashboard },
 
       // ? Tinnitus Questionnaire
-      { path: "/tinnitus-questionnaire", name: "tinnitus-questionnaire", component: Tinnitusquestionnairebuilder },
-      { path: "/list-tinnitus-questionnaire", name: "list-tinnitus-questionnaire", component: Tinnitusquestionnaire },
-      { path: "/detail-tinnitus-questionnaire/:id", name: "detail-tinnitus-questionnaire", component: DetailQuestionnaire },
+      {
+        path: "/tinnitus-questionnaire",
+        name: "tinnitus-questionnaire",
+        component: Tinnitusquestionnairebuilder,
+      },
+      {
+        path: "/list-tinnitus-questionnaire",
+        name: "list-tinnitus-questionnaire",
+        component: Tinnitusquestionnaire,
+      },
+      {
+        path: "/detail-tinnitus-questionnaire/:id",
+        name: "detail-tinnitus-questionnaire",
+        component: DetailQuestionnaire,
+      },
 
       // ? Research Form
-      { path: "/research-form", name: "research-form", component: Researchform },
+      {
+        path: "/research-form",
+        name: "research-form",
+        component: Researchform,
+      },
       { path: "/research-list", name: "research list", component: Research },
-      { path: "/research-detail/:id", name: "research-detail", component: DetailtResearch },
+      {
+        path: "/research-detail/:id",
+        name: "research-detail",
+        component: DetailtResearch,
+      },
 
       // ? Hearing Screening Form
-      { path: "/hearing-screening-form", name: "hearing-screening-form", component: HearingScreeningForm },
+      {
+        path: "/hearing-screening-form",
+        name: "hearing-screening-form",
+        component: HearingScreeningForm,
+      },
       // ? Patient Registration Form
-      { path: "/patient-registration-form", name: "patient-registration-form", component: PatientRegistrationForm },
+      {
+        path: "/patient-registration-form",
+        name: "patient-registration-form",
+        component: PatientRegistrationForm,
+      },
 
       // ? Sound Management
       { path: "/add-sound", name: "add-sound", component: AddSoundForm },
-      { path: "/audio-library", name: "audio-library", component: AudioLibraryPage },
+      {
+        path: "/audio-library",
+        name: "audio-library",
+        component: AudioLibraryPage,
+      },
 
       // ? Screening Management
-      { path: "/create-screening", name: "create-screening", component: CreateScreeningPage },
+      {
+        path: "/create-screening",
+        name: "create-screening",
+        component: CreateScreeningPage,
+      },
       { path: "/notebook", name: "note book", component: ResourceNoteBookPage },
 
       // ? Clinical Pictures Management
-      { path: "/clinical-pictures", name: "clinical-pictures", component: ClinicalPicturesListPage },
-      { path: "/clinical-picture/:id", name: "clinical-picture-detail", component: ClinicalPictureDetailPage },
+      {
+        path: "/clinical-pictures",
+        name: "clinical-pictures",
+        component: ClinicalPicturesListPage,
+      },
+      {
+        path: "/clinical-picture/:id",
+        name: "clinical-picture-detail",
+        component: ClinicalPictureDetailPage,
+      },
 
       // ? Patient Screening Assignment
-      { path: "/patient-screening-assignment", name: "patient-screening-assignment", component: PatientScreeningAssignmentPage },
+      {
+        path: "/patient-screening-assignment",
+        name: "patient-screening-assignment",
+        component: PatientScreeningAssignmentPage,
+      },
 
       // ? Audio Mixer
       { path: "/audio-mixer", name: "audio-mixer", component: AudioMixerPage },
 
       // ? User Registration
-      { path: "/user-registration", name: "user-registration", component: UserRegistrationPage },
+      {
+        path: "/user-registration",
+        name: "user-registration",
+        component: UserRegistrationPage,
+      },
 
       // ? Screening Responses List
-      { path: "/screening-responses", name: "screening-responses", component: ScreeningResponsesListPage },
-      { path: '/tinnitus-assignment', name: "asignar cuestionario", component: TinnitusQuestionnaireAssignmentPage },
-      { path: '/tinnitus-responses', name: "respuestas tinnitus", component: TinnitusResponsesListPage },
+      {
+        path: "/screening-responses",
+        name: "screening-responses",
+        component: ScreeningResponsesListPage,
+      },
+      {
+        path: "/tinnitus-assignment",
+        name: "asignar cuestionario",
+        component: TinnitusQuestionnaireAssignmentPage,
+      },
+      {
+        path: "/tinnitus-responses",
+        name: "respuestas tinnitus",
+        component: TinnitusResponsesListPage,
+      },
 
       // ? Patient Profile
-      { path: '/patient-profile', name: "patient-profile", component: PatientProfilePage },
+      {
+        path: "/patient-profile",
+        name: "patient-profile",
+        component: PatientProfilePage,
+      },
 
       // ? Calendar
-      { path: '/calendar', name: "calendar", component: CalendarPage }
-    ]
-  }
+      { path: "/calendar", name: "calendar", component: CalendarPage },
+      { path: "/n8n-send-text", name: "n8n-send-text", component: N8nSendText },
+      {
+        path: "/ai-document-uploader",
+        name: "ai-document-uploader",
+        component: AiDocumentUploader,
+      },
+      {
+        path: "/ai-documentos",
+        name: "ai-documentos",
+        component: AiDocumentList,
+      },
+      {
+        path: "/ai-analisis",
+        name: "ai-analisis",
+        component: AiDocumentAnalysisList,
+      },
+    ],
+  },
 ];
 
 export const router = createRouter({

@@ -4,7 +4,9 @@
     :class="embedded ? 'h-full' : 'h-screen'"
   >
     <!-- Barra superior: búsqueda + acciones -->
-    <header class="shrink-0 border-b border-slate-200 bg-white px-4 py-3 sm:px-5">
+    <header
+      class="shrink-0 border-b border-slate-200 bg-white px-4 py-3 sm:px-5"
+    >
       <div class="flex items-center gap-3">
         <div class="relative min-w-0 flex-1">
           <svg
@@ -42,8 +44,18 @@
           class="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 sm:flex"
           @click="markAllAsRead"
         >
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
           </svg>
         </button>
 
@@ -52,8 +64,18 @@
           title="Nuevo mensaje"
           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white shadow-sm transition hover:bg-violet-700"
         >
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
           </svg>
         </button>
 
@@ -64,8 +86,18 @@
           aria-label="Cerrar bandeja"
           @click="emit('close')"
         >
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -73,14 +105,26 @@
 
     <div class="flex min-h-0 flex-1 overflow-hidden">
       <!-- Sidebar carpetas -->
-      <aside class="flex w-20 shrink-0 flex-col border-r border-slate-200 bg-slate-50 py-3">
+      <aside
+        class="flex w-20 shrink-0 flex-col border-r border-slate-200 bg-slate-50 py-3"
+      >
         <button
           type="button"
           class="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-violet-600 text-white shadow-sm transition hover:bg-violet-700"
           title="Redactar"
         >
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
           </svg>
         </button>
 
@@ -98,10 +142,22 @@
             "
             @click="setActiveFolder(item.folder)"
           >
-            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
+            <svg
+              class="h-5 w-5 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                :d="item.icon"
+              />
             </svg>
-            <span class="truncate w-full text-center leading-tight">{{ item.short }}</span>
+            <span class="truncate w-full text-center leading-tight">{{
+              item.short
+            }}</span>
           </button>
         </nav>
       </aside>
@@ -161,13 +217,29 @@
               v-else-if="displayMessages.length === 0"
               class="flex flex-col items-center justify-center px-6 py-16 text-center"
             >
-              <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <div
+                class="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400"
+              >
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
               </div>
-              <p class="text-sm font-medium text-slate-600">Sin conversaciones</p>
-              <p class="mt-1 text-xs text-slate-400">No hay mensajes en esta vista</p>
+              <p class="text-sm font-medium text-slate-600">
+                Sin conversaciones
+              </p>
+              <p class="mt-1 text-xs text-slate-400">
+                No hay mensajes en esta vista
+              </p>
             </div>
 
             <template v-else>
@@ -197,12 +269,26 @@
             v-else
             class="flex h-full flex-col items-center justify-center px-8 text-center text-slate-400"
           >
-            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50">
-              <svg class="h-8 w-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            <div
+              class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50"
+            >
+              <svg
+                class="h-8 w-8 text-slate-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
               </svg>
             </div>
-            <p class="text-sm font-medium text-slate-500">Selecciona una conversación para comenzar</p>
+            <p class="text-sm font-medium text-slate-500">
+              Selecciona una conversación para comenzar
+            </p>
             <p class="mt-1 max-w-xs text-xs text-slate-400">
               Elige un mensaje de la lista para leerlo y responder
             </p>
@@ -214,17 +300,31 @@
           v-if="selected"
           class="absolute inset-0 z-10 flex flex-col bg-white sm:hidden"
         >
-          <div class="flex shrink-0 items-center gap-2 border-b border-slate-200 px-3 py-2">
+          <div
+            class="flex shrink-0 items-center gap-2 border-b border-slate-200 px-3 py-2"
+          >
             <button
               type="button"
               class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100"
               @click="selectedId = null"
             >
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </button>
-            <span class="truncate text-sm font-medium text-slate-800">{{ selected.from }}</span>
+            <span class="truncate text-sm font-medium text-slate-800">{{
+              selected.from
+            }}</span>
           </div>
           <MessageDetail
             class="min-h-0 flex-1"
@@ -268,7 +368,12 @@ const {
 
 const activeListTab = ref<ListTab>("all");
 
-const navItems: { folder: folder; label: string; short: string; icon: string }[] = [
+const navItems: {
+  folder: folder;
+  label: string;
+  short: string;
+  icon: string;
+}[] = [
   {
     folder: "inbox",
     label: "Bandeja de entrada",
