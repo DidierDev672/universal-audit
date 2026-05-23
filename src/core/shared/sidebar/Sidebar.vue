@@ -375,6 +375,58 @@
             </svg>
           </RouterLink>
 
+          <RouterLink
+            to="/calendar-ai-repository"
+            @click="activeItem = 'calendario-ai-repositorio'"
+            :class="[
+              'w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200 group ml-2',
+              activeItem === 'calendario-ai-repositorio'
+                ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/30'
+                : 'text-gray-700 hover:bg-violet-50 hover:text-violet-700',
+            ]"
+          >
+            <div
+              :class="[
+                'shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all',
+                activeItem === 'calendario-ai-repositorio'
+                  ? 'bg-white/20 backdrop-blur-sm'
+                  : 'bg-gradient-to-br from-violet-100 to-purple-100 group-hover:from-violet-200 group-hover:to-purple-200',
+              ]"
+            >
+              <svg
+                :class="[
+                  'w-5 h-5 transition-transform',
+                  activeItem === 'calendario-ai-repositorio'
+                    ? 'text-white'
+                    : 'text-violet-600',
+                ]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
+              </svg>
+            </div>
+            <div class="flex-1 text-left">
+              <span class="font-semibold text-sm">Repositorio IA</span>
+              <p
+                :class="[
+                  'text-xs mt-0.5',
+                  activeItem === 'calendario-ai-repositorio'
+                    ? 'text-white/80'
+                    : 'text-gray-500',
+                ]"
+              >
+                Análisis guardados
+              </p>
+            </div>
+          </RouterLink>
+
           <!-- 3. Crear Cuestionarios para Tinnitus -->
           <RouterLink
             to="/tinnitus-questionnaire"

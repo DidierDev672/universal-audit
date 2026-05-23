@@ -14,6 +14,7 @@ import HearingScreeningForm from "../pages/Hearing/HearingScreeningForm.vue";
 import PatientRegistrationForm from "../pages/Patient/PatientRegistrationForm.vue";
 import PatientProfilePage from "../pages/Patient/PatientProfilePage.vue";
 import CalendarPage from "../pages/Calendar/CalendarPage.vue";
+import CalendarAIRepositoryPage from "../pages/Calendar/CalendarAIRepositoryPage.vue";
 
 import AddSoundForm from "../pages/sound/AddSoundForm.vue";
 import AudioLibraryPage from "../pages/sound/AudioLibraryPage.vue";
@@ -169,6 +170,11 @@ const routes = [
 
       // ? Calendar
       { path: "/calendar", name: "calendar", component: CalendarPage },
+      {
+        path: "/calendar-ai-repository",
+        name: "calendar-ai-repository",
+        component: CalendarAIRepositoryPage,
+      },
       { path: "/n8n-send-text", name: "n8n-send-text", component: N8nSendText },
       {
         path: "/ai-document-uploader",

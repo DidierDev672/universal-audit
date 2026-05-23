@@ -18,18 +18,25 @@ Este documento describe cómo implementar en el backend el almacenamiento del an
 const CALENDAR_AI_ANALYSES_API =
   "http://localhost:3000/api/v1/calendar-ai-analyses";
 
-// POST body
+// POST body (revisión de evento — tabla «Analizar IA»)
 {
-  calendarEventId: string;      // id del evento en calendar-events
+  calendarEventId: string;
   researchId: string | number | null;
   eventTitle: string;
   eventType: "task" | "research";
-  eventDate: string;            // YYYY-MM-DD
+  eventDate: string;            // YYYY-MM-DD inicio
+  eventEndDate: string;         // YYYY-MM-DD fin
   researchName: string | null;
   content: string;              // markdown del análisis IA
   generatedAt: string;          // ISO 8601
+  analysisType: "event_review";
+  assignmentProposal: null;
 }
 ```
+
+**Asignación de tarea con IA** (`analysisType: "task_assignment"`, modal «Asignar con IA»): ver [calendar-task-ai-assignment-api.md](./calendar-task-ai-assignment-api.md).
+
+Tipos y cliente HTTP: `src/shared/types/calendarAiAnalysis.ts`, `src/shared/api/calendarAiAnalysisApi.ts`.
 
 ### 1.3 Relación con otros recursos
 
@@ -52,7 +59,10 @@ const CALENDAR_AI_ANALYSES_API =
 | `research_id` | string \| null | FK opcional a `research.id` |
 | `event_title` | string | Desnormalizado (histórico si cambia el evento) |
 | `event_type` | enum `task`, `research` | |
-| `event_date` | date | Día mostrado en el resumen |
+| `event_date` | date | Inicio del rango del evento |
+| `event_end_date` | date \| null | Fin del rango |
+| `analysis_type` | enum | `event_review` \| `task_assignment` |
+| `assignment_proposal` | jsonb \| null | Propuesta estructurada (solo task_assignment) |
 | `research_name` | string \| null | Desnormalizado |
 | `content` | text | Markdown completo del análisis |
 | `model` | string \| null | Ej. `gemini-2.0-flash` (opcional, backend puede rellenarlo) |
