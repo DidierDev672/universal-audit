@@ -1,0 +1,210 @@
+/*
+ * Tipografía clínica — lectura cómoda
+ * H1 28px | H2 22px | H3 18px | Body 16px / 1.9 | Label 13px
+ */
+
+.ai-clinical-scroll {
+  background-color: rgb(248 250 252 / 0.85);
+}
+
+/* Contenedor de cards: space-y-8 entre secciones */
+.ai-clinical-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.ai-clinical-card {
+  background-color: #fff;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.ai-clinical-card > h1 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ai-clinical-card > h2 {
+  margin-top: 0 !important;
+  margin-bottom: 1rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ai-clinical-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ai-clinical-empty {
+  font-size: 16px;
+  line-height: 1.9;
+  color: #64748b;
+}
+
+.ai-clinical-typography {
+  font-size: 16px;
+  line-height: 1.9;
+  letter-spacing: -0.01em;
+  color: #475569;
+}
+
+.ai-clinical-typography h1 {
+  font-size: 28px;
+  line-height: 1.35;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.85em;
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ai-clinical-typography h2 {
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+  margin: 1.75em 0 0.55em;
+}
+
+.ai-clinical-typography h2:first-child {
+  margin-top: 0;
+}
+
+.ai-clinical-typography h3 {
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.35em;
+}
+
+.ai-clinical-typography h4 {
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: #334155;
+  margin: 0 0 0.25em;
+}
+
+.ai-clinical-typography p {
+  font-size: 16px;
+  line-height: 1.9;
+  letter-spacing: -0.01em;
+  color: #475569;
+  margin: 0;
+}
+
+.ai-clinical-typography ul,
+.ai-clinical-typography ol {
+  font-size: 16px;
+  line-height: 1.9;
+  letter-spacing: -0.01em;
+  color: #475569;
+  margin: 0;
+  padding-left: 1.35em;
+}
+
+.ai-clinical-typography li {
+  margin: 0.35em 0;
+}
+
+.ai-clinical-typography li > p {
+  margin: 0.25em 0;
+}
+
+.ai-clinical-typography p strong,
+.ai-clinical-typography li strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: 0.01em;
+}
+
+.ai-clinical-typography h1 strong,
+.ai-clinical-typography h2 strong,
+.ai-clinical-typography h3 strong,
+.ai-clinical-typography h4 strong {
+  font-size: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+.ai-clinical-typography hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 0.5em 0;
+}
+
+.ai-clinical-typography code {
+  font-size: 0.9em;
+  background: #f4f4f5;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  color: #334155;
+}
+
+.ai-clinical-typography pre {
+  background: #1e293b;
+  color: #f8fafc;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.ai-clinical-typography pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.ai-clinical-typography blockquote {
+  border-left: 3px solid #0d9e6e;
+  padding-left: 0.85rem;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.9;
+  letter-spacing: -0.01em;
+  color: #64748b;
+  font-style: italic;
+}
+
+.ai-clinical-typography a {
+  color: #0d9e6e;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ai-clinical-typography table {
+  width: 100%;
+  font-size: 13px;
+  line-height: 1.6;
+  border-collapse: collapse;
+  margin: 0;
+}
+
+.ai-clinical-typography th {
+  font-weight: 600;
+  color: #334155;
+  text-align: left;
+  padding: 0.5em 0.65em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ai-clinical-typography td {
+  padding: 0.45em 0.65em;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+}

@@ -36,6 +36,7 @@ import N8nSendText from "../components/n8n/N8nSendText.vue";
 import AiDocumentUploader from "../components/AI/AiDocumentUploader.vue";
 import AiDocumentList from "../components/AI/AiDocumentList.vue";
 import AiDocumentAnalysisList from "../components/AI/AiDocumentAnalysisList.vue";
+import HumanAnatomyPage from "../pages/anatomy/HumanAnatomyPage.vue";
 
 const routes = [
   { path: "/", name: "root-login", component: LoginForm },
@@ -183,6 +184,11 @@ const routes = [
         path: "/ai-analisis",
         name: "ai-analisis",
         component: AiDocumentAnalysisList,
+      },
+      {
+        path: "/anatomia-3d",
+        name: "anatomia-3d",
+        component: HumanAnatomyPage,
       },
     ],
   },

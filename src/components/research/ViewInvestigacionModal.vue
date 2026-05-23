@@ -1,14 +1,18 @@
 <template>
-  <!-- Modal Overlay -->
-  <transition name="modal">
-    <div v-if="isOpen" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      @click="close">
-      <!-- Modal Container -->
-      <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
-        @click.stop>
-        <!-- Modal Header -->
-        <div
-          class="relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4 flex items-center justify-between shrink-0">
+  <Teleport to="body">
+    <Transition name="app-modal">
+      <div v-if="isOpen" class="app-modal-root">
+        <div class="app-modal-backdrop" aria-hidden="true" @click="close" />
+        <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="close">
+          <div
+            class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            role="dialog"
+            aria-modal="true"
+            @click.stop
+          >
+        <header
+          class="app-modal-header relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4 flex items-center justify-between shrink-0"
+        >
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,10 +59,9 @@
               </svg>
             </button>
           </div>
-        </div>
+        </header>
 
-        <!-- Content Area -->
-        <div class="flex-1 overflow-hidden flex">
+        <div class="app-modal-body flex-1 overflow-hidden flex">
           <!-- Main Content -->
           <div ref="contentContainer" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 min-h-0 relative"
             @mouseup="handleTextSelection">
@@ -287,14 +290,18 @@
           </svg>
         </button>
 
-        <!-- Modal para crear nota con color y texto -->
-        <div v-if="showNoteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4"
-          @click.self="closeNoteModal">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-
-          <!-- Modal Content -->
-          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-modal-in">
+        <Teleport to="body">
+          <Transition name="app-modal">
+            <div v-if="showNoteModal" class="app-modal-root" style="z-index: 55">
+              <div class="app-modal-backdrop" aria-hidden="true" @click="closeNoteModal" />
+              <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeNoteModal">
+                <div
+                  class="app-modal-panel app-modal-panel--sheet relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+                  role="dialog"
+                  aria-modal="true"
+                  @click.stop
+                >
+            <div class="app-modal-body">
             <h3 class="text-lg font-bold text-gray-800 mb-4">Crear Nota</h3>
 
             <!-- Texto seleccionado -->
@@ -318,22 +325,24 @@
                 </button>
               </div>
             </div>
-            <!-- Botones -->
-            <div class="flex gap-2 justify-end">
+            </div>
+            <footer class="app-modal-footer flex gap-2 justify-end">
               <button @click="closeNoteModal"
-                class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
+                class="app-modal-btn px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
                 Cancelar
               </button>
               <button @click="createNoteFromModal" :disabled="!selectedModalColor"
-                class="px-4 py-2 text-sm bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors">
+                class="app-modal-btn px-4 py-2 text-sm bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors">
                 Crear Nota
               </button>
+            </footer>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </Transition>
+        </Teleport>
 
-        <!-- Footer -->
-        <div class="p-3 bg-white border-t border-gray-200 shrink-0">
+        <footer class="app-modal-footer p-3 bg-white border-t border-gray-200 shrink-0">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2 text-sm text-gray-600">
               <span class="font-medium">Investigación ID:</span>
@@ -341,19 +350,29 @@
             </div>
             <p class="text-xs text-gray-400">Selecciona texto para crear notas y highlights</p>
           </div>
+        </footer>
+          </div>
         </div>
       </div>
-    </div>
-  </transition>
+    </Transition>
+  </Teleport>
 
-  <!-- Modal para ver detalle de nota (outside transition - separate root element) -->
-  <div v-if="showNoteDetailModal && selectedNoteForDetail"
-    class="fixed inset-0 z-60 flex items-center justify-center p-4" @click.self="closeNoteDetail">
-    <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-
-    <!-- Modal Content -->
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 animate-modal-in">
+  <Teleport to="body">
+    <Transition name="app-modal">
+      <div
+        v-if="showNoteDetailModal && selectedNoteForDetail"
+        class="app-modal-root"
+        style="z-index: 60"
+      >
+        <div class="app-modal-backdrop" aria-hidden="true" @click="closeNoteDetail" />
+        <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeNoteDetail">
+          <div
+            class="app-modal-panel app-modal-panel--sheet relative bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6"
+            role="dialog"
+            aria-modal="true"
+            @click.stop
+          >
+            <div class="app-modal-body">
       <!-- Header -->
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
@@ -404,8 +423,12 @@
         <p class="text-xs text-gray-400">ID de la nota: <span class="font-mono">{{ selectedNoteForDetail.id }}</span>
         </p>
       </div>
-    </div>
-  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -1060,27 +1083,6 @@ export default {
 </script>
 
 <style scoped>
-/* Transiciones del modal */
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-/* Personalización de scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 3px;

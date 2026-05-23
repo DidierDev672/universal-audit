@@ -1,13 +1,16 @@
 <template>
-  <!-- Modal Overlay -->
-  <transition name="modal">
-    <div v-if="isOpen" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      @click="close">
-      <!-- Modal Container -->
-      <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
-        @click.stop>
-        <!-- Modal Header -->
-        <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 flex items-center justify-between shrink-0">
+  <Teleport to="body">
+    <Transition name="app-modal">
+      <div v-if="isOpen" class="app-modal-root">
+        <div class="app-modal-backdrop" aria-hidden="true" @click="close" />
+        <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="close">
+          <div
+            class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            role="dialog"
+            aria-modal="true"
+            @click.stop
+          >
+        <header class="app-modal-header bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4 flex items-center justify-between shrink-0">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,10 +59,9 @@
               </svg>
             </button>
           </div>
-        </div>
+        </header>
 
-        <!-- Research Content Area -->
-        <div ref="researchContainer" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 min-h-0 relative">
+        <div ref="researchContainer" class="app-modal-body flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 min-h-0 relative">
           <!-- Fondo con iconos animados -->
           <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="absolute top-10 left-10 w-8 h-8 text-gray-300/40 animate-float" style="animation-delay: 0s;">
@@ -131,21 +133,22 @@
               </button>
             </div>
           </div>
+        </div>
 
-          <!-- Footer de investigación -->
-          <div class="p-4 bg-white border-t border-gray-200 shrink-0 mt-auto">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2 text-sm text-gray-600">
-                <span class="font-medium">Prompt:</span>
-                <span class="text-gray-500 truncate max-w-md">{{ props.title }}</span>
-              </div>
-              <p class="text-xs text-gray-400">Selecciona texto para crear notas</p>
+        <footer class="app-modal-footer p-4 bg-white border-t border-gray-200 shrink-0">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-sm text-gray-600">
+              <span class="font-medium">Prompt:</span>
+              <span class="text-gray-500 truncate max-w-md">{{ props.title }}</span>
             </div>
+            <p class="text-xs text-gray-400">Selecciona texto para crear notas</p>
+          </div>
+        </footer>
           </div>
         </div>
       </div>
-    </div>
-  </transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -462,17 +465,6 @@ const cleanup = () => {
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
-}
-
-/* Transiciones del modal */
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
 }
 
 /* Personalización de scrollbar */

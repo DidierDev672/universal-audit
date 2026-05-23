@@ -1,6 +1,19 @@
 import { supabase } from "@/services/supabase";
+import {
+  uploadAiDocumentViaApi,
+  queueAiAnalysisViaApi,
+  type PatientDocumentContext,
+} from "@/services/aiDocumentUploadsApi";
 
 export type AiDocumentFileType = "pdf" | "word";
+
+export interface AiDocumentPatientInfo {
+  patientId?: string | null;
+  patientName: string;
+  patientDocumentType?: string | null;
+  patientDocumentNumber?: string | null;
+  patientBirthDate?: string | null;
+}
 
 export interface AiDocumentUploadRow {
   id: string;
@@ -12,6 +25,11 @@ export interface AiDocumentUploadRow {
   file_type: AiDocumentFileType;
   user_id: string | null;
   client_user_id: string | null;
+  patient_id?: string | null;
+  patient_name?: string | null;
+  patient_document_type?: string | null;
+  patient_document_number?: string | null;
+  patient_birth_date?: string | null;
   status: string;
   created_at: string;
   updated_at: string;
@@ -56,10 +74,58 @@ export function inferDocumentFileType(file: File): AiDocumentFileType | null {
   return null;
 }
 
-/** Sube el archivo a Storage e inserta fila en ai_document_uploads */
+function mapApiRowToUploadRow(
+  row: import("@/services/aiDocumentUploadsApi").AiDocumentUploadApiRow,
+): AiDocumentUploadRow {
+  return {
+    id: row.id,
+    storage_bucket: row.storage_bucket,
+    storage_object_path: row.storage_object_path,
+    original_filename: row.original_filename,
+    mime_type: row.mime_type,
+    file_size_bytes: row.file_size_bytes,
+    file_type: row.file_type,
+    user_id: null,
+    client_user_id: row.client_user_id,
+    patient_id: row.patient_id,
+    patient_name: row.patient_name,
+    patient_document_type: row.patient_document_type,
+    patient_document_number: row.patient_document_number,
+    patient_birth_date: row.patient_birth_date,
+    status: row.status,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+/** Sube vía API REST (recomendado) con datos del paciente */
 export async function storeAiDocument(
   file: File,
   clientUserId: string | null,
+  patient: AiDocumentPatientInfo,
+): Promise<AiDocumentUploadRow> {
+  const context: PatientDocumentContext = {
+    patientId: patient.patientId ?? null,
+    patientName: patient.patientName.trim(),
+    patientDocumentType: patient.patientDocumentType ?? null,
+    patientDocumentNumber: patient.patientDocumentNumber ?? null,
+    patientBirthDate: patient.patientBirthDate ?? null,
+  };
+
+  try {
+    const apiRow = await uploadAiDocumentViaApi(file, context, clientUserId);
+    return mapApiRowToUploadRow(apiRow);
+  } catch (apiError) {
+    console.warn("[ai-documents] API upload falló, intento Supabase directo:", apiError);
+    return storeAiDocumentDirect(file, clientUserId, patient);
+  }
+}
+
+/** Respaldo: Storage + Supabase directo */
+async function storeAiDocumentDirect(
+  file: File,
+  clientUserId: string | null,
+  patient: AiDocumentPatientInfo,
 ): Promise<AiDocumentUploadRow> {
   const fileType = inferDocumentFileType(file);
   if (!fileType) {
@@ -99,6 +165,11 @@ export async function storeAiDocument(
       file_size_bytes: file.size,
       file_type: fileType,
       client_user_id: clientUserId,
+      patient_id: patient.patientId ?? null,
+      patient_name: patient.patientName.trim(),
+      patient_document_type: patient.patientDocumentType ?? null,
+      patient_document_number: patient.patientDocumentNumber ?? null,
+      patient_birth_date: patient.patientBirthDate ?? null,
       status: "uploaded",
     })
     .select()
@@ -119,6 +190,33 @@ export async function queueAiAnalysisForDocuments(
 ): Promise<AiDocumentAnalysisRow[]> {
   if (documentUploadIds.length === 0) {
     throw new Error("No hay documentos para analizar");
+  }
+
+  const viaApi: AiDocumentAnalysisRow[] = [];
+  let useDirect = false;
+
+  for (const id of documentUploadIds) {
+    try {
+      const queued = await queueAiAnalysisViaApi(id);
+      viaApi.push({
+        id: queued.id,
+        document_upload_id: queued.document_upload_id,
+        response_text: null,
+        raw_response: {},
+        model_name: null,
+        status: queued.status,
+        error_message: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+    } catch {
+      useDirect = true;
+      break;
+    }
+  }
+
+  if (!useDirect && viaApi.length === documentUploadIds.length) {
+    return viaApi;
   }
 
   const rows = documentUploadIds.map((document_upload_id) => ({

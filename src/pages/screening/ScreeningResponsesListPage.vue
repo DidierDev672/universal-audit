@@ -825,14 +825,11 @@ onMounted(() => {
 
     <!-- Modal de Análisis con IA -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showAnalysisModal && currentAnalysis"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeAnalysisModal"></div>
-
-          <!-- Modal Content -->
-          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <Transition name="app-modal">
+        <div v-if="showAnalysisModal && currentAnalysis" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeAnalysisModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeAnalysisModal">
+          <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" @click.stop>
             <!-- Header -->
             <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4 rounded-t-2xl">
               <div class="flex items-center justify-between">
@@ -930,19 +927,17 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        </div>
       </Transition>
     </Teleport>
 
     <!-- Modal de Crear Nota Clínica -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showClinicalNoteModal && currentClinicalNote"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeClinicalNoteModal"></div>
-
-          <!-- Modal Content -->
-          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <Transition name="app-modal">
+        <div v-if="showClinicalNoteModal && currentClinicalNote" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeClinicalNoteModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeClinicalNoteModal">
+          <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" @click.stop>
             <!-- Header -->
             <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4 rounded-t-2xl">
               <div class="flex items-center justify-between">
@@ -1027,18 +1022,16 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        </div>
       </Transition>
     </Teleport>
     <!-- Modal de Ver Notas Clínicas del Paciente -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showViewNotesModal && currentViewingPatient"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeViewNotesModal"></div>
-
-          <!-- Modal Content -->
-          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <Transition name="app-modal">
+        <div v-if="showViewNotesModal && currentViewingPatient" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeViewNotesModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeViewNotesModal">
+          <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" @click.stop>
             <!-- Header -->
             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 rounded-t-2xl">
               <div class="flex items-center justify-between">
@@ -1164,18 +1157,16 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        </div>
       </Transition>
     </Teleport>
     <!-- Modal de Editar Nota Clínica -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showEditNoteModal && currentEditingNote"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeEditNoteModal"></div>
-
-          <!-- Modal Content -->
-          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <Transition name="app-modal">
+        <div v-if="showEditNoteModal && currentEditingNote" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeEditNoteModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeEditNoteModal">
+          <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" @click.stop>
             <!-- Header -->
             <div class="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4 rounded-t-2xl">
               <div class="flex items-center justify-between">
@@ -1245,6 +1236,7 @@ onMounted(() => {
               </button>
             </div>
           </div>
+        </div>
         </div>
       </Transition>
     </Teleport>

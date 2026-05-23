@@ -1162,13 +1162,11 @@ onMounted(() => {
 
     <!-- Detail Modal -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showDetailModal && selectedResponse" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeDetailModal"></div>
-
-          <!-- Modal Content -->
-          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden">
+      <Transition name="app-modal">
+        <div v-if="showDetailModal && selectedResponse" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeDetailModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeDetailModal">
+          <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true" @click.stop>
             <!-- Header -->
             <div class="bg-gradient-to-r from-teal-600 to-cyan-600 px-6 py-4">
               <div class="flex items-center justify-between">
@@ -1268,19 +1266,17 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        </div>
       </Transition>
     </Teleport>
 
     <!-- Clinical Note Modal -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showClinicalNoteModal && selectedResponseForNote"
-          class="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeClinicalNoteModal"></div>
-
-          <!-- Modal Content -->
-          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+      <Transition name="app-modal">
+        <div v-if="showClinicalNoteModal && selectedResponseForNote" class="app-modal-root" style="z-index: 60">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeClinicalNoteModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeClinicalNoteModal">
+          <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true" @click.stop>
             <!-- Header -->
             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
               <div class="flex items-center justify-between">
@@ -1345,17 +1341,16 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        </div>
       </Transition>
     </Teleport>
 
     <!-- View Notes Modal -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showViewNotesModal && selectedResponseForView"
-          class="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeViewNotesModal"></div>
-
+      <Transition name="app-modal">
+        <div v-if="showViewNotesModal && selectedResponseForView" class="app-modal-root" style="z-index: 60">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeViewNotesModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeViewNotesModal">
           <!-- Modal Content -->
           <div :class="[
             'relative bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300',
@@ -1515,19 +1510,17 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        </div>
       </Transition>
     </Teleport>
 
     <!-- AI Analysis Modal -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showAIAnalysisModal && selectedResponseForAI"
-          class="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeAIAnalysisModal"></div>
-
-          <!-- Modal Content -->
-          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      <Transition name="app-modal">
+        <div v-if="showAIAnalysisModal && selectedResponseForAI" class="app-modal-root" style="z-index: 60">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeAIAnalysisModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeAIAnalysisModal">
+          <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true" @click.stop>
             <!-- Header -->
             <div class="bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-4">
               <div class="flex items-center justify-between">
@@ -1618,17 +1611,16 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        </div>
       </Transition>
     </Teleport>
 
     <!-- View Saved Analysis Modal -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showViewAnalysisModal && selectedResponseForViewAnalysis"
-          class="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeViewAnalysisModal"></div>
-
+      <Transition name="app-modal">
+        <div v-if="showViewAnalysisModal && selectedResponseForViewAnalysis" class="app-modal-root" style="z-index: 60">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeViewAnalysisModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeViewAnalysisModal">
           <!-- Modal Content -->
           <div :class="[
             'relative bg-white rounded-2xl shadow-2xl w-full overflow-hidden transition-all duration-300',
@@ -2029,19 +2021,20 @@ onMounted(() => {
             <div v-if="showColorMenu" class="fixed inset-0 z-[65]" @click="closeColorMenu"></div>
           </div>
         </div>
+        </div>
       </Transition>
     </Teleport>
 
     <!-- Modal para Análisis de Notas por IA -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showNotesAnalysisModal"
-          class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[70]"
-          @click.self="closeNotesAnalysisModal">
+      <Transition name="app-modal">
+        <div v-if="showNotesAnalysisModal" class="app-modal-root" style="z-index: 70">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeNotesAnalysisModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeNotesAnalysisModal">
           <div :class="[
-            'bg-white rounded-2xl shadow-2xl w-full overflow-hidden flex flex-col transition-all duration-300',
+            'app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full overflow-hidden flex flex-col transition-all duration-300',
             isNotesAnalysisModalExpanded ? 'max-w-[95vw] max-h-[95vh]' : 'max-w-4xl max-h-[90vh]'
-          ]">
+          ]" role="dialog" aria-modal="true" @click.stop>
             <!-- Header -->
             <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4 flex justify-between items-center">
               <div class="flex items-center gap-3">
@@ -2167,32 +2160,13 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        </div>
       </Transition>
     </Teleport>
   </div>
 </template>
 
 <style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-active .relative,
-.modal-leave-active .relative {
-  transition: transform 0.3s ease;
-}
-
-.modal-enter-from .relative,
-.modal-leave-to .relative {
-  transform: scale(0.95);
-}
-
 /* Animación flotante para los iconos de fondo */
 @keyframes float {
 

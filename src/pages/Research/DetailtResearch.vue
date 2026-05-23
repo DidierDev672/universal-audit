@@ -741,15 +741,13 @@
     />
 
     <!-- Modal de Análisis IA -->
-    <div
-      v-if="showAnalysisModal"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4"
-      @click.self="closeAnalysisModal"
-    >
-      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-      <div
-        class="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
-      >
+    <Teleport to="body">
+    <Transition name="app-modal">
+      <div v-if="showAnalysisModal" class="app-modal-root">
+        <div class="app-modal-backdrop" aria-hidden="true" @click="closeAnalysisModal" />
+        <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeAnalysisModal">
+          <div class="app-modal-panel app-modal-panel--sheet relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+       role="dialog" aria-modal="true" @click.stop>
         <!-- Header -->
         <div
           class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-indigo-500"
@@ -945,8 +943,11 @@
             <p>Abre una investigación para ver su análisis.</p>
           </div>
         </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </Transition>
+  </Teleport>
   </div>
 </template>
 

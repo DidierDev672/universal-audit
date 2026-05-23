@@ -18,6 +18,10 @@ export interface AiDocumentAnalysisListItem {
   original_filename: string | null;
   created_at: string | null;
   updated_at: string | null;
+  patient_id?: string | null;
+  patient_name?: string | null;
+  patient_document_type?: string | null;
+  patient_document_number?: string | null;
 }
 
 function authHeaders(): Record<string, string> {
@@ -28,6 +32,42 @@ function authHeaders(): Record<string, string> {
   };
   if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
+}
+
+function strOrNull(v: unknown): string | null {
+  if (v == null || v === "") return null;
+  return String(v);
+}
+
+function readPatientFields(
+  r: Record<string, unknown>,
+): Pick<
+  AiDocumentAnalysisListItem,
+  | "patient_id"
+  | "patient_name"
+  | "patient_document_type"
+  | "patient_document_number"
+> {
+  const nested =
+    r.document_upload ??
+    r.documentUpload ??
+    r.upload ??
+    r.ai_document_upload;
+  const src =
+    nested && typeof nested === "object"
+      ? (nested as Record<string, unknown>)
+      : r;
+
+  return {
+    patient_id: strOrNull(src.patient_id ?? src.patientId),
+    patient_name: strOrNull(src.patient_name ?? src.patientName),
+    patient_document_type: strOrNull(
+      src.patient_document_type ?? src.patientDocumentType,
+    ),
+    patient_document_number: strOrNull(
+      src.patient_document_number ?? src.patientDocumentNumber,
+    ),
+  };
 }
 
 function normalizeItem(raw: unknown): AiDocumentAnalysisListItem | null {
@@ -68,6 +108,7 @@ function normalizeItem(raw: unknown): AiDocumentAnalysisListItem | null {
         : r.updatedAt != null
           ? String(r.updatedAt)
           : null,
+    ...readPatientFields(r),
   };
 }
 
@@ -142,6 +183,148 @@ export interface AiDocumentRedactionSaveResponse {
   document_upload_id?: string;
   analysis_id?: string;
   status?: string;
+}
+
+export interface AiDocumentRedactionListItem {
+  id: string;
+  document_upload_id: string;
+  analysis_id: string | null;
+  content: string;
+  model: string | null;
+  notes_count: number;
+  original_filename: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+function normalizeRedactionItem(raw: unknown): AiDocumentRedactionListItem | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+
+  const id = String(r.id ?? "");
+  if (!id) return null;
+
+  return {
+    id,
+    document_upload_id: String(
+      r.document_upload_id ?? r.documentUploadId ?? "",
+    ),
+    analysis_id:
+      r.analysis_id != null
+        ? String(r.analysis_id)
+        : r.analysisId != null
+          ? String(r.analysisId)
+          : null,
+    content: String(r.content ?? ""),
+    model:
+      r.model != null
+        ? String(r.model)
+        : r.model_name != null
+          ? String(r.model_name)
+          : null,
+    notes_count: Number(r.notes_count ?? r.notesCount ?? 0),
+    original_filename:
+      r.original_filename != null
+        ? String(r.original_filename)
+        : r.originalFilename != null
+          ? String(r.originalFilename)
+          : null,
+    created_at:
+      r.created_at != null
+        ? String(r.created_at)
+        : r.createdAt != null
+          ? String(r.createdAt)
+          : null,
+    updated_at:
+      r.updated_at != null
+        ? String(r.updated_at)
+        : r.updatedAt != null
+          ? String(r.updatedAt)
+          : null,
+  };
+}
+
+function extractRedactionsPayload(data: unknown): unknown[] {
+  if (Array.isArray(data)) return data;
+  if (data && typeof data === "object") {
+    const o = data as Record<string, unknown>;
+    for (const key of ["data", "body", "redactions", "items", "results"]) {
+      if (Array.isArray(o[key])) return o[key] as unknown[];
+    }
+  }
+  return [];
+}
+
+/** GET /api/v1/ai-document-redactions/ */
+export async function listAiDocumentRedactions(): Promise<AiDocumentRedactionListItem[]> {
+  const token = useAuthStore().authToken ?? localStorage.getItem("auth_token");
+  if (!token) {
+    throw new Error("Debes iniciar sesión para ver las redacciones.");
+  }
+
+  const { data } = await axios.get<unknown>(AI_DOCUMENT_REDACTIONS_API, {
+    headers: authHeaders(),
+  });
+
+  return extractRedactionsPayload(data)
+    .map(normalizeRedactionItem)
+    .filter((x): x is AiDocumentRedactionListItem => x !== null)
+    .sort((a, b) => {
+      const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return tb - ta;
+    });
+}
+
+/** GET /api/v1/ai-document-redactions/document-upload/:documentUploadId */
+export async function listAiDocumentRedactionsByDocumentUpload(
+  documentUploadId: string,
+): Promise<AiDocumentRedactionListItem[]> {
+  const token = useAuthStore().authToken ?? localStorage.getItem("auth_token");
+  if (!token) {
+    throw new Error("Debes iniciar sesión para ver las redacciones.");
+  }
+
+  const url = `${AI_DOCUMENT_REDACTIONS_API}document-upload/${encodeURIComponent(documentUploadId)}`;
+  const { data } = await axios.get<unknown>(url, { headers: authHeaders() });
+
+  return extractRedactionsPayload(data)
+    .map(normalizeRedactionItem)
+    .filter((x): x is AiDocumentRedactionListItem => x !== null)
+    .sort((a, b) => {
+      const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return tb - ta;
+    });
+}
+
+/** Redacciones (análisis IA) asociadas a un análisis de documento y sus notas */
+export async function listAiDocumentRedactionsByAnalysis(
+  analysisId: string,
+  documentUploadId: string,
+): Promise<AiDocumentRedactionListItem[]> {
+  const items = await listAiDocumentRedactionsByDocumentUpload(documentUploadId);
+  return items.filter((r) => r.analysis_id === analysisId);
+}
+
+/** GET /api/v1/ai-document-redactions/:id */
+export async function getAiDocumentRedactionById(
+  id: string,
+): Promise<AiDocumentRedactionListItem | null> {
+  const token = useAuthStore().authToken ?? localStorage.getItem("auth_token");
+  if (!token) {
+    throw new Error("Debes iniciar sesión para ver la redacción.");
+  }
+
+  const url = `${AI_DOCUMENT_REDACTIONS_API}${encodeURIComponent(id)}`;
+  const { data } = await axios.get<unknown>(url, { headers: authHeaders() });
+
+  if (data && typeof data === "object") {
+    const o = data as Record<string, unknown>;
+    const inner = o.data ?? data;
+    return normalizeRedactionItem(inner);
+  }
+  return null;
 }
 
 /** POST /api/v1/ai-document-redactions/ — guardar redacción con IA */

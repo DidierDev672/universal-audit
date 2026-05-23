@@ -663,12 +663,13 @@
     </main>
 
     <!-- Modal Ver Transcripción -->
-    <transition name="modal">
-      <div v-if="showTranscriptionModal && currentTranscription"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="showTranscriptionModal = false">
-        <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl" @click.stop>
-          <!-- Header -->
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showTranscriptionModal && currentTranscription" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="showTranscriptionModal = false" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="showTranscriptionModal = false">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] -col shadow-2xl" role="dialog" aria-modal="true" @click.stop>
+              <!-- Header -->
           <div
             class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-5 rounded-t-3xl flex items-center justify-between">
             <div>
@@ -862,17 +863,20 @@
               Descargar
             </button>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <!-- Modal Agregar Recurso -->
-    <transition name="modal">
-      <div v-if="showAddResourceModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="closeAddResourceModal">
-        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden" @click.stop>
-          <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showAddResourceModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeAddResourceModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeAddResourceModal">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden" role="dialog" aria-modal="true" @click.stop>
+              <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
             <div>
               <h3 class="text-lg font-semibold text-gray-800">Agregar Recurso</h3>
               <p class="text-xs text-gray-500">Sube un documento o pega una URL.</p>
@@ -931,18 +935,20 @@
               </button>
             </div>
           </form>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <!-- Modal Vincular Tamizajes/Cuestionarios -->
-    <transition name="modal">
-      <div v-if="showLinkScreeningModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="showLinkScreeningModal = false">
-        <div class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
-          @click.stop>
-          <!-- Header -->
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showLinkScreeningModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="showLinkScreeningModal = false" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="showLinkScreeningModal = false">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col" role="dialog" aria-modal="true" @click.stop>
+              <!-- Header -->
           <div
             class="px-6 py-5 border-b border-gray-200 flex items-center justify-between bg-gradient-to-r from-purple-600 to-pink-600">
             <div class="flex items-center gap-3">
@@ -1105,17 +1111,20 @@
               </button>
             </div>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <!-- Modal Nota de Highlight -->
-    <transition name="modal">
-      <div v-if="showHighlightNoteModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="closeHighlightNoteModal">
-        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden" @click.stop>
-          <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showHighlightNoteModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeHighlightNoteModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeHighlightNoteModal">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden" role="dialog" aria-modal="true" @click.stop>
+              <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
             <div>
               <h3 class="text-lg font-semibold text-gray-800">
                 {{ currentHighlight?.noteId ? 'Editar Nota Clínica' : 'Crear Nota Clínica' }}
@@ -1168,16 +1177,24 @@
               </button>
             </div>
           </form>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <!-- Modal de Visualización de Árbol (Vue Flow) -->
-    <transition name="fade">
-      <div v-if="showTreeModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        @click.self="showTreeModal = false">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[80vh] flex flex-col overflow-hidden">
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showTreeModal" class="app-modal-root">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="showTreeModal = false" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="showTreeModal = false">
+            <div
+              class="app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[80vh] flex flex-col overflow-hidden"
+              role="dialog"
+              aria-modal="true"
+              @click.stop
+            >
           <!-- Header -->
           <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
             <div class="flex items-center gap-3">
@@ -1224,16 +1241,24 @@
             <span class="text-indigo-600 font-medium">{{ treeNodes.length }} nodos • {{ treeEdges.length }}
               conexiones</span>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <!-- Modal de Nuevo Cuadro Clínico -->
-    <transition name="fade">
-      <div v-if="showClinicalPictureModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        @click.self="closeClinicalPictureModal">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showClinicalPictureModal" class="app-modal-root">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeClinicalPictureModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeClinicalPictureModal">
+            <div
+              class="app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+              role="dialog"
+              aria-modal="true"
+              @click.stop
+            >
           <!-- Header -->
           <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-emerald-50">
             <div class="flex items-center gap-3">
@@ -1294,12 +1319,12 @@
           <!-- Footer -->
           <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
             <button @click="closeClinicalPictureModal"
-              class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors">
+              class="app-modal-btn px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors">
               Cancelar
             </button>
             <button @click="createNewClinicalPicture"
               :disabled="isLoadingClinicalPictures || !clinicalPictureForm.title.trim()"
-              class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-medium rounded-lg transition-all flex items-center gap-2">
+              class="app-modal-btn px-6 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white font-medium rounded-lg transition-all flex items-center gap-2">
               <svg v-if="isLoadingClinicalPictures" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                 <path class="opacity-75" fill="currentColor"
@@ -1308,18 +1333,20 @@
               {{ isLoadingClinicalPictures ? 'Creando...' : 'Crear Cuadro Clínico' }}
             </button>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <!-- Modal de Respuestas de Tamizaje -->
-    <transition name="modal">
-      <div v-if="showScreeningResponsesModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="closeScreeningResponsesModal">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[85vh] overflow-hidden flex flex-col"
-          @click.stop>
-          <!-- Header -->
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showScreeningResponsesModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeScreeningResponsesModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeScreeningResponsesModal">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[85vh] overflow-hidden flex flex-col" role="dialog" aria-modal="true" @click.stop>
+              <!-- Header -->
           <div class="bg-gradient-to-r from-cyan-600 to-blue-600 px-6 py-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
@@ -1484,9 +1511,11 @@
               </button>
             </div>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <!-- Botones Flotantes de Cuadro Clínico y Árbol (fuera de tabs) -->
     <div class="fixed bottom-6 right-24 z-40 flex flex-col gap-3">
@@ -4123,28 +4152,6 @@ const scrollToBottom = async () => {
 </script>
 
 <style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
 }

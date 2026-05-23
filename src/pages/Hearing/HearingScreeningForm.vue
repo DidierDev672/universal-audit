@@ -696,7 +696,7 @@
             :disabled="!isFormValid || isSubmitting"
             :class="[
               'px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2',
-              'shadow-lg hover:shadow-xl transform hover:scale-105',
+              'shadow-lg hover:shadow-xl hover:scale-105',
               isFormValid && !isSubmitting
                 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed',
@@ -737,17 +737,18 @@
     </div>
 
     <!-- Success Modal -->
-    <transition name="modal">
-      <div
-        v-if="showSuccessModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="showSuccessModal = false"
-      >
-        <div
-          class="bg-white rounded-3xl p-8 max-w-md shadow-2xl transform scale-100"
-          @click.stop
-        >
-          <div class="text-center">
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showSuccessModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="showSuccessModal = false" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="showSuccessModal = false">
+            <div
+              class="app-modal-panel app-modal-panel--sheet max-w-md rounded-3xl bg-white p-8 shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              @click.stop
+            >
+              <div class="app-modal-body text-center">
             <div
               class="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"
             >
@@ -778,9 +779,11 @@
               Entendido
             </button>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -1077,25 +1080,5 @@ const uploadFileToSupabase = async () => {
 .list-leave-to {
   opacity: 0;
   transform: translateY(10px);
-}
-
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-active .bg-white,
-.modal-leave-active .bg-white {
-  transition: transform 0.3s ease;
-}
-
-.modal-enter-from .bg-white,
-.modal-leave-to .bg-white {
-  transform: scale(0.9);
 }
 </style>

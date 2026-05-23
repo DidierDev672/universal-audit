@@ -694,13 +694,13 @@ onMounted(() => {
     </div>
 
     <!-- Modal de Respuestas de Tamizaje -->
-    <transition name="modal">
-      <div v-if="showScreeningModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="closeScreeningModal">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[85vh] overflow-hidden flex flex-col"
-          @click.stop>
-          <!-- Header -->
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showScreeningModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeScreeningModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeScreeningModal">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[85vh] overflow-hidden flex flex-col" role="dialog" aria-modal="true" @click.stop>
+              <!-- Header -->
           <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-6 py-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
@@ -852,18 +852,20 @@ onMounted(() => {
               </button>
             </div>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <!-- Modal de Recursos de Tamizaje -->
-    <transition name="modal">
-      <div v-if="showScreeningResourcesModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="closeScreeningResourcesModal">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[85vh] overflow-hidden flex flex-col"
-          @click.stop>
-          <!-- Header -->
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showScreeningResourcesModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeScreeningResourcesModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeScreeningResourcesModal">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[85vh] overflow-hidden flex flex-col" role="dialog" aria-modal="true" @click.stop>
+              <!-- Header -->
           <div class="bg-linear-to-r from-emerald-600 via-teal-600 to-cyan-600 px-6 py-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
@@ -1019,25 +1021,13 @@ onMounted(() => {
               </button>
             </div>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: all 0.3s ease;
-}
-
-.modal-enter-from {
-  opacity: 0;
-  transform: scale(0.95);
-}
-
-.modal-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
-}
 </style>

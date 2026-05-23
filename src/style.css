@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./core/shared/modal/modalAnimations.css";
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

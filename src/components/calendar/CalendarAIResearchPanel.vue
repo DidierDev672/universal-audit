@@ -1,23 +1,25 @@
 <template>
-  <transition name="modal">
-    <div
-      v-if="isOpen"
-      class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6"
-      @click.self="emit('close')"
-    >
-      <div
-        class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
-        aria-hidden="true"
-      />
-      <div
-        class="relative flex flex-col w-full max-w-4xl max-h-[92vh] bg-slate-50 rounded-3xl shadow-2xl border border-slate-200 overflow-hidden"
-        role="dialog"
-        aria-labelledby="calendar-ai-panel-title"
-        @click.stop
-      >
-        <!-- Barra superior -->
+  <Teleport to="body">
+    <Transition name="app-modal">
+      <div v-if="isOpen" class="app-modal-root" style="z-index: 60">
         <div
-          class="shrink-0 flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white"
+          class="app-modal-backdrop"
+          aria-hidden="true"
+          @click="emit('close')"
+        />
+        <div
+          class="app-modal-scrim app-modal-scrim--sheet"
+          @click.self="emit('close')"
+        >
+          <div
+            class="app-modal-panel app-modal-panel--sheet relative flex flex-col w-full max-w-4xl max-h-[92vh] bg-slate-50 rounded-3xl shadow-2xl border border-slate-200 overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="calendar-ai-panel-title"
+            @click.stop
+          >
+        <header
+          class="app-modal-header shrink-0 flex items-center justify-between gap-4 px-6 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white"
         >
           <div class="flex items-center gap-3 min-w-0">
             <div
@@ -127,10 +129,9 @@
               </svg>
             </button>
           </div>
-        </div>
+        </header>
 
-        <!-- Contenido con patrón Z -->
-        <div class="flex-1 overflow-y-auto">
+        <div class="app-modal-body flex-1 overflow-y-auto">
           <!-- Z-1: esquina superior izquierda → derecha -->
           <div
             class="grid grid-cols-1 sm:grid-cols-2 gap-3 px-6 pt-6 pb-2 max-w-3xl mx-auto w-full"
@@ -280,9 +281,11 @@
             </div>
           </div>
         </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -365,15 +368,6 @@ const generatedAtLabel = computed(() => {
 </script>
 
 <style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.25s ease;
-}
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
 /* Lectura centrada + escaneo Z en el cuerpo del análisis */
 .ai-z-prose :deep(h1),
 .ai-z-prose :deep(h2),

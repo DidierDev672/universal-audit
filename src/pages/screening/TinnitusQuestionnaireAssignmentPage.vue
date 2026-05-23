@@ -696,15 +696,11 @@ onMounted(() => {
 
     <!-- Modal de Selección de Pacientes -->
     <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showPatientModal" class="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog"
-          aria-modal="true" aria-labelledby="modal-title">
-          <!-- Backdrop -->
-          <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closePatientModal" aria-hidden="true">
-          </div>
-
-          <!-- Modal Content -->
-          <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      <Transition name="app-modal">
+        <div v-if="showPatientModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closePatientModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closePatientModal">
+          <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden" role="dialog" aria-modal="true" @click.stop>
             <!-- Header -->
             <div class="bg-gradient-to-r from-teal-600 to-cyan-600 px-6 py-4">
               <div class="flex items-center justify-between">
@@ -818,29 +814,9 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        </div>
       </Transition>
     </Teleport>
   </div>
 </template>
 
-<style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-.modal-enter-active .relative,
-.modal-leave-active .relative {
-  transition: transform 0.3s ease;
-}
-
-.modal-enter-from .relative,
-.modal-leave-to .relative {
-  transform: scale(0.95);
-}
-</style>

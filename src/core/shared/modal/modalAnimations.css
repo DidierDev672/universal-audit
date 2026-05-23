@@ -1,0 +1,259 @@
+/**
+ * Animaciones globales para modales (Vue <Transition name="app-modal">).
+ * Overlay 150ms → panel 200ms (+50ms delay) → secciones 250ms escalonadas.
+ */
+
+.app-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.app-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgb(0 0 0 / 0.4);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.app-modal-scrim {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  pointer-events: none;
+}
+
+.app-modal-panel {
+  pointer-events: auto;
+  max-height: min(90vh, 100%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* —— Apertura / cierre del root (overlay) —— */
+.app-modal-enter-active,
+.app-modal-leave-active {
+  transition: opacity 150ms ease-out;
+}
+
+.app-modal-enter-from,
+.app-modal-leave-to {
+  opacity: 0;
+}
+
+/* —— Panel: fade + scale + translateY —— */
+.app-modal-enter-active .app-modal-panel,
+.app-modal-leave-active .app-modal-panel {
+  transition:
+    opacity 200ms ease-out,
+    transform 200ms ease-out;
+}
+
+.app-modal-enter-active .app-modal-panel {
+  transition-delay: 50ms;
+}
+
+.app-modal-enter-from .app-modal-panel,
+.app-modal-leave-to .app-modal-panel {
+  opacity: 0;
+  transform: scale(0.96) translateY(12px);
+}
+
+.app-modal-leave-active .app-modal-panel {
+  transition-delay: 0ms;
+}
+
+.app-modal-leave-to .app-modal-panel {
+  transform: scale(0.96) translateY(8px);
+}
+
+/* —— Secciones internas —— */
+.app-modal-enter-active .app-modal-header,
+.app-modal-leave-active .app-modal-header {
+  transition:
+    opacity 250ms ease-out,
+    transform 250ms ease-out;
+}
+
+.app-modal-enter-active .app-modal-header {
+  transition-delay: 100ms;
+}
+
+.app-modal-enter-from .app-modal-header,
+.app-modal-leave-to .app-modal-header {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.app-modal-enter-active .app-modal-body,
+.app-modal-leave-active .app-modal-body {
+  transition:
+    opacity 250ms ease-out,
+    transform 250ms ease-out;
+}
+
+.app-modal-enter-active .app-modal-body {
+  transition-delay: 150ms;
+}
+
+.app-modal-enter-from .app-modal-body,
+.app-modal-leave-to .app-modal-body {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.app-modal-enter-active .app-modal-footer,
+.app-modal-leave-active .app-modal-footer {
+  transition: opacity 250ms ease-out;
+}
+
+.app-modal-enter-active .app-modal-footer {
+  transition-delay: 200ms;
+}
+
+.app-modal-enter-from .app-modal-footer,
+.app-modal-leave-to .app-modal-footer {
+  opacity: 0;
+}
+
+.app-modal-leave-active .app-modal-header,
+.app-modal-leave-active .app-modal-body,
+.app-modal-leave-active .app-modal-footer {
+  transition-duration: 150ms;
+  transition-delay: 0ms;
+}
+
+/* —— Mobile: bottom sheet —— */
+@media (max-width: 639px) {
+  .app-modal-scrim--sheet {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .app-modal-panel--sheet {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 92dvh;
+  }
+
+  .app-modal-enter-from .app-modal-panel--sheet,
+  .app-modal-leave-to .app-modal-panel--sheet {
+    opacity: 1;
+    transform: translateY(100%);
+  }
+
+  .app-modal-enter-active .app-modal-panel--sheet,
+  .app-modal-leave-active .app-modal-panel--sheet {
+    transition:
+      opacity 200ms ease-out,
+      transform 200ms ease-out;
+  }
+}
+
+/* —— Botones en modales —— */
+.app-modal-btn {
+  transition: all 150ms ease-out;
+}
+
+.app-modal-btn:hover:not(:disabled) {
+  transform: scale(1.02);
+}
+
+.app-modal-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* —— Drawer lateral (bandeja, paneles derechos) —— */
+.app-drawer-root {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.app-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgb(0 0 0 / 0.4);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.app-drawer-panel {
+  position: relative;
+  pointer-events: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-drawer-enter-active,
+.app-drawer-leave-active {
+  transition: opacity 150ms ease-out;
+}
+
+.app-drawer-enter-from,
+.app-drawer-leave-to {
+  opacity: 0;
+}
+
+.app-drawer-enter-active .app-drawer-panel,
+.app-drawer-leave-active .app-drawer-panel {
+  transition: transform 200ms ease-out;
+}
+
+.app-drawer-enter-active .app-drawer-panel {
+  transition-delay: 50ms;
+}
+
+.app-drawer-enter-from .app-drawer-panel,
+.app-drawer-leave-to .app-drawer-panel {
+  transform: translateX(100%);
+}
+
+/* —— Accesibilidad: reduced motion —— */
+@media (prefers-reduced-motion: reduce) {
+  .app-modal-enter-active,
+  .app-modal-leave-active,
+  .app-modal-enter-active .app-modal-panel,
+  .app-modal-leave-active .app-modal-panel,
+  .app-modal-enter-active .app-modal-header,
+  .app-modal-leave-active .app-modal-header,
+  .app-modal-enter-active .app-modal-body,
+  .app-modal-leave-active .app-modal-body,
+  .app-modal-enter-active .app-modal-footer,
+  .app-modal-leave-active .app-modal-footer,
+  .app-drawer-enter-active,
+  .app-drawer-leave-active,
+  .app-drawer-enter-active .app-drawer-panel,
+  .app-drawer-leave-active .app-drawer-panel {
+    transition: none !important;
+  }
+
+  .app-modal-enter-from .app-modal-panel,
+  .app-modal-leave-to .app-modal-panel,
+  .app-modal-enter-from .app-modal-header,
+  .app-modal-leave-to .app-modal-header,
+  .app-modal-enter-from .app-modal-body,
+  .app-modal-leave-to .app-modal-body,
+  .app-modal-enter-from .app-modal-footer,
+  .app-modal-leave-to .app-modal-footer,
+  .app-modal-enter-from .app-modal-panel--sheet,
+  .app-modal-leave-to .app-modal-panel--sheet,
+  .app-drawer-enter-from .app-drawer-panel,
+  .app-drawer-leave-to .app-drawer-panel {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .app-modal-btn:hover:not(:disabled),
+  .app-modal-btn:active:not(:disabled) {
+    transform: none !important;
+  }
+}

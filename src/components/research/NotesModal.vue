@@ -1,18 +1,14 @@
 <template>
-  <div
-    v-if="isOpen"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4"
-    @click.self="close"
-  >
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-
-    <div
-      class="relative bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+  <Teleport to="body">
+  <Transition name="app-modal">
+    <div v-if="isOpen" class="app-modal-root">
+      <div class="app-modal-backdrop" aria-hidden="true" @click="close" />
+      <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="close">
+        <div class="app-modal-panel app-modal-panel--sheet relative bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
       style="width: 90vw; height: 85vh"
-    >
-      <!-- Header -->
-      <div
-        class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-indigo-500 to-purple-600"
+     role="dialog" aria-modal="true" @click.stop>
+      <header
+        class="app-modal-header flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-indigo-500 to-purple-600"
       >
         <h2 class="text-xl font-bold text-white flex items-center gap-2">
           <svg
@@ -48,10 +44,9 @@
             />
           </svg>
         </button>
-      </div>
+      </header>
 
-      <!-- Content -->
-      <div class="flex-1 overflow-y-auto p-6 space-y-6">
+      <div class="app-modal-body flex-1 overflow-y-auto p-6 space-y-6">
         <!-- Loading State -->
         <div
           v-if="loading"
@@ -665,19 +660,23 @@
         </div>
       </div>
 
-      <!-- Modal para Agregar Contexto -->
-      <div
-        v-if="showContextModal && noteToAddContext"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4"
-        @click.self="closeContextModal"
-      >
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-        <div
-          class="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden"
-        >
-          <!-- Header -->
+      <Teleport to="body">
+        <Transition name="app-modal">
           <div
-            class="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-emerald-50"
+            v-if="showContextModal && noteToAddContext"
+            class="app-modal-root"
+            style="z-index: 55"
+          >
+            <div class="app-modal-backdrop" aria-hidden="true" @click="closeContextModal" />
+            <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeContextModal">
+              <div
+                class="app-modal-panel app-modal-panel--sheet relative bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden"
+                role="dialog"
+                aria-modal="true"
+                @click.stop
+              >
+          <header
+            class="app-modal-header flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-emerald-50"
           >
             <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
               <svg
@@ -713,9 +712,8 @@
                 />
               </svg>
             </button>
-          </div>
-          <!-- Content -->
-          <div class="p-6">
+          </header>
+          <div class="app-modal-body p-6">
             <p class="text-sm text-gray-600 mb-4">
               Agrega contexto adicional a
               <strong>{{ noteToAddContext.title }}</strong
@@ -728,19 +726,18 @@
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none text-gray-700"
             ></textarea>
           </div>
-          <!-- Footer -->
-          <div
-            class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end gap-3"
+          <footer
+            class="app-modal-footer px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end gap-3"
           >
             <button
               @click="closeContextModal"
-              class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              class="app-modal-btn px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
             >
               Cancelar
             </button>
             <button
               @click="saveContext"
-              class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors flex items-center gap-2"
+              class="app-modal-btn px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors flex items-center gap-2"
             >
               <svg
                 class="w-4 h-4"
@@ -757,23 +754,30 @@
               </svg>
               Guardar
             </button>
+          </footer>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </Transition>
+      </Teleport>
 
-      <!-- Modal de Nota Completa -->
-      <div
-        v-if="showNoteModal && selectedNote"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4"
-        @click.self="closeNoteModal"
-      >
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-        <div
-          class="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
-        >
-          <!-- Header -->
+      <Teleport to="body">
+        <Transition name="app-modal">
           <div
-            class="flex items-center justify-between px-6 py-4 border-b border-gray-200"
+            v-if="showNoteModal && selectedNote"
+            class="app-modal-root"
+            style="z-index: 55"
+          >
+            <div class="app-modal-backdrop" aria-hidden="true" @click="closeNoteModal" />
+            <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeNoteModal">
+              <div
+                class="app-modal-panel app-modal-panel--sheet relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+                role="dialog"
+                aria-modal="true"
+                @click.stop
+              >
+          <header
+            class="app-modal-header flex items-center justify-between px-6 py-4 border-b border-gray-200"
             :class="selectedNote.color || 'bg-gray-50'"
           >
             <h3 class="text-lg font-bold text-gray-800">
@@ -797,31 +801,35 @@
                 />
               </svg>
             </button>
-          </div>
-          <!-- Content -->
-          <div class="p-6 overflow-y-auto max-h-[60vh]">
+          </header>
+          <div class="app-modal-body p-6 overflow-y-auto max-h-[60vh]">
             <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">
               {{ selectedNote.content }}
             </p>
           </div>
-          <!-- Footer -->
-          <div
-            class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between"
+          <footer
+            class="app-modal-footer px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between"
           >
             <span class="text-sm text-gray-500">{{
               formatDate(selectedNote.createdAt)
             }}</span>
             <button
               @click="closeNoteModal"
-              class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+              class="app-modal-btn px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
             >
               Cerrar
             </button>
+          </footer>
+              </div>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">

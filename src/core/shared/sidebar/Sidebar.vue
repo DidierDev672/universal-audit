@@ -1185,15 +1185,31 @@
               />
             </svg>
           </RouterLink>
+          <!-- AI — Subir documento -->
           <RouterLink
             to="/ai-document-uploader"
-            class="w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group"
+            :class="[
+              'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
+              activeItem === 'ai-document-uploader'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+                : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700',
+            ]"
           >
             <div
-              class="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all"
+              :class="[
+                'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
+                activeItem === 'ai-document-uploader'
+                  ? 'bg-white/20 backdrop-blur-sm'
+                  : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200',
+              ]"
             >
               <svg
-                class="w-6 h-6 transition-transform"
+                :class="[
+                  'w-6 h-6 transition-transform',
+                  activeItem === 'ai-document-uploader'
+                    ? 'text-white scale-110'
+                    : 'text-emerald-600',
+                ]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1208,17 +1224,58 @@
             </div>
             <div class="flex-1 text-left">
               <span class="font-semibold text-sm">AI — Subir documento</span>
+              <p
+                :class="[
+                  'text-xs mt-0.5',
+                  activeItem === 'ai-document-uploader'
+                    ? 'text-white/80'
+                    : 'text-gray-500',
+                ]"
+              >
+                Cargar documentos para análisis
+              </p>
             </div>
+            <svg
+              v-if="activeItem === 'ai-document-uploader'"
+              class="w-5 h-5 text-white animate-pulse"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
           </RouterLink>
+
+          <!-- AI — Ver documentos -->
           <RouterLink
             to="/ai-documentos"
-            class="w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group"
+            :class="[
+              'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
+              activeItem === 'ai-documentos'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+                : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700',
+            ]"
           >
             <div
-              class="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all"
+              :class="[
+                'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
+                activeItem === 'ai-documentos'
+                  ? 'bg-white/20 backdrop-blur-sm'
+                  : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200',
+              ]"
             >
               <svg
-                class="w-6 h-6 transition-transform"
+                :class="[
+                  'w-6 h-6 transition-transform',
+                  activeItem === 'ai-documentos'
+                    ? 'text-white scale-110'
+                    : 'text-emerald-600',
+                ]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1233,17 +1290,58 @@
             </div>
             <div class="flex-1 text-left">
               <span class="font-semibold text-sm">AI — Ver documentos</span>
+              <p
+                :class="[
+                  'text-xs mt-0.5',
+                  activeItem === 'ai-documentos'
+                    ? 'text-white/80'
+                    : 'text-gray-500',
+                ]"
+              >
+                Biblioteca de documentos
+              </p>
             </div>
+            <svg
+              v-if="activeItem === 'ai-documentos'"
+              class="w-5 h-5 text-white animate-pulse"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
           </RouterLink>
+
+          <!-- AI — Ver análisis -->
           <RouterLink
             to="/ai-analisis"
-            class="w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group"
+            :class="[
+              'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
+              activeItem === 'ai-analisis'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
+                : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700',
+            ]"
           >
             <div
-              class="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all"
+              :class="[
+                'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
+                activeItem === 'ai-analisis'
+                  ? 'bg-white/20 backdrop-blur-sm'
+                  : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200',
+              ]"
             >
               <svg
-                class="w-6 h-6 transition-transform"
+                :class="[
+                  'w-6 h-6 transition-transform',
+                  activeItem === 'ai-analisis'
+                    ? 'text-white scale-110'
+                    : 'text-emerald-600',
+                ]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -1258,62 +1356,19 @@
             </div>
             <div class="flex-1 text-left">
               <span class="font-semibold text-sm">AI — Ver análisis</span>
-            </div>
-          </RouterLink>
-          <RouterLink
-            to="/n8n-send-text"
-            @click="activeItem = 'n8n-send-text'"
-            :class="[
-              'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
-              activeItem === 'n8n-send-text'
-                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
-                : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700',
-            ]"
-          >
-            <div
-              :class="[
-                'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
-                activeItem === 'n8n-send-text'
-                  ? 'bg-white/20 backdrop-blur-sm'
-                  : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200',
-              ]"
-            >
-              <svg
-                :class="[
-                  'w-6 h-6 transition-transform',
-                  activeItem === 'n8n-send-text'
-                    ? 'text-white scale-110'
-                    : 'text-emerald-600',
-                ]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
-            </div>
-
-            <div class="flex-1 text-left">
-              <span class="font-semibold text-sm">n8n — Enviar texto</span>
               <p
                 :class="[
                   'text-xs mt-0.5',
-                  activeItem === 'n8n-send-text'
+                  activeItem === 'ai-analisis'
                     ? 'text-white/80'
                     : 'text-gray-500',
                 ]"
               >
-                POST gemini-task
+                Resultados de análisis con IA
               </p>
             </div>
-
             <svg
-              v-if="activeItem === 'n8n-send-text'"
+              v-if="activeItem === 'ai-analisis'"
               class="w-5 h-5 text-white animate-pulse"
               fill="none"
               stroke="currentColor"

@@ -389,16 +389,13 @@
     </div>
 
     <!-- Task Modal -->
-    <transition name="modal">
-      <div
-        v-if="showTaskModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click.self="closeTaskModal"
-      >
-        <div
-          class="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
-        >
-          <div class="p-6 border-b border-gray-100">
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showTaskModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeTaskModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeTaskModal">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" @click.stop>
+              <div class="p-6 border-b border-gray-100">
             <div class="flex items-center justify-between">
               <h3 class="text-xl font-bold text-gray-800">
                 {{ editingTask ? "Editar Tarea" : "Nueva Tarea Especial" }}
@@ -611,21 +608,20 @@
               </button>
             </div>
           </form>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <!-- Research Modal -->
-    <transition name="modal">
-      <div
-        v-if="showResearchModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click.self="closeResearchModal"
-      >
-        <div
-          class="bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
-        >
-          <div class="p-6 border-b border-gray-100">
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showResearchModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="closeResearchModal" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="closeResearchModal">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" @click.stop>
+              <div class="p-6 border-b border-gray-100">
             <div class="flex items-center justify-between">
               <h3 class="text-xl font-bold text-gray-800">
                 {{
@@ -817,19 +813,20 @@
               </button>
             </div>
           </form>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <!-- Event Detail Modal -->
-    <transition name="modal">
-      <div
-        v-if="selectedEvent"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click.self="selectedEvent = null"
-      >
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full">
-          <div class="p-6">
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="selectedEvent" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="selectedEvent = null" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="selectedEvent = null">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl shadow-2xl max-w-md w-full" role="dialog" aria-modal="true" @click.stop>
+              <div class="p-6">
             <div class="flex items-center justify-between mb-4">
               <span
                 :class="[
@@ -971,9 +968,11 @@
               </button>
             </div>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
 
     <CalendarAIResearchPanel
       :is-open="aiPanelOpen"
@@ -1986,13 +1985,4 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
 </style>

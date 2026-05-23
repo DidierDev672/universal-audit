@@ -300,12 +300,13 @@
     </form>
 
     <!-- Success Modal -->
-    <transition name="modal">
-      <div v-if="showSuccessModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        @click="showSuccessModal = false">
-        <div class="bg-white rounded-3xl p-8 max-w-md shadow-2xl" @click.stop>
-          <div class="text-center">
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="showSuccessModal" class="app-modal-root" style="z-index: 50">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="showSuccessModal = false" />
+          <div class="app-modal-scrim app-modal-scrim--sheet" @click.self="showSuccessModal = false">
+            <div class="app-modal-panel app-modal-panel--sheet bg-white rounded-3xl p-8 max-w-md shadow-2xl" role="dialog" aria-modal="true" @click.stop>
+              <div class="text-center">
             <div
               class="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
               <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -319,9 +320,11 @@
               Entendido
             </button>
           </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -525,13 +528,4 @@ const resetForm = () => {
   transform: translateY(10px);
 }
 
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
 </style>
