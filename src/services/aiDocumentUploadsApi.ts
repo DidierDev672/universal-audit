@@ -32,6 +32,13 @@ export interface AiDocumentUploadApiRow {
   updated_at: string;
 }
 
+export interface UploadAiImageBatchInput {
+  files: File[];
+  patientName: string;
+  patientId?: string | null;
+  clientUserId?: string | null;
+}
+
 function authHeaders(): Record<string, string> {
   const store = useAuthStore();
   const token = store.authToken ?? localStorage.getItem("auth_token");
@@ -134,6 +141,34 @@ export async function uploadAiDocumentViaApi(
     throw new Error("Respuesta inválida del servidor al subir documento");
   }
   return row;
+}
+
+/** POST múltiples imágenes en lote */
+export async function uploadAiImagesViaApi(
+  input: UploadAiImageBatchInput,
+): Promise<AiDocumentUploadApiRow[]> {
+  if (input.files.length === 0) return [];
+  const patientName = input.patientName.trim();
+  if (!patientName) {
+    throw new Error("El nombre del paciente es requerido para almacenar imágenes.");
+  }
+
+  const uploads: AiDocumentUploadApiRow[] = [];
+  for (const file of input.files) {
+    if (!file.type.startsWith("image/")) {
+      throw new Error(`Archivo no válido para imagen: ${file.name}`);
+    }
+    const row = await uploadAiDocumentViaApi(
+      file,
+      {
+        patientId: input.patientId ?? null,
+        patientName,
+      },
+      input.clientUserId ?? null,
+    );
+    uploads.push(row);
+  }
+  return uploads;
 }
 
 /** POST /api/v1/ai-document-uploads/:id/queue-analysis */

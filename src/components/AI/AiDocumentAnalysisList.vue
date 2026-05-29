@@ -303,12 +303,14 @@
                 </div>
               </div>
 
-              <footer class="analysis-sheet-footer">
-                <span class="text-[11px] text-slate-400">Análisis con IA</span>
-                <span class="analysis-sheet-cta">
-                  Ver detalle
+              <footer class="analysis-sheet-footer flex-col items-stretch gap-2 !mt-4">
+                <button
+                  type="button"
+                  class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-[12px] font-semibold text-violet-800 transition-colors hover:bg-violet-100"
+                  @click.stop="abrirNotasDocumento(item)"
+                >
                   <svg
-                    class="h-3.5 w-3.5"
+                    class="h-4 w-4 shrink-0"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -318,10 +320,33 @@
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M9 5l7 7-7 7"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
-                </span>
+                  Ver notas del documento
+                </button>
+                <div
+                  class="flex items-center justify-between gap-2 text-[11px] text-slate-400"
+                >
+                  <span>Análisis con IA</span>
+                  <span class="analysis-sheet-cta">
+                    Ver detalle
+                    <svg
+                      class="h-3.5 w-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </span>
+                </div>
               </footer>
             </div>
           </button>
@@ -539,10 +564,10 @@
                       >
                         {{
                           cargandoRedaccionesNotas
-                            ? "Cargando análisis de notas…"
+                            ? "Cargando análisis guardados…"
                             : redaccionesNotas.length > 0
-                              ? `Ver análisis de notas (${redaccionesNotas.length})`
-                              : "Ver análisis de notas guardados"
+                              ? `Ver análisis guardados (${redaccionesNotas.length})`
+                              : "Ver análisis guardados"
                         }}
                       </button>
                     </div>
@@ -740,11 +765,25 @@
                   <!-- Vista: notas (Vue Flow) -->
                   <div
                     v-show="vistaModal === 'notas'"
-                    class="flex-1 min-h-0 flex flex-col relative"
+                    class="flex-1 min-h-0 flex flex-col overflow-hidden relative"
                   >
                     <div
                       class="shrink-0 px-4 pt-3 pb-2 flex flex-wrap items-center gap-2 border-b border-black/[0.06] bg-[#fafafa]/80"
                     >
+                      <button
+                        type="button"
+                        :disabled="
+                          notasDelAnalisis.length === 0 || analizandoNotasIA
+                        "
+                        class="py-2 px-3 text-[12px] font-medium text-white bg-gradient-to-r from-emerald-600 to-teal-600 rounded-[9px] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                        @click="analizarNotasConIA"
+                      >
+                        {{
+                          analizandoNotasIA
+                            ? "Analizando…"
+                            : "Analizar notas con IA"
+                        }}
+                      </button>
                       <button
                         type="button"
                         :disabled="
@@ -761,6 +800,18 @@
                       </button>
                       <button
                         type="button"
+                        class="py-2 px-3 text-[12px] font-medium rounded-[9px] border border-violet-200 text-violet-800 hover:bg-violet-50 transition-colors disabled:opacity-50"
+                        :disabled="cargandoRedaccionesNotas"
+                        @click="abrirListaRedaccionesNotas"
+                      >
+                        {{
+                          cargandoRedaccionesNotas
+                            ? "Cargando…"
+                            : "Ver análisis guardados"
+                        }}
+                      </button>
+                      <button
+                        type="button"
                         class="py-2 px-3 text-[12px] font-medium rounded-[9px] border transition-colors"
                         :class="
                           panelAnalisisVisible
@@ -772,9 +823,108 @@
                         {{
                           panelAnalisisVisible
                             ? "Ocultar análisis"
-                            : "Ver análisis (markdown)"
+                            : "Ver análisis del documento"
                         }}
                       </button>
+                    </div>
+
+                    <div
+                      class="ai-modal-notes-scroll flex-1 min-h-0 overflow-y-auto overflow-x-hidden"
+                    >
+                    <div
+                      v-if="cargandoNotasDocumento"
+                      class="mx-4 mt-3 rounded-xl border border-slate-200 bg-white px-4 py-6 text-center text-[12px] text-slate-500"
+                    >
+                      Cargando notas vinculadas al documento…
+                    </div>
+
+                    <div
+                      v-else-if="
+                        panelAnalisisNotasIAVisible ||
+                        analizandoNotasIA ||
+                        errorAnalisisNotasIA
+                      "
+                      class="mx-4 mt-3 overflow-hidden rounded-xl border border-emerald-200 bg-white shadow-sm"
+                    >
+                      <div
+                        class="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-2.5"
+                      >
+                        <span
+                          class="text-[11px] font-semibold text-emerald-800"
+                        >
+                          Análisis IA de las notas
+                        </span>
+                        <div class="flex flex-wrap items-center gap-1.5">
+                        <button
+                          v-if="markdownAnalisisNotasIA && !analizandoNotasIA"
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-emerald-800 shadow-sm hover:bg-emerald-50"
+                          @click="abrirModalAnalisisGuardados({ preview: true })"
+                        >
+                          Ver en modal
+                        </button>
+                        <button
+                          v-if="markdownAnalisisNotasIA && !analizandoNotasIA"
+                          type="button"
+                          :disabled="!puedeGuardarAnalisisNotasIA"
+                          class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          @click="guardarAnalisisNotasIA"
+                        >
+                          <svg
+                            class="h-3.5 w-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                            />
+                          </svg>
+                          {{
+                            guardandoAnalisisNotasIA
+                              ? "Guardando…"
+                              : analisisNotasIAGuardado
+                                ? "Actualizar análisis"
+                                : "Guardar análisis"
+                          }}
+                        </button>
+                        </div>
+                      </div>
+                      <div class="px-4 py-4">
+                        <div
+                          v-if="analizandoNotasIA"
+                          class="py-8 text-center text-[12px] text-slate-500"
+                        >
+                          Generando análisis con inteligencia artificial…
+                        </div>
+                        <p
+                          v-else-if="errorAnalisisNotasIA"
+                          class="text-[12px] text-red-600"
+                        >
+                          {{ errorAnalisisNotasIA }}
+                        </p>
+                        <template v-else-if="markdownAnalisisNotasIA">
+                          <div
+                            class="ai-clinical-scroll ai-modal-analysis-scroll ai-clinical-typography ai-analysis-markdown max-h-[min(42vh,360px)] max-w-none overflow-y-auto pr-1"
+                            v-html="analisisNotasIAHtml"
+                          />
+                          <p
+                            v-if="mensajeGuardadoAnalisisNotasIA"
+                            class="mt-3 text-[11px] rounded-lg px-3 py-2"
+                            :class="
+                              errorGuardadoAnalisisNotasIA
+                                ? 'text-red-700 bg-red-50 border border-red-200/60'
+                                : 'text-emerald-800 bg-emerald-50 border border-emerald-200/60'
+                            "
+                          >
+                            {{ mensajeGuardadoAnalisisNotasIA }}
+                          </p>
+                        </template>
+                      </div>
                     </div>
 
                     <div
@@ -831,11 +981,13 @@
                       </VueFlow>
                     </div>
 
+                    </div>
+
                     <!-- Panel detalle / edición de contexto -->
                     <Transition name="fade">
                       <div
                         v-if="notaDetalleFlow"
-                        class="shrink-0 border-t border-black/[0.06] bg-white px-5 py-4 max-h-[40%] overflow-y-auto"
+                        class="shrink-0 border-t border-black/[0.06] bg-white px-5 py-4 max-h-[40%] overflow-y-auto ai-modal-notes-scroll"
                       >
                         <div
                           class="flex items-start justify-between gap-2 mb-2"
@@ -1140,6 +1292,16 @@
         </div>
       </Transition>
     </Teleport>
+
+    <AiDocumentNoteAnalysisViewModal
+      :is-open="modalAnalisisGuardadosAbierto"
+      :document-title="modalAnalisisGuardadosTitulo"
+      :analysis-id="seleccionado?.id ?? ''"
+      :document-upload-id="seleccionado?.document_upload_id ?? ''"
+      :preview-markdown="modalAnalisisPreviewMarkdown"
+      :preview-notes-count="notasDelAnalisis.length"
+      @close="cerrarModalAnalisisGuardados"
+    />
   </div>
 </template>
 
@@ -1172,8 +1334,20 @@ import type {
   AiAnalysisNoteColor,
 } from "@/types/aiAnalysisNote";
 import AiAnalysisNoteNode from "./AiAnalysisNoteNode.vue";
+import AiDocumentNoteAnalysisViewModal from "./AiDocumentNoteAnalysisViewModal.vue";
 import AppIconWallpaper from "@/core/shared/wallpaper/AppIconWallpaper.vue";
 import { renderClinicalMarkdown } from "./clinicalMarkdownCards";
+import {
+  createAiDocumentAnalysisNote,
+  getAiDocumentAnalysisNotes,
+} from "@/shared/api/aiDocumentAnalysisNoteApi";
+import {
+  NOTE_COLOR_THEMES,
+  themeByBackground,
+  type NoteColorTheme,
+} from "@/shared/constants/noteColorThemes";
+import { runAiDocumentNoteAnalysis } from "@/shared/service/aiDocumentNoteAnalysisAi";
+import type { AiDocumentAnalysisNoteRecord } from "@/shared/types/aiDocumentAnalysisNote";
 
 const md = new MarkdownIt({
   html: false,
@@ -1279,12 +1453,40 @@ const redaccionesNotas = ref<AiDocumentRedactionListItem[]>([]);
 const cargandoRedaccionesNotas = ref(false);
 const errorRedaccionesNotas = ref<string | null>(null);
 const redaccionNotaSeleccionada = ref<AiDocumentRedactionListItem | null>(null);
+const cargandoNotasDocumento = ref(false);
+const analizandoNotasIA = ref(false);
+const markdownAnalisisNotasIA = ref("");
+const errorAnalisisNotasIA = ref<string | null>(null);
+const panelAnalisisNotasIAVisible = ref(false);
+const guardandoAnalisisNotasIA = ref(false);
+const analisisNotasIAGuardado = ref(false);
+const analisisNotasIAIdGuardado = ref<string | null>(null);
+const mensajeGuardadoAnalisisNotasIA = ref("");
+const errorGuardadoAnalisisNotasIA = ref(false);
+const modalAnalisisGuardadosAbierto = ref(false);
+const modalAnalisisPreviewMarkdown = ref<string | null>(null);
+
+const COLOR_LABEL_TO_THEME: Record<string, NoteColorTheme> = {
+  Naranja: NOTE_COLOR_THEMES[0]!,
+  Amarillo: NOTE_COLOR_THEMES[0]!,
+  Púrpura: NOTE_COLOR_THEMES[1]!,
+  Lavanda: NOTE_COLOR_THEMES[1]!,
+  Azul: NOTE_COLOR_THEMES[2]!,
+  Cielo: NOTE_COLOR_THEMES[2]!,
+  Rosa: NOTE_COLOR_THEMES[3]!,
+  Melocotón: NOTE_COLOR_THEMES[0]!,
+  Verde: NOTE_COLOR_THEMES[2]!,
+};
 
 const notasDelAnalisis = computed(() => {
   const id = seleccionado.value?.id;
   if (!id) return [];
   return notasPorAnalisis.value[id] ?? [];
 });
+
+const modalAnalisisGuardadosTitulo = computed(() =>
+  seleccionado.value ? tituloCard(seleccionado.value) : "Documento",
+);
 
 const analisisVisibles = computed(() => {
   const q = busquedaPaciente.value.trim().toLowerCase();
@@ -1330,7 +1532,80 @@ function storageKey(analysisId: string) {
   return `ai-analysis-notes-${analysisId}`;
 }
 
-function cargarNotas(analysisId: string) {
+function colorClassesFromRecord(
+  record: AiDocumentAnalysisNoteRecord,
+): AiAnalysisNoteColor {
+  const byName = COLOR_LABEL_TO_THEME[record.color_name?.trim() ?? ""];
+  if (byName) {
+    return colorClassesFromThemeName(byName.name);
+  }
+  const theme = themeByBackground(record.color);
+  if (theme) return colorClassesFromThemeName(theme.name);
+  return coloresNota[0]!;
+}
+
+function colorClassesFromThemeName(themeName: string): AiAnalysisNoteColor {
+  const key = themeName.trim();
+  const match = coloresNota.find(
+    (c) => c.name.toLowerCase() === key.toLowerCase(),
+  );
+  if (match) return match;
+  const lower = key.toLowerCase();
+  if (lower.includes("lavanda") || lower.includes("púrpura")) {
+    return coloresNota.find((c) => c.name === "Púrpura") ?? coloresNota[0]!;
+  }
+  if (lower.includes("cielo") || lower.includes("azul")) {
+    return coloresNota.find((c) => c.name === "Azul") ?? coloresNota[0]!;
+  }
+  if (lower.includes("rosa")) {
+    return coloresNota.find((c) => c.name === "Rosa") ?? coloresNota[0]!;
+  }
+  if (lower.includes("melocot") || lower.includes("naranja")) {
+    return coloresNota.find((c) => c.name === "Naranja") ?? coloresNota[0]!;
+  }
+  return coloresNota[0]!;
+}
+
+function themeFromColorSelection(
+  color: AiAnalysisNoteColor,
+): NoteColorTheme {
+  return COLOR_LABEL_TO_THEME[color.name] ?? NOTE_COLOR_THEMES[0]!;
+}
+
+function mapApiNoteToFlow(
+  record: AiDocumentAnalysisNoteRecord,
+  analysisId: string,
+): AiAnalysisNote {
+  const classes = colorClassesFromRecord(record);
+  return {
+    id: record.id,
+    analysisId,
+    content: record.content,
+    context: "",
+    colorName: record.color_name || classes.name,
+    bgClass: classes.bgClass,
+    borderClass: classes.borderClass,
+    textClass: classes.textClass,
+    createdAt: record.created_at,
+    updatedAt: record.updated_at ?? record.created_at,
+  };
+}
+
+async function cargarNotas(analysisId: string) {
+  cargandoNotasDocumento.value = true;
+  try {
+    const apiNotes = await getAiDocumentAnalysisNotes(analysisId);
+    notasPorAnalisis.value[analysisId] = apiNotes
+      .filter((n) => n.ai_document_analysis_id === analysisId)
+      .map((n) => mapApiNoteToFlow(n, analysisId));
+    persistirNotas(analysisId);
+    return;
+  } catch {
+    /* fallback local */
+  } finally {
+    cargandoNotasDocumento.value = false;
+  }
+
   try {
     const raw = localStorage.getItem(storageKey(analysisId));
     notasPorAnalisis.value[analysisId] = raw
@@ -1375,6 +1650,16 @@ function resetEstadoNotas() {
   cargandoRedaccionesNotas.value = false;
   errorRedaccionesNotas.value = null;
   redaccionNotaSeleccionada.value = null;
+  cargandoNotasDocumento.value = false;
+  analizandoNotasIA.value = false;
+  markdownAnalisisNotasIA.value = "";
+  errorAnalisisNotasIA.value = null;
+  panelAnalisisNotasIAVisible.value = false;
+  guardandoAnalisisNotasIA.value = false;
+  analisisNotasIAGuardado.value = false;
+  analisisNotasIAIdGuardado.value = null;
+  mensajeGuardadoAnalisisNotasIA.value = "";
+  errorGuardadoAnalisisNotasIA.value = false;
 }
 
 async function cargarRedaccionesNotas() {
@@ -1401,10 +1686,23 @@ async function cargarRedaccionesNotas() {
 }
 
 async function abrirListaRedaccionesNotas() {
-  menuFabAbierto.value = false;
-  vistaModal.value = "lista-redacciones-notas";
-  redaccionNotaSeleccionada.value = null;
   await cargarRedaccionesNotas();
+  abrirModalAnalisisGuardados();
+}
+
+function abrirModalAnalisisGuardados(opciones?: { preview?: boolean }) {
+  if (!seleccionado.value) return;
+  menuFabAbierto.value = false;
+  modalAnalisisPreviewMarkdown.value =
+    opciones?.preview && markdownAnalisisNotasIA.value?.trim()
+      ? markdownAnalisisNotasIA.value.trim()
+      : null;
+  modalAnalisisGuardadosAbierto.value = true;
+}
+
+function cerrarModalAnalisisGuardados() {
+  modalAnalisisGuardadosAbierto.value = false;
+  modalAnalisisPreviewMarkdown.value = null;
 }
 
 function abrirDetalleRedaccionNota(item: AiDocumentRedactionListItem) {
@@ -1489,6 +1787,20 @@ const redaccionNotaDetalleHtml = computed(() =>
   renderClinicalMarkdown(md, redaccionNotaSeleccionada.value?.content),
 );
 
+const analisisNotasIAHtml = computed(() => {
+  const raw = markdownAnalisisNotasIA.value?.trim();
+  if (!raw) return "";
+  return renderClinicalMarkdown(md, raw, "");
+});
+
+const puedeGuardarAnalisisNotasIA = computed(
+  () =>
+    !!markdownAnalisisNotasIA.value?.trim() &&
+    !!seleccionado.value &&
+    !guardandoAnalisisNotasIA.value &&
+    !analizandoNotasIA.value,
+);
+
 const puedeGuardarRedaccion = computed(
   () =>
     !!textoRedaccionNotas.value?.trim() &&
@@ -1570,6 +1882,50 @@ async function redactarNotasConIA() {
     alert(`Error al redactar: ${errorRedaccion.value}`);
   } finally {
     redactandoNotas.value = false;
+  }
+}
+
+async function guardarAnalisisNotasIA() {
+  const analysis = seleccionado.value;
+  const texto = markdownAnalisisNotasIA.value?.trim();
+  if (!analysis || !texto) return;
+
+  const token = localStorage.getItem("auth_token");
+  if (!token) {
+    alert("Debes iniciar sesión para guardar el análisis. Ve a /login.");
+    return;
+  }
+
+  guardandoAnalisisNotasIA.value = true;
+  mensajeGuardadoAnalisisNotasIA.value = "";
+  errorGuardadoAnalisisNotasIA.value = false;
+
+  const payload = {
+    document_upload_id: analysis.document_upload_id,
+    analysis_id: analysis.id,
+    content: texto,
+    model: GEMINI_MODEL_NAME,
+    notes_count: notasDelAnalisis.value.length,
+    original_filename: analysis.original_filename ?? tituloCard(analysis),
+    ...(analisisNotasIAIdGuardado.value
+      ? { redaction_id: analisisNotasIAIdGuardado.value }
+      : {}),
+  };
+
+  try {
+    const data = await saveAiDocumentRedaction(payload);
+    if (data?.id) analisisNotasIAIdGuardado.value = data.id;
+    analisisNotasIAGuardado.value = true;
+    mensajeGuardadoAnalisisNotasIA.value =
+      "Análisis de notas guardado correctamente.";
+    await cargarRedaccionesNotas();
+    abrirModalAnalisisGuardados();
+  } catch (err) {
+    const msg = readAiAnalysesApiError(err);
+    errorGuardadoAnalisisNotasIA.value = true;
+    mensajeGuardadoAnalisisNotasIA.value = msg;
+  } finally {
+    guardandoAnalisisNotasIA.value = false;
   }
 }
 
@@ -1744,10 +2100,51 @@ function claseEstado(status: string): string {
 
 function abrirDetalle(item: AiDocumentAnalysisListItem) {
   seleccionado.value = item;
-  cargarNotas(item.id);
   resetEstadoNotas();
   modalAbierto.value = true;
+  void cargarNotas(item.id).then(() => sincronizarFlowNotas());
   void cargarRedaccionesNotas();
+}
+
+async function abrirNotasDocumento(item: AiDocumentAnalysisListItem) {
+  seleccionado.value = item;
+  resetEstadoNotas();
+  modalAbierto.value = true;
+  vistaModal.value = "notas";
+  await cargarNotas(item.id);
+  sincronizarFlowNotas();
+  void cargarRedaccionesNotas();
+}
+
+async function analizarNotasConIA() {
+  const analysis = seleccionado.value;
+  if (!analysis || notasDelAnalisis.value.length === 0) {
+    alert("Crea al menos una nota vinculada al documento antes de analizar.");
+    return;
+  }
+
+  analizandoNotasIA.value = true;
+  errorAnalisisNotasIA.value = null;
+  panelAnalisisNotasIAVisible.value = true;
+  menuFabAbierto.value = false;
+  analisisNotasIAGuardado.value = false;
+  analisisNotasIAIdGuardado.value = null;
+  mensajeGuardadoAnalisisNotasIA.value = "";
+  errorGuardadoAnalisisNotasIA.value = false;
+
+  try {
+    const { analysisMarkdown } = await runAiDocumentNoteAnalysis({
+      aiDocumentAnalysisId: analysis.id,
+      documentTitle: tituloCard(analysis),
+      documentAnalysisExcerpt: analysis.content,
+    });
+    markdownAnalisisNotasIA.value = analysisMarkdown;
+  } catch (e) {
+    errorAnalisisNotasIA.value =
+      e instanceof Error ? e.message : "No se pudo analizar las notas.";
+  } finally {
+    analizandoNotasIA.value = false;
+  }
 }
 
 function cerrarModal() {
@@ -1776,29 +2173,52 @@ function cancelarCrearNota() {
   vistaModal.value = notasDelAnalisis.value.length > 0 ? "notas" : "analisis";
 }
 
-function guardarNuevaNota() {
+async function guardarNuevaNota() {
   const analysis = seleccionado.value;
   const color = colorNotaSeleccionado.value;
   const content = nuevaNotaContent.value.trim();
   if (!analysis || !color || !content) return;
 
   const now = new Date().toISOString();
-  const nota: AiAnalysisNote = {
-    id: crypto.randomUUID(),
-    analysisId: analysis.id,
-    content,
-    context: nuevaNotaContext.value.trim(),
-    colorName: color.name,
-    bgClass: color.bgClass,
-    borderClass: color.borderClass,
-    textClass: color.textClass,
-    createdAt: now,
-    updatedAt: now,
-  };
+  const theme = themeFromColorSelection(color);
 
-  const list = [...(notasPorAnalisis.value[analysis.id] ?? []), nota];
-  notasPorAnalisis.value[analysis.id] = list;
-  persistirNotas(analysis.id);
+  try {
+    const saved = await createAiDocumentAnalysisNote({
+      ai_document_analysis_id: analysis.id,
+      content,
+      color: theme.background,
+      color_name: theme.name,
+      created_at: now,
+    });
+    const nota = mapApiNoteToFlow(
+      {
+        ...saved,
+        ai_document_analysis_id: analysis.id,
+      },
+      analysis.id,
+    );
+    nota.context = nuevaNotaContext.value.trim();
+
+    const list = [...(notasPorAnalisis.value[analysis.id] ?? []), nota];
+    notasPorAnalisis.value[analysis.id] = list;
+    persistirNotas(analysis.id);
+  } catch {
+    const nota: AiAnalysisNote = {
+      id: crypto.randomUUID(),
+      analysisId: analysis.id,
+      content,
+      context: nuevaNotaContext.value.trim(),
+      colorName: color.name,
+      bgClass: color.bgClass,
+      borderClass: color.borderClass,
+      textClass: color.textClass,
+      createdAt: now,
+      updatedAt: now,
+    };
+    const list = [...(notasPorAnalisis.value[analysis.id] ?? []), nota];
+    notasPorAnalisis.value[analysis.id] = list;
+    persistirNotas(analysis.id);
+  }
 
   nuevaNotaContent.value = "";
   nuevaNotaContext.value = "";
@@ -2381,5 +2801,34 @@ onMounted(() => {
   background: #f8fafc;
   color: #94a3b8;
   font-style: italic;
+}
+
+.ai-modal-notes-scroll,
+.ai-modal-analysis-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+.ai-modal-notes-scroll::-webkit-scrollbar,
+.ai-modal-analysis-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ai-modal-notes-scroll::-webkit-scrollbar-track,
+.ai-modal-analysis-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.ai-modal-notes-scroll::-webkit-scrollbar-thumb,
+.ai-modal-analysis-scroll::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+.ai-modal-notes-scroll::-webkit-scrollbar-thumb:hover,
+.ai-modal-analysis-scroll::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 </style>

@@ -35,9 +35,15 @@ import TinnitusResponsesListPage from "../pages/screening/TinnitusResponsesListP
 import Layout from "../core/shared/layout/Layout.vue";
 import N8nSendText from "../components/n8n/N8nSendText.vue";
 import AiDocumentUploader from "../components/AI/AiDocumentUploader.vue";
+import AiImageBatchAnalyzer from "../components/AI/AiImageBatchAnalyzer.vue";
+import AiImageAnalysesViewer from "../components/AI/AiImageAnalysesViewer.vue";
 import AiDocumentList from "../components/AI/AiDocumentList.vue";
 import AiDocumentAnalysisList from "../components/AI/AiDocumentAnalysisList.vue";
 import HumanAnatomyPage from "../pages/anatomy/HumanAnatomyPage.vue";
+import GenerativeModelConfigPage from "../pages/AI/GenerativeModelConfigPage.vue";
+import NotePackageComposer from "../components/notes/NotePackageComposer.vue";
+import NotePackagesViewer from "../components/notes/NotePackagesViewer.vue";
+import NotePackageDetailPage from "../pages/notes/NotePackageDetailPage.vue";
 
 const routes = [
   { path: "/", name: "root-login", component: LoginForm },
@@ -182,6 +188,16 @@ const routes = [
         component: AiDocumentUploader,
       },
       {
+        path: "/ai-image-analyzer",
+        name: "ai-image-analyzer",
+        component: AiImageBatchAnalyzer,
+      },
+      {
+        path: "/ai-image-analyses",
+        name: "ai-image-analyses",
+        component: AiImageAnalysesViewer,
+      },
+      {
         path: "/ai-documentos",
         name: "ai-documentos",
         component: AiDocumentList,
@@ -192,9 +208,29 @@ const routes = [
         component: AiDocumentAnalysisList,
       },
       {
+        path: "/ai-model-config",
+        name: "ai-model-config",
+        component: GenerativeModelConfigPage,
+      },
+      {
         path: "/anatomia-3d",
         name: "anatomia-3d",
         component: HumanAnatomyPage,
+      },
+      {
+        path: "/note-packages",
+        name: "note-packages",
+        component: NotePackagesViewer,
+      },
+      {
+        path: "/note-packages/compose",
+        name: "note-packages-compose",
+        component: NotePackageComposer,
+      },
+      {
+        path: "/note-packages/:id",
+        name: "note-package-detail",
+        component: NotePackageDetailPage,
       },
     ],
   },

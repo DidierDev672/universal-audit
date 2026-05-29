@@ -1824,6 +1824,7 @@
       :research-name="aiPanelEvent?.researchName ?? null"
       :generated-at="aiGeneratedAt"
       :context-summary="aiContextSummary"
+      :calendar-ai-analysis-id="aiPanelAnalysisId"
       @close="closeAIPanel"
       @regenerate="regenerateAIAnalysis"
       @save="saveAIAnalysis"
@@ -1865,7 +1866,10 @@ import { push } from "notivue";
 import CalendarAIResearchPanel from "../../components/calendar/CalendarAIResearchPanel.vue";
 import CalendarTaskAssignmentAIPanel from "../../components/calendar/CalendarTaskAssignmentAIPanel.vue";
 import TaskAssignModeDialog from "../../components/calendar/TaskAssignModeDialog.vue";
-import { postCalendarAiAnalysis } from "../../shared/api/calendarAiAnalysisApi";
+import {
+  getCalendarAiAnalyses,
+  postCalendarAiAnalysis,
+} from "../../shared/api/calendarAiAnalysisApi";
 import { useCalendarTaskAiScheduleStore } from "../../stores/calendarTaskAiSchedule";
 import { useNotificationsStore } from "../../stores/notifications";
 import type {
@@ -2060,6 +2064,8 @@ const aiAnalyzingId = ref<string | null>(null);
 const aiSaving = ref(false);
 const aiSaveError = ref<string | null>(null);
 const aiSaveSuccess = ref(false);
+/** ID del análisis guardado en servidor (para vincular notas desde el panel). */
+const aiPanelAnalysisId = ref("");
 
 const aiContextSummary = computed(() => {
   const ev = aiPanelEvent.value;
@@ -3329,7 +3335,7 @@ function buildResearchMonitoringAIPrompt(
       ? `${extras.startTime} – ${extras.endTime}`
       : "—";
 
-  return `Eres un asistente experto en salud auditiva e investigación clínica.
+  return `Eres un asistente experto en salud y educación e investigación clínica.
 
 Analiza este bloque de investigación en el calendario y propón seguimiento claro para el equipo.
 
@@ -3414,6 +3420,7 @@ async function runResearchInstantAI(
   aiPanelContent.value = "";
   resetAISaveState();
   aiAnalyzingId.value = row.id;
+  void resolveAiPanelAnalysisId(row.id);
 
   try {
     const envelope = await fetchResearchMonitoringEnvelope(row, extras);
@@ -3846,6 +3853,7 @@ async function runAIAnalysisForEvent(
   aiPanelContent.value = "";
   resetAISaveState();
   aiAnalyzingId.value = event.id;
+  void resolveAiPanelAnalysisId(event.id);
 
   try {
     const prompt = customPrompt ?? buildCalendarEventAIPrompt(event);
@@ -3873,7 +3881,21 @@ function closeAIPanel() {
   aiPanelOpen.value = false;
   aiPanelLoading.value = false;
   aiAnalyzingId.value = null;
+  aiPanelAnalysisId.value = "";
   resetAISaveState();
+}
+
+async function resolveAiPanelAnalysisId(calendarEventId: string): Promise<void> {
+  try {
+    const list = await getCalendarAiAnalyses({ calendarEventId });
+    const latest = [...list].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )[0];
+    aiPanelAnalysisId.value = latest?.id ?? "";
+  } catch {
+    aiPanelAnalysisId.value = "";
+  }
 }
 
 function regenerateAIAnalysis() {
@@ -3908,7 +3930,8 @@ async function saveAIAnalysis() {
       findings: null,
     };
 
-    await postCalendarAiAnalysis(payload);
+    const saved = await postCalendarAiAnalysis(payload);
+    aiPanelAnalysisId.value = saved.id;
     aiSaveSuccess.value = true;
   } catch (err) {
     console.error("[saveAIAnalysis]", err);

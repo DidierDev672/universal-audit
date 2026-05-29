@@ -393,8 +393,12 @@ const activeItem = computed(() => {
   if (path === "/ai-document-uploader") return "ai-document-uploader";
   if (path === "/ai-documentos") return "ai-documentos";
   if (path === "/ai-analisis") return "ai-analisis";
+  if (path === "/ai-model-config") return "ai-model-config";
   if (path === "/calendar-ai-repository") return "calendario-ai-repositorio";
   if (path === "/anatomia-3d") return "anatomia-3d";
+  if (path === "/note-packages") return "note-packages";
+  if (path === "/note-packages/compose") return "note-packages-compose";
+  if (path.startsWith("/note-packages/")) return "note-package-detail";
   return "";
 });
 

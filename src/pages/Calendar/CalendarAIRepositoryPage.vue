@@ -248,9 +248,10 @@
               <CalendarEventTypeIcon :type="record.eventType" size="md" />
             </div>
             <time
-              class="text-xs font-medium text-slate-500 tabular-nums pt-1"
+              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11.5px] font-medium text-slate-500 tabular-nums bg-white/90 border border-slate-300/40 backdrop-blur-sm"
               :datetime="record.generatedAt || record.eventDate"
             >
+              <span class="w-1.5 h-1.5 rounded-full bg-current opacity-40" />
               {{ formatRecordDate(record) }}
             </time>
           </div>
@@ -286,15 +287,15 @@
             {{ recordExcerpt(record) }}
           </p>
 
-          <div class="mt-5 pt-4 border-t border-slate-100">
+          <div class="mt-5 pt-4 border-t border-slate-100 flex flex-col gap-2">
             <button
               type="button"
-              class="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-50 px-4 py-2.5 text-sm font-medium text-violet-700 border border-slate-200 transition-colors group-hover:bg-violet-50 group-hover:border-violet-200"
+              class="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+              :disabled="!hasDocumentAnalysis(record)"
               @click="openDetail(record)"
             >
-              Ver detalle
               <svg
-                class="w-4 h-4 transition-transform group-hover:translate-x-0.5"
+                class="h-4 w-4 shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -304,9 +305,47 @@
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M9 5l7 7-7 7"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
                 />
               </svg>
+              Ver análisis IA
+            </button>
+
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <RepositoryRecordActionsMenu
+                :label="documentAnalysisMenuLabel(record)"
+                menu-button-class="bg-slate-50 text-violet-800 border-slate-200 hover:bg-violet-50 hover:border-violet-200"
+                :items="documentAnalysisMenuItems(record)"
+                @select="(item) => onDocumentMenuSelect(record, item.id)"
+              />
+              <RepositoryRecordActionsMenu
+                :label="noteAnalysisMenuLabel(record)"
+                menu-button-class="bg-emerald-50 text-emerald-800 border-emerald-100 hover:bg-emerald-100 hover:border-emerald-200"
+                :items="noteAnalysisMenuItems(record)"
+                @select="(item) => onNoteMenuSelect(record, item.id)"
+              />
+            </div>
+
+            <button
+              type="button"
+              class="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-slate-700 border border-slate-200 transition-colors hover:bg-slate-50"
+              @click="openNotesModal(record)"
+            >
+              <svg
+                class="h-4 w-4 shrink-0 text-violet-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              Ver y gestionar notas
             </button>
           </div>
         </article>
@@ -331,7 +370,28 @@
       :research-name="selectedRecord?.researchName ?? null"
       :generated-at="selectedGeneratedAt"
       :context-summary="selectedContextSummary"
+      :calendar-ai-analysis-id="selectedRecord?.id ?? ''"
       @close="closeDetail"
+      @note-created="onNoteCreatedFromDetail"
+    />
+
+    <CalendarAnalysisNotesModal
+      :is-open="notesModalOpen"
+      :calendar-ai-analysis-id="notesRecord?.id ?? ''"
+      :event-title="notesRecord?.eventTitle ?? ''"
+      :event-type="notesRecord?.eventType ?? 'task'"
+      @close="closeNotesModal"
+    />
+
+    <CalendarNoteAnalysisViewModal
+      :is-open="noteAnalysisModalOpen"
+      :calendar-ai-analysis-id="noteAnalysisRecord?.id ?? ''"
+      :event-title="noteAnalysisRecord?.eventTitle ?? ''"
+      :event-type="noteAnalysisRecord?.eventType ?? 'task'"
+      :auto-generate="noteAnalysisAutoGenerate"
+      :force-generate="noteAnalysisForceGenerate"
+      @close="closeNoteAnalysisModal"
+      @generated="onNoteAnalysisGenerated"
     />
   </div>
 </template>
@@ -339,8 +399,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import CalendarAIResearchPanel from "../../components/calendar/CalendarAIResearchPanel.vue";
+import CalendarAnalysisNotesModal from "../../components/calendar/CalendarAnalysisNotesModal.vue";
+import CalendarNoteAnalysisViewModal from "../../components/calendar/CalendarNoteAnalysisViewModal.vue";
 import CalendarEventTypeIcon from "../../components/calendar/CalendarEventTypeIcon.vue";
+import RepositoryRecordActionsMenu, {
+  type RepositoryMenuItem,
+} from "../../components/calendar/RepositoryRecordActionsMenu.vue";
 import { getCalendarAiAnalyses } from "../../shared/api/calendarAiAnalysisApi";
+import { getCalendarAnalysisNoteAnalysisLogs } from "../../shared/api/calendarAnalysisNoteApi";
 import type {
   CalendarAiAnalysisRecord,
   CalendarEventType,
@@ -363,6 +429,14 @@ const dateFilter = ref("");
 
 const detailOpen = ref(false);
 const selectedRecord = ref<CalendarAiAnalysisRecord | null>(null);
+const notesModalOpen = ref(false);
+const notesRecord = ref<CalendarAiAnalysisRecord | null>(null);
+const noteAnalysisModalOpen = ref(false);
+const noteAnalysisRecord = ref<CalendarAiAnalysisRecord | null>(null);
+const noteAnalysisAutoGenerate = ref(false);
+const noteAnalysisForceGenerate = ref(false);
+/** IDs de documentos con al menos un análisis de notas guardado. */
+const noteAnalysisIds = ref<Set<string>>(new Set());
 
 const filteredAnalyses = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
@@ -484,11 +558,160 @@ function closeDetail(): void {
   selectedRecord.value = null;
 }
 
+function onNoteCreatedFromDetail(): void {
+  // La nota queda vinculada al documento; el usuario puede abrir «Ver y gestionar notas».
+}
+
+function openNotesModal(record: CalendarAiAnalysisRecord): void {
+  notesRecord.value = record;
+  notesModalOpen.value = true;
+}
+
+function closeNotesModal(): void {
+  notesModalOpen.value = false;
+  notesRecord.value = null;
+}
+
+function hasDocumentAnalysis(record: CalendarAiAnalysisRecord): boolean {
+  return Boolean(record.content?.trim());
+}
+
+function hasNoteAnalysis(record: CalendarAiAnalysisRecord): boolean {
+  return noteAnalysisIds.value.has(record.id);
+}
+
+function documentAnalysisMenuLabel(record: CalendarAiAnalysisRecord): string {
+  return hasDocumentAnalysis(record) ? "Informe IA" : "Sin informe";
+}
+
+function noteAnalysisMenuLabel(record: CalendarAiAnalysisRecord): string {
+  return hasNoteAnalysis(record) ? "Análisis de notas" : "Generar análisis notas";
+}
+
+function documentAnalysisMenuItems(
+  record: CalendarAiAnalysisRecord,
+): RepositoryMenuItem[] {
+  const tipo = record.eventType === "task" ? "tarea" : "investigación";
+  return [
+    {
+      id: "view-document",
+      label: "Ver análisis IA del informe",
+      hint: `Informe generado para la ${tipo}`,
+      disabled: !hasDocumentAnalysis(record),
+    },
+    {
+      id: "view-detail",
+      label: "Ver detalle completo",
+      hint: "Panel con contexto y contenido",
+      disabled: !hasDocumentAnalysis(record),
+    },
+  ];
+}
+
+function noteAnalysisMenuItems(record: CalendarAiAnalysisRecord): RepositoryMenuItem[] {
+  const tipo = record.eventType === "task" ? "tarea" : "investigación";
+  const items: RepositoryMenuItem[] = [];
+
+  if (hasNoteAnalysis(record)) {
+    items.push({
+      id: "view-notes-analysis",
+      label: "Ver análisis de notas guardado",
+      hint: "Informe IA sobre las notas vinculadas",
+    });
+    items.push({
+      id: "regenerate-notes-analysis",
+      label: "Regenerar análisis de notas",
+      hint: `Nuevo informe IA para la ${tipo}`,
+    });
+  } else {
+    items.push({
+      id: "generate-notes-analysis",
+      label: "Generar análisis de notas",
+      hint: `Crea el informe IA a partir de las notas de la ${tipo}`,
+    });
+  }
+
+  items.push({
+    id: "open-notes",
+    label: "Abrir notas del documento",
+    hint: "Grafo, crear notas y analizar desde el modal",
+  });
+
+  return items;
+}
+
+function onDocumentMenuSelect(
+  record: CalendarAiAnalysisRecord,
+  actionId: string,
+): void {
+  if (actionId === "view-document" || actionId === "view-detail") {
+    openDetail(record);
+  }
+}
+
+function onNoteMenuSelect(record: CalendarAiAnalysisRecord, actionId: string): void {
+  switch (actionId) {
+    case "view-notes-analysis":
+      openNoteAnalysisModal(record, { autoGenerate: false, forceGenerate: false });
+      break;
+    case "regenerate-notes-analysis":
+      openNoteAnalysisModal(record, { autoGenerate: false, forceGenerate: true });
+      break;
+    case "generate-notes-analysis":
+      openNoteAnalysisModal(record, { autoGenerate: true, forceGenerate: false });
+      break;
+    case "open-notes":
+      openNotesModal(record);
+      break;
+  }
+}
+
+function openNoteAnalysisModal(
+  record: CalendarAiAnalysisRecord,
+  options: { autoGenerate?: boolean; forceGenerate?: boolean } = {},
+): void {
+  noteAnalysisRecord.value = record;
+  noteAnalysisAutoGenerate.value = options.autoGenerate ?? false;
+  noteAnalysisForceGenerate.value = options.forceGenerate ?? false;
+  noteAnalysisModalOpen.value = true;
+}
+
+function closeNoteAnalysisModal(): void {
+  noteAnalysisModalOpen.value = false;
+  noteAnalysisRecord.value = null;
+  noteAnalysisAutoGenerate.value = false;
+  noteAnalysisForceGenerate.value = false;
+}
+
+function onNoteAnalysisGenerated(): void {
+  const id = noteAnalysisRecord.value?.id;
+  if (id) {
+    noteAnalysisIds.value = new Set([...noteAnalysisIds.value, id]);
+  }
+}
+
+async function refreshNoteAnalysisIndex(): Promise<void> {
+  try {
+    const logs = await getCalendarAnalysisNoteAnalysisLogs();
+    const ids = new Set<string>();
+    for (const log of logs) {
+      if (log.calendarAiAnalysisId) {
+        ids.add(log.calendarAiAnalysisId);
+      }
+    }
+    noteAnalysisIds.value = ids;
+  } catch (err) {
+    console.warn("[CalendarAIRepositoryPage] note analysis index", err);
+    noteAnalysisIds.value = new Set();
+  }
+}
+
 async function loadAnalyses(): Promise<void> {
   loading.value = true;
   error.value = null;
   try {
     analyses.value = await getCalendarAiAnalyses();
+    await refreshNoteAnalysisIndex();
   } catch (err) {
     console.error("[CalendarAIRepositoryPage]", err);
     error.value =

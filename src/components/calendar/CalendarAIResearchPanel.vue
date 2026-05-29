@@ -54,6 +54,29 @@
               </div>
               <div class="flex items-center gap-2 shrink-0">
                 <button
+                  v-if="canCreateNote"
+                  type="button"
+                  class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 transition-colors"
+                  title="Crear nota vinculada a este documento"
+                  @click="createNoteOpen = true"
+                >
+                  <svg
+                    class="w-4 h-4 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  Nueva nota
+                </button>
+                <button
                   v-if="!readOnly"
                   type="button"
                   :disabled="!canSave || saving"
@@ -339,12 +362,21 @@
         </div>
       </div>
     </Transition>
+
+    <CreateCalendarAnalysisNoteModal
+      :is-open="createNoteOpen"
+      :calendar-ai-analysis-id="calendarAiAnalysisId ?? ''"
+      :event-title="eventTitle || 'Documento'"
+      @close="createNoteOpen = false"
+      @created="onNoteCreated"
+    />
   </Teleport>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import MarkdownIt from "markdown-it";
+import CreateCalendarAnalysisNoteModal from "./CreateCalendarAnalysisNoteModal.vue";
 
 interface AnalysisSection {
   id: string;
@@ -370,6 +402,8 @@ const props = withDefaults(
     researchName?: string | null;
     generatedAt?: Date | null;
     contextSummary?: string;
+    /** ID del análisis guardado; necesario para vincular notas. */
+    calendarAiAnalysisId?: string;
   }>(),
   {
     readOnly: false,
@@ -385,6 +419,7 @@ const props = withDefaults(
     researchName: null,
     generatedAt: null,
     contextSummary: "",
+    calendarAiAnalysisId: "",
   },
 );
 
@@ -392,7 +427,26 @@ const emit = defineEmits<{
   close: [];
   regenerate: [];
   save: [];
+  "note-created": [];
 }>();
+
+const createNoteOpen = ref(false);
+
+const canCreateNote = computed(
+  () => !!props.calendarAiAnalysisId?.trim(),
+);
+
+function onNoteCreated(): void {
+  createNoteOpen.value = false;
+  emit("note-created");
+}
+
+watch(
+  () => props.isOpen,
+  (open) => {
+    if (!open) createNoteOpen.value = false;
+  },
+);
 
 const md = new MarkdownIt({
   html: false,

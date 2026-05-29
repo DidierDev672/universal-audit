@@ -24,6 +24,13 @@ export interface AiDocumentAnalysisListItem {
   patient_document_number?: string | null;
 }
 
+export interface SaveAiDocumentAnalysisPayload {
+  document_upload_id: string;
+  content: string;
+  model?: string;
+  analysis_id?: string | null;
+}
+
 function authHeaders(): Record<string, string> {
   const store = useAuthStore();
   const token = store.authToken ?? localStorage.getItem("auth_token");
@@ -166,6 +173,41 @@ export async function listAiDocumentAnalyses(): Promise<AiDocumentAnalysisListIt
       const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
       return tb - ta;
     });
+}
+
+/** POST /api/v1/ai-document-analyses/ */
+export async function saveAiDocumentAnalysis(
+  payload: SaveAiDocumentAnalysisPayload,
+): Promise<{ id: string; document_upload_id: string; created_at: string }> {
+  const token = useAuthStore().authToken ?? localStorage.getItem("auth_token");
+  if (!token) {
+    throw new Error("Debes iniciar sesión para guardar los análisis.");
+  }
+
+  const body = {
+    ...payload,
+    model: payload.model ?? GEMINI_MODEL_NAME,
+  };
+
+  const { data } = await axios.post<unknown>(AI_DOCUMENT_ANALYSES_API, body, {
+    headers: authHeaders(),
+  });
+
+  const inner =
+    data && typeof data === "object"
+      ? ((data as Record<string, unknown>).data ?? data)
+      : null;
+
+  if (!inner || typeof inner !== "object") {
+    throw new Error("Respuesta inválida al guardar el análisis");
+  }
+
+  const r = inner as Record<string, unknown>;
+  return {
+    id: String(r.id ?? ""),
+    document_upload_id: String(r.document_upload_id ?? payload.document_upload_id),
+    created_at: String(r.created_at ?? new Date().toISOString()),
+  };
 }
 
 export interface AiDocumentRedactionSavePayload {

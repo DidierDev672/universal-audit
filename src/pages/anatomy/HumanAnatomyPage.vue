@@ -39,13 +39,47 @@
             <p
               class="text-[11.5px] text-[#86868b] leading-relaxed tracking-tight max-w-2xl"
             >
-              Modelo anatómico estilizado con proporciones humanas: silueta
-              corporal y órganos con formas reconocibles (cerebro, corazón,
-              pulmones, riñones en forma de frijol, etc.).
+              Explora el cuerpo completo o selecciona un sistema orgánico para
+              visualizar sus estructuras en 3D (oído, cerebro, corazón, pulmón,
+              aparatos reproductivos, etc.).
             </p>
           </header>
 
-          <HumanBodyOrgans3D class="min-h-[560px]" />
+          <div class="flex gap-1 p-1 mb-4 rounded-xl bg-slate-100 w-fit">
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg text-[12px] font-medium transition-all"
+              :class="
+                vistaActiva === 'cuerpo'
+                  ? 'bg-white text-[#1d1d1f] shadow-sm'
+                  : 'text-[#86868b] hover:text-[#1d1d1f]'
+              "
+              @click="vistaActiva = 'cuerpo'"
+            >
+              Cuerpo completo
+            </button>
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg text-[12px] font-medium transition-all"
+              :class="
+                vistaActiva === 'sistemas'
+                  ? 'bg-white text-[#1d1d1f] shadow-sm'
+                  : 'text-[#86868b] hover:text-[#1d1d1f]'
+              "
+              @click="vistaActiva = 'sistemas'"
+            >
+              Sistemas y partes
+            </button>
+          </div>
+
+          <HumanBodyOrgans3D
+            v-if="vistaActiva === 'cuerpo'"
+            class="min-h-[560px]"
+          />
+          <OrganSystemViewer3D
+            v-else
+            class="min-h-[560px]"
+          />
         </div>
       </div>
     </div>
@@ -53,5 +87,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import HumanBodyOrgans3D from "@/components/anatomy/HumanBodyOrgans3D.vue";
+import OrganSystemViewer3D from "@/components/anatomy/OrganSystemViewer3D.vue";
+
+const vistaActiva = ref<"cuerpo" | "sistemas">("sistemas");
 </script>

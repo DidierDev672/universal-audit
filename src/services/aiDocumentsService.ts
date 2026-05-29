@@ -5,7 +5,7 @@ import {
   type PatientDocumentContext,
 } from "@/services/aiDocumentUploadsApi";
 
-export type AiDocumentFileType = "pdf" | "word";
+export type AiDocumentFileType = "pdf" | "word" | "image";
 
 export interface AiDocumentPatientInfo {
   patientId?: string | null;
@@ -70,6 +70,17 @@ export function inferDocumentFileType(file: File): AiDocumentFileType | null {
     lower.endsWith(".docx")
   ) {
     return "word";
+  }
+  if (
+    t.startsWith("image/") ||
+    lower.endsWith(".png") ||
+    lower.endsWith(".jpg") ||
+    lower.endsWith(".jpeg") ||
+    lower.endsWith(".webp") ||
+    lower.endsWith(".gif") ||
+    lower.endsWith(".bmp")
+  ) {
+    return "image";
   }
   return null;
 }

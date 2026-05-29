@@ -11,6 +11,13 @@ export interface PatientSummary {
   birthDate: string;
 }
 
+export interface CreatePatientManualPayload {
+  fullName: string;
+  documentType?: string;
+  documentNumber?: string;
+  birthDate?: string;
+}
+
 function authHeaders(contentType?: string): Record<string, string> {
   const store = useAuthStore();
   const token = store.authToken ?? localStorage.getItem("auth_token");
@@ -59,4 +66,31 @@ export async function listPatients(): Promise<PatientSummary[]> {
     .filter((row): row is Record<string, unknown> => !!row && typeof row === "object")
     .map(mapPatient)
     .filter((p) => p.id && p.fullName);
+}
+
+/** POST /api/v1/patients */
+export async function createPatientManual(
+  payload: CreatePatientManualPayload,
+): Promise<PatientSummary> {
+  const body = {
+    fullName: payload.fullName.trim(),
+    documentType: payload.documentType?.trim() || "",
+    documentNumber: payload.documentNumber?.trim() || "",
+    birthDate: payload.birthDate?.trim() || "",
+    isAllergic: null,
+    familyData: {
+      father: { fullName: "", age: null, diseases: [] as string[] },
+      mother: { fullName: "", age: null, diseases: [] as string[] },
+    },
+  };
+
+  const { data } = await axios.post<Record<string, unknown>>(PATIENTS_API, body, {
+    headers: authHeaders("application/json"),
+  });
+
+  if (!data || typeof data !== "object") {
+    throw new Error("Respuesta inválida al crear paciente");
+  }
+
+  return mapPatient(data);
 }
