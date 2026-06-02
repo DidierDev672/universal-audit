@@ -325,6 +325,33 @@
                   </svg>
                   Ver notas del documento
                 </button>
+
+                <!-- Edit + Delete action row -->
+                <div class="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-[12px] font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-800"
+                    @click.stop="openEditAnalisis(item)"
+                  >
+                    <svg class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-rose-100 bg-rose-50 px-3 py-2 text-[12px] font-medium text-rose-600 transition-colors hover:bg-rose-100 hover:text-rose-700"
+                    @click.stop="requestDeleteAnalisis(item)"
+                  >
+                    <svg class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Eliminar
+                  </button>
+                </div>
+
                 <div
                   class="flex items-center justify-between gap-2 text-[11px] text-slate-400"
                 >
@@ -369,6 +396,171 @@
         </p>
       </template>
     </div>
+
+    <!-- ── Delete Analysis Confirmation Dialog ───────────────────────────────── -->
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="deleteAnalisisDialogOpen" class="app-modal-root">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="cancelDeleteAnalisis" />
+          <div class="app-modal-scrim flex items-center justify-center p-4" @click.self="cancelDeleteAnalisis">
+            <div
+              class="pointer-events-auto relative w-full max-w-md overflow-hidden rounded-2xl border border-rose-200 bg-white shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              @click.stop
+            >
+              <div class="h-1.5 w-full bg-gradient-to-r from-rose-500 to-red-600" />
+
+              <div class="px-6 pt-6 pb-5">
+                <div class="mb-4 flex items-start gap-3">
+                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-100">
+                    <svg class="h-5 w-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                    </svg>
+                  </div>
+                  <div class="min-w-0">
+                    <h3 class="text-base font-semibold text-slate-900">Eliminar análisis de IA</h3>
+                    <p v-if="analisisPendingDelete" class="mt-0.5 line-clamp-1 text-xs font-medium text-rose-600">
+                      {{ analisisPendingDelete.patient_name ?? 'Sin paciente' }}
+                      <template v-if="analisisPendingDelete.original_filename">
+                        · {{ analisisPendingDelete.original_filename }}
+                      </template>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="rounded-xl border border-rose-100 bg-rose-50/70 px-4 py-3 text-sm leading-relaxed text-rose-900">
+                  <p class="font-semibold">Este análisis es el resultado de un proceso irrepetible.</p>
+                  <p class="mt-2 text-rose-800/90">
+                    La inteligencia artificial procesó el documento clínico de este paciente y generó
+                    conclusiones únicas. Si lo eliminas,
+                    <strong>perderás permanentemente ese razonamiento diagnóstico</strong>,
+                    las notas vinculadas y cualquier evidencia de los patrones detectados.
+                  </p>
+                  <p class="mt-2 text-rose-800/90">
+                    En lugar de eliminar, considera editar el contenido para corregirlo o completarlo.
+                    Un análisis incompleto sigue siendo más valioso que ninguno.
+                  </p>
+                </div>
+
+                <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    :disabled="deletingAnalisis"
+                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+                    @click="cancelDeleteAnalisis"
+                  >
+                    <svg class="h-4 w-4 shrink-0 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Mejor edito el análisis
+                  </button>
+                  <button
+                    type="button"
+                    :disabled="deletingAnalisis"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-rose-700 disabled:opacity-50"
+                    @click="confirmDeleteAnalisis"
+                  >
+                    <svg v-if="deletingAnalisis" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    {{ deletingAnalisis ? 'Eliminando…' : 'Sí, eliminar definitivamente' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- ── Edit Analysis Modal ─────────────────────────────────────────────── -->
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="editAnalisisDialogOpen" class="app-modal-root">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="cancelEditAnalisis" />
+          <div class="app-modal-scrim flex items-center justify-center p-4" @click.self="cancelEditAnalisis">
+            <div
+              class="pointer-events-auto relative flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              @click.stop
+            >
+              <div class="h-1 w-full bg-gradient-to-r from-emerald-400 to-emerald-600" />
+
+              <div class="px-6 pt-5 pb-4">
+                <div class="mb-4 flex items-center gap-3">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50">
+                    <svg class="h-5 w-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </div>
+                  <div class="min-w-0">
+                    <h3 class="text-base font-semibold text-slate-900">Editar análisis de IA</h3>
+                    <p v-if="analisisPendingEdit" class="mt-0.5 line-clamp-1 text-xs text-slate-500">
+                      {{ analisisPendingEdit.patient_name ?? 'Sin paciente asignado' }}
+                      <template v-if="analisisPendingEdit.original_filename">
+                        · {{ analisisPendingEdit.original_filename }}
+                      </template>
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <label for="edit-analisis-content" class="block text-sm font-medium text-slate-700 mb-1.5">
+                    Contenido del análisis
+                    <span class="ml-1.5 text-xs font-normal text-slate-400">(Markdown)</span>
+                  </label>
+                  <textarea
+                    id="edit-analisis-content"
+                    v-model="editAnalisisContent"
+                    rows="14"
+                    class="w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-mono text-[13px] leading-relaxed text-slate-800 shadow-sm outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100 disabled:opacity-50"
+                    :disabled="savingAnalisisEdit"
+                    placeholder="Contenido del análisis generado por IA…"
+                    @keydown.escape="cancelEditAnalisis"
+                  />
+                  <p class="mt-1 text-[11px] text-slate-400">
+                    Puedes corregir, completar o restructurar el texto. El formato Markdown se respetará al visualizarlo.
+                  </p>
+                </div>
+
+                <p v-if="editAnalisisError" class="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                  {{ editAnalisisError }}
+                </p>
+              </div>
+
+              <div class="flex shrink-0 flex-col-reverse gap-2 border-t border-slate-100 px-6 py-4 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  :disabled="savingAnalisisEdit"
+                  class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+                  @click="cancelEditAnalisis"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  :disabled="savingAnalisisEdit || !editAnalisisContent.trim()"
+                  class="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-50"
+                  @click="saveEditAnalisis"
+                >
+                  <svg v-if="savingAnalisisEdit" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  {{ savingAnalisisEdit ? 'Guardando…' : 'Guardar análisis' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
 
     <Teleport to="body">
       <Transition name="app-modal">
@@ -1317,11 +1509,13 @@ import "@vue-flow/core/dist/style.css";
 import "@vue-flow/core/dist/theme-default.css";
 import { useGetGenerativeModelGP } from "@/shared/service/useGetGenerativeModelGP";
 import {
+  deleteAiDocumentAnalysis,
   GEMINI_MODEL_NAME,
   listAiDocumentAnalyses,
   listAiDocumentRedactionsByAnalysis,
   readAiAnalysesApiError,
   saveAiDocumentRedaction,
+  updateAiDocumentAnalysis,
 } from "@/services/aiDocumentAnalysesApi";
 import { listAiDocuments } from "@/services/aiDocumentsService";
 import type { AiDocumentUploadRow } from "@/services/aiDocumentsService";
@@ -2301,6 +2495,90 @@ watch(vistaModal, (vista) => {
 watch(modalAbierto, (abierto) => {
   if (!abierto) resetEstadoNotas();
 });
+
+// ── Delete analysis ────────────────────────────────────────────────────────────
+const deleteAnalisisDialogOpen = ref(false);
+const analisisPendingDelete = ref<AiDocumentAnalysisListItem | null>(null);
+const deletingAnalisis = ref(false);
+
+function requestDeleteAnalisis(item: AiDocumentAnalysisListItem) {
+  analisisPendingDelete.value = item;
+  deleteAnalisisDialogOpen.value = true;
+}
+
+function cancelDeleteAnalisis() {
+  if (deletingAnalisis.value) return;
+  analisisPendingDelete.value = null;
+  deleteAnalisisDialogOpen.value = false;
+}
+
+async function confirmDeleteAnalisis() {
+  if (!analisisPendingDelete.value) return;
+  deletingAnalisis.value = true;
+  try {
+    await deleteAiDocumentAnalysis(analisisPendingDelete.value.id);
+    analisis.value = analisis.value.filter(
+      (a) => a.id !== analisisPendingDelete.value!.id,
+    );
+    if (seleccionado.value?.id === analisisPendingDelete.value.id) {
+      modalAbierto.value = false;
+      seleccionado.value = null;
+    }
+  } catch (e) {
+    error.value = readAiAnalysesApiError(e);
+  } finally {
+    deletingAnalisis.value = false;
+    deleteAnalisisDialogOpen.value = false;
+    analisisPendingDelete.value = null;
+  }
+}
+
+// ── Edit analysis ──────────────────────────────────────────────────────────────
+const editAnalisisDialogOpen = ref(false);
+const analisisPendingEdit = ref<AiDocumentAnalysisListItem | null>(null);
+const editAnalisisContent = ref('');
+const editAnalisisError = ref('');
+const savingAnalisisEdit = ref(false);
+
+function openEditAnalisis(item: AiDocumentAnalysisListItem) {
+  analisisPendingEdit.value = item;
+  editAnalisisContent.value = item.content;
+  editAnalisisError.value = '';
+  editAnalisisDialogOpen.value = true;
+}
+
+function cancelEditAnalisis() {
+  if (savingAnalisisEdit.value) return;
+  analisisPendingEdit.value = null;
+  editAnalisisContent.value = '';
+  editAnalisisError.value = '';
+  editAnalisisDialogOpen.value = false;
+}
+
+async function saveEditAnalisis() {
+  const content = editAnalisisContent.value.trim();
+  if (!content) {
+    editAnalisisError.value = 'El contenido del análisis no puede estar vacío.';
+    return;
+  }
+  editAnalisisError.value = '';
+  savingAnalisisEdit.value = true;
+  try {
+    await updateAiDocumentAnalysis(analisisPendingEdit.value!.id, content);
+    const idx = analisis.value.findIndex(
+      (a) => a.id === analisisPendingEdit.value!.id,
+    );
+    if (idx !== -1) analisis.value[idx] = { ...analisis.value[idx], content };
+    if (seleccionado.value?.id === analisisPendingEdit.value!.id) {
+      seleccionado.value = { ...seleccionado.value, content };
+    }
+    cancelEditAnalisis();
+  } catch (e) {
+    editAnalisisError.value = readAiAnalysesApiError(e);
+  } finally {
+    savingAnalisisEdit.value = false;
+  }
+}
 
 async function cargar() {
   cargando.value = true;

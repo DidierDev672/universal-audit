@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import NotePackageFolderCard, {
+  type FolderNotePeek,
+} from "@/components/notes/NotePackageFolderCard.vue";
 import {
+  deleteNotePackage,
   getNotePackageById,
   getNotePackages,
 } from "@/shared/api/notePackageApi";
@@ -13,11 +17,17 @@ const errorMessage = ref<string | null>(null);
 const packages = ref<NotePackageRecord[]>([]);
 const searchQuery = ref("");
 const packageNoteHaystack = ref<Record<string, string>>({});
+const packageNotePeeks = ref<Record<string, FolderNotePeek[]>>({});
 const indexingNotes = ref(false);
+const deleteDialogOpen = ref(false);
+const packagePendingDelete = ref<NotePackageRecord | null>(null);
+const deletingPackage = ref(false);
+const deleteErrorMessage = ref<string | null>(null);
 
 async function loadPackageSearchIndex(items: NotePackageRecord[]) {
   if (items.length === 0) {
     packageNoteHaystack.value = {};
+    packageNotePeeks.value = {};
     return;
   }
 
@@ -28,13 +38,21 @@ async function loadPackageSearchIndex(items: NotePackageRecord[]) {
     );
 
     const haystack: Record<string, string> = {};
+    const peeks: Record<string, FolderNotePeek[]> = {};
+
     for (const detail of details) {
       if (!detail) continue;
       haystack[detail.package.id] = detail.notes
         .map((note) => `${note.subject} ${note.content} ${note.colorName}`)
         .join(" ");
+      peeks[detail.package.id] = detail.notes.slice(0, 5).map((note) => ({
+        subject: note.subject,
+        color: note.color,
+      }));
     }
+
     packageNoteHaystack.value = haystack;
+    packageNotePeeks.value = peeks;
   } finally {
     indexingNotes.value = false;
   }
@@ -45,6 +63,7 @@ async function loadPackages() {
   errorMessage.value = null;
   searchQuery.value = "";
   packageNoteHaystack.value = {};
+  packageNotePeeks.value = {};
   try {
     const items = await getNotePackages();
     packages.value = items;
@@ -76,6 +95,13 @@ const filteredPackages = computed(() => {
   });
 });
 
+const packageCountLabel = computed(() =>
+  packages.value.length === 1 ? "Paquete" : "Paquetes",
+);
+
+const PACKAGES_COUNT_BADGE_CLASS =
+  "inline-flex items-center gap-1.5 rounded-lg bg-linear-to-r from-blue-50 via-sky-50/95 to-emerald-50 px-2.5 py-1 font-bold uppercase tracking-wide text-blue-900/90 ring-1 ring-blue-100/70 shadow-sm";
+
 function openPackage(id: string) {
   router.push({ name: "note-package-detail", params: { id } });
 }
@@ -91,6 +117,48 @@ function clearSearch() {
   searchQuery.value = "";
 }
 
+function requestDeletePackage(pkg: NotePackageRecord) {
+  packagePendingDelete.value = pkg;
+  deleteErrorMessage.value = null;
+  deleteDialogOpen.value = true;
+}
+
+function cancelDeletePackage() {
+  if (deletingPackage.value) return;
+  deleteDialogOpen.value = false;
+  packagePendingDelete.value = null;
+  deleteErrorMessage.value = null;
+}
+
+async function confirmDeletePackage() {
+  const pkg = packagePendingDelete.value;
+  if (!pkg || deletingPackage.value) return;
+
+  deletingPackage.value = true;
+  deleteErrorMessage.value = null;
+  errorMessage.value = null;
+
+  try {
+    await deleteNotePackage(pkg.id);
+    packages.value = packages.value.filter((item) => item.id !== pkg.id);
+    const nextHaystack = { ...packageNoteHaystack.value };
+    delete nextHaystack[pkg.id];
+    packageNoteHaystack.value = nextHaystack;
+    const nextPeeks = { ...packageNotePeeks.value };
+    delete nextPeeks[pkg.id];
+    packageNotePeeks.value = nextPeeks;
+    deleteDialogOpen.value = false;
+    packagePendingDelete.value = null;
+  } catch (e) {
+    deleteErrorMessage.value =
+      e instanceof Error
+        ? e.message
+        : "No se pudo eliminar el paquete de notas.";
+  } finally {
+    deletingPackage.value = false;
+  }
+}
+
 onMounted(loadPackages);
 </script>
 
@@ -103,16 +171,14 @@ onMounted(loadPackages);
         >
           Secciones
         </p>
-        <h1 class="mt-1 text-2xl font-semibold text-slate-900">
-          Paquetes de notas
-        </h1>
         <p class="mt-2 text-base font-medium leading-relaxed text-slate-600">
-          Cada tarjeta es una sección guardada con sus notas individuales.
+          Cada tarjeta muestra una carpeta manila con las notas del paquete.
+          Pasa el cursor sobre la carpeta para verlas asomarse.
         </p>
       </div>
       <router-link
         to="/note-packages/compose"
-        class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-700"
+        class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 ease-out hover:bg-violet-700 active:scale-[0.98]"
       >
         Crear nuevo paquete
       </router-link>
@@ -202,18 +268,34 @@ onMounted(loadPackages);
             </svg>
           </button>
         </div>
-        <p class="mt-2 text-xs font-medium text-slate-500">
+        <p
+          class="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs font-medium text-slate-500"
+        >
           <template v-if="indexingNotes">
             Indexando notas para búsqueda…
           </template>
           <template v-else-if="searchQuery.trim()">
-            {{ filteredPackages.length }}
+            <span class="tabular-nums">{{ filteredPackages.length }}</span>
             {{ filteredPackages.length === 1 ? "resultado" : "resultados" }}
-            de {{ packages.length }}
+            de
+            <span
+              :class="PACKAGES_COUNT_BADGE_CLASS"
+              class="text-[0.6875rem]"
+              :aria-label="`${packages.length} ${packageCountLabel.toLowerCase()}`"
+            >
+              <span class="tabular-nums">{{ packages.length }}</span>
+              <span>{{ packageCountLabel }}</span>
+            </span>
           </template>
           <template v-else>
-            {{ packages.length }}
-            {{ packages.length === 1 ? "paquete" : "paquetes" }}
+            <span
+              :class="PACKAGES_COUNT_BADGE_CLASS"
+              class="text-[0.6875rem]"
+              :aria-label="`${packages.length} ${packageCountLabel.toLowerCase()}`"
+            >
+              <span class="tabular-nums">{{ packages.length }}</span>
+              <span>{{ packageCountLabel }}</span>
+            </span>
           </template>
         </p>
       </div>
@@ -234,37 +316,118 @@ onMounted(loadPackages);
         </button>
       </div>
 
-      <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <button
-          v-for="pkg in filteredPackages"
+      <div
+        v-else
+        class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+      >
+        <NotePackageFolderCard
+          v-for="(pkg, index) in filteredPackages"
           :key="pkg.id"
-          type="button"
-          class="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-violet-300 hover:shadow-md"
-          @click="openPackage(pkg.id)"
-        >
-          <div class="flex items-start justify-between gap-2">
-            <h2
-              class="text-base font-medium leading-relaxed text-slate-900 line-clamp-2"
-            >
-              {{ pkg.title }}
-            </h2>
-            <span
-              class="shrink-0 rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-semibold text-violet-700"
-            >
-              {{ pkg.noteCount }} {{ pkg.noteCount === 1 ? "nota" : "notas" }}
-            </span>
-          </div>
-          <p
-            v-if="pkg.description"
-            class="mt-2 text-sm font-medium leading-relaxed text-slate-500 line-clamp-2"
-          >
-            {{ pkg.description }}
-          </p>
-          <p class="mt-3 text-xs font-medium text-slate-400">
-            {{ formatDate(pkg.createdAt) }}
-          </p>
-        </button>
+          :title="pkg.title"
+          :description="pkg.description"
+          :note-count="pkg.noteCount"
+          :note-peeks="packageNotePeeks[pkg.id] ?? []"
+          :index="index"
+          @open="openPackage(pkg.id)"
+          @delete="requestDeletePackage(pkg)"
+        />
       </div>
     </template>
+
+    <Teleport to="body">
+      <div
+        v-if="deleteDialogOpen && packagePendingDelete"
+        class="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4"
+        role="presentation"
+        @click.self="cancelDeletePackage"
+      >
+        <div
+          class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200/80"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="delete-package-dialog-title"
+          aria-describedby="delete-package-dialog-desc"
+          @keydown.escape="cancelDeletePackage"
+        >
+          <header
+            class="border-b border-amber-200/80 bg-linear-to-r from-amber-50 via-white to-rose-50 px-6 py-4"
+          >
+            <div class="flex items-start gap-3">
+              <span
+                class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 ring-1 ring-amber-200/80"
+                aria-hidden="true"
+              >
+                <svg
+                  class="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </span>
+              <div class="min-w-0">
+                <h2
+                  id="delete-package-dialog-title"
+                  class="text-base font-semibold text-slate-900"
+                >
+                  Eliminar paquete de notas
+                </h2>
+                <p class="mt-1 text-sm font-medium text-slate-600">
+                  «{{ packagePendingDelete.title }}»
+                </p>
+              </div>
+            </div>
+          </header>
+
+          <div class="px-6 py-5">
+            <p
+              id="delete-package-dialog-desc"
+              class="text-sm leading-relaxed text-slate-700"
+            >
+              Estas notas forman parte de una
+              <strong class="font-semibold text-slate-900">investigación</strong>.
+              Al eliminar este paquete se borrarán de forma permanente todas
+              las notas y los análisis asociados.
+            </p>
+            <p class="mt-3 text-sm font-medium text-slate-800">
+              ¿Está seguro de que desea eliminarlo?
+            </p>
+            <p
+              v-if="deleteErrorMessage"
+              class="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
+              {{ deleteErrorMessage }}
+            </p>
+          </div>
+
+          <footer
+            class="flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-slate-50/80 px-6 py-4"
+          >
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200/80 transition-all duration-200 hover:bg-white hover:ring-slate-300/80 disabled:opacity-50"
+              :disabled="deletingPackage"
+              @click="cancelDeletePackage"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-rose-700 disabled:opacity-50"
+              :disabled="deletingPackage"
+              @click="confirmDeletePackage"
+            >
+              {{ deletingPackage ? "Eliminando…" : "Eliminar paquete" }}
+            </button>
+          </footer>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>

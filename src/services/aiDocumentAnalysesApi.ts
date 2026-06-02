@@ -369,6 +369,30 @@ export async function getAiDocumentRedactionById(
   return null;
 }
 
+/** DELETE /api/v1/ai-document-analyses/:id */
+export async function deleteAiDocumentAnalysis(id: string): Promise<void> {
+  const token = useAuthStore().authToken ?? localStorage.getItem("auth_token");
+  if (!token) throw new Error("Debes iniciar sesión para eliminar el análisis.");
+  await axios.delete(
+    `${AI_DOCUMENT_ANALYSES_API}${encodeURIComponent(id)}`,
+    { headers: authHeaders() },
+  );
+}
+
+/** PATCH /api/v1/ai-document-analyses/:id — actualiza el contenido del análisis */
+export async function updateAiDocumentAnalysis(
+  id: string,
+  content: string,
+): Promise<void> {
+  const token = useAuthStore().authToken ?? localStorage.getItem("auth_token");
+  if (!token) throw new Error("Debes iniciar sesión para editar el análisis.");
+  await axios.patch(
+    `${AI_DOCUMENT_ANALYSES_API}${encodeURIComponent(id)}`,
+    { content },
+    { headers: authHeaders() },
+  );
+}
+
 /** POST /api/v1/ai-document-redactions/ — guardar redacción con IA */
 export async function saveAiDocumentRedaction(
   payload: AiDocumentRedactionSavePayload,

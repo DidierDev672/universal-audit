@@ -4,6 +4,7 @@ import type {
   CalendarAnalysisNoteRecord,
   CreateCalendarAnalysisNoteAnalysisLogPayload,
   CreateCalendarAnalysisNotePayload,
+  UpdateCalendarAnalysisNotePayload,
 } from "../types/calendarAnalysisNote";
 
 const API_BASE = "http://localhost:3000/api/v1";
@@ -38,6 +39,21 @@ export async function createCalendarAnalysisNote(
 ): Promise<CalendarAnalysisNoteRecord> {
   const { data } = await axios.post<CalendarAnalysisNoteRecord>(NOTES_BASE, payload);
   return data;
+}
+
+export async function updateCalendarAnalysisNote(
+  id: string,
+  payload: UpdateCalendarAnalysisNotePayload,
+): Promise<CalendarAnalysisNoteRecord> {
+  const { data } = await axios.patch<CalendarAnalysisNoteRecord>(
+    `${NOTES_BASE}/${encodeURIComponent(id)}`,
+    payload,
+  );
+  return data;
+}
+
+export async function deleteCalendarAnalysisNote(id: string): Promise<void> {
+  await axios.delete(`${NOTES_BASE}/${encodeURIComponent(id)}`);
 }
 
 export async function createCalendarAnalysisNoteAnalysisLog(

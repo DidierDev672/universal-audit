@@ -112,26 +112,6 @@
               class="flex flex-wrap items-center justify-center gap-1 px-3 py-2"
             >
               <RouterLink
-                to="/research"
-                class="flex items-center gap-2 px-3 py-2 text-sm text-gray-500 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition-all"
-              >
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
-                <span>Investigaciones</span>
-              </RouterLink>
-
-              <RouterLink
                 to="/questionnaire"
                 class="flex items-center gap-2 px-3 py-2 text-sm text-gray-500 rounded-lg hover:text-purple-600 hover:bg-purple-50 transition-all"
               >
@@ -384,21 +364,49 @@ const currentPageSubtitle = computed(() => props.pageSubtitle);
 
 const activeItem = computed(() => {
   const path = route.path;
-  if (path === "/research-form") return "crear-investigacion-auditiva";
+
+  // ── Calendar ──────────────────────────────────────────────────────────────
+  if (path === "/calendar") return "calendario";
+  if (path === "/calendar-ai-repository") return "calendario-ai-repositorio";
+
+  // ── Questionnaires ────────────────────────────────────────────────────────
   if (path === "/tinnitus-questionnaire") return "crear-cuestionarios-tinnitus";
-  if (path === "/hearing-screening-form" || path === "/create-screening")
-    return "crear-tamizaje";
+  if (path === "/list-tinnitus-questionnaire") return "crear-cuestionarios-tinnitus";
+  if (path.startsWith("/detail-tinnitus-questionnaire")) return "crear-cuestionarios-tinnitus";
+  if (path === "/questionnaire") return "crear-cuestionarios-tinnitus";
+  if (path === "/tinnitus-assignment") return "asignar-cuestionarios-tinnitus";
+  if (path === "/tinnitus-responses") return "ver-respuestas-tinnitus";
+
+  // ── Screening ─────────────────────────────────────────────────────────────
+  if (path === "/hearing-screening-form" || path === "/create-screening") return "crear-tamizaje";
+  if (path === "/screening-responses") return "screening-responses";
+
+  // ── Audio ─────────────────────────────────────────────────────────────────
+  if (path === "/add-sound") return "add-sound";
+  if (path === "/audio-mixer") return "audio-mixer";
+
+  // ── Clinical ──────────────────────────────────────────────────────────────
+  if (path === "/clinical-pictures") return "clinical-pictures";
+  if (path === "/anatomia-3d") return "anatomia-3d";
+
+  // ── Notes ─────────────────────────────────────────────────────────────────
+  if (path === "/note-packages/compose") return "note-packages-compose";
+  if (path === "/note-packages") return "note-packages";
+  if (path.startsWith("/note-packages/")) return "note-package-detail";
+
+  // ── Patients & Users ──────────────────────────────────────────────────────
   if (path === "/patient-registration-form") return "crear-registro-paciente";
   if (path === "/user-registration") return "crear-usuario-sistema";
+  if (path === "/patient-profile") return "perfil-usuario";
+
+  // ── AI tools ──────────────────────────────────────────────────────────────
+  if (path === "/ai-model-config") return "ai-model-config";
   if (path === "/ai-document-uploader") return "ai-document-uploader";
+  if (path === "/ai-image-analyzer") return "ai-image-attachments-es";
+  if (path === "/ai-image-analyses") return "ai-image-analyses";
   if (path === "/ai-documentos") return "ai-documentos";
   if (path === "/ai-analisis") return "ai-analisis";
-  if (path === "/ai-model-config") return "ai-model-config";
-  if (path === "/calendar-ai-repository") return "calendario-ai-repositorio";
-  if (path === "/anatomia-3d") return "anatomia-3d";
-  if (path === "/note-packages") return "note-packages";
-  if (path === "/note-packages/compose") return "note-packages-compose";
-  if (path.startsWith("/note-packages/")) return "note-package-detail";
+
   return "";
 });
 

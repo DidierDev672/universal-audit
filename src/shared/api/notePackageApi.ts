@@ -5,7 +5,9 @@ import type {
   CreateNotePackagePayload,
   NotePackageAnalysisLogRecord,
   NotePackageDetail,
+  NotePackageItemRecord,
   NotePackageRecord,
+  UpdateNotePackageItemPayload,
 } from "../types/notePackage";
 
 const API_BASE = "http://localhost:3000/api/v1";
@@ -42,6 +44,35 @@ export async function createNotePackage(
     headers: authHeaders(),
   });
   return data;
+}
+
+export async function deleteNotePackage(id: string): Promise<void> {
+  await axios.delete(`${BASE}/${encodeURIComponent(id)}`, {
+    headers: authHeaders(),
+  });
+}
+
+export async function updateNotePackageItem(
+  packageId: string,
+  noteId: string,
+  payload: UpdateNotePackageItemPayload,
+): Promise<NotePackageItemRecord> {
+  const { data } = await axios.patch<NotePackageItemRecord>(
+    `${BASE}/${encodeURIComponent(packageId)}/notes/${encodeURIComponent(noteId)}`,
+    payload,
+    { headers: authHeaders() },
+  );
+  return data;
+}
+
+export async function deleteNotePackageItem(
+  packageId: string,
+  noteId: string,
+): Promise<void> {
+  await axios.delete(
+    `${BASE}/${encodeURIComponent(packageId)}/notes/${encodeURIComponent(noteId)}`,
+    { headers: authHeaders() },
+  );
 }
 
 export async function getNotePackageAnalysisLogs(

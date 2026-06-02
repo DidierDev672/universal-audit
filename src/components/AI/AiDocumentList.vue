@@ -302,6 +302,20 @@
                 Varios archivos
               </span>
             </button>
+
+            <!-- Delete folder button -->
+            <button
+              type="button"
+              class="mt-1.5 inline-flex w-full items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-medium text-rose-500 ring-1 ring-rose-200/60 transition-all hover:bg-rose-50 hover:text-rose-700 hover:ring-rose-300/70"
+              :title="`Eliminar carpeta de ${grupo.nombre}`"
+              @click.stop="requestDeleteFolder(grupo)"
+            >
+              <svg class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Eliminar
+            </button>
           </article>
         </div>
 
@@ -405,6 +419,17 @@
                 </button>
                 <button
                   type="button"
+                  class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  @click="openEditDoc(doc)"
+                >
+                  <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  Editar
+                </button>
+                <button
+                  type="button"
                   :disabled="analizandoId === doc.id || descargandoId === doc.id"
                   class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-emerald-700 disabled:opacity-50"
                   @click="analizarConIA(doc)"
@@ -437,6 +462,217 @@
         {{ documentos.length }} documento(s)
       </p>
     </div>
+
+    <!-- ── Delete Folder Confirmation Dialog ─────────────────────────────── -->
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="deleteFolderDialogOpen" class="app-modal-root">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="cancelDeleteFolder" />
+          <div class="app-modal-scrim flex items-center justify-center p-4" @click.self="cancelDeleteFolder">
+            <div
+              class="pointer-events-auto relative w-full max-w-md overflow-hidden rounded-2xl border border-rose-200 bg-white shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              @click.stop
+            >
+              <!-- Red top bar -->
+              <div class="h-1.5 w-full bg-gradient-to-r from-rose-500 to-red-600" />
+
+              <div class="px-6 pt-6 pb-5">
+                <!-- Icon -->
+                <div class="mb-4 flex items-center gap-3">
+                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-100">
+                    <svg class="h-5 w-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-semibold text-slate-900">Estás a punto de borrar una carpeta completa</h3>
+                    <p v-if="folderPendingDelete" class="mt-0.5 text-xs font-medium text-rose-600">
+                      {{ folderPendingDelete.nombre }} ·
+                      {{ folderPendingDelete.documentos.length }}
+                      {{ folderPendingDelete.documentos.length === 1 ? 'documento' : 'documentos' }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Psychological warning message -->
+                <div class="rounded-xl border border-rose-100 bg-rose-50/70 px-4 py-3 text-sm leading-relaxed text-rose-900">
+                  <p class="font-medium">
+                    Cada documento que guardas para un paciente es parte de su historia clínica digital.
+                  </p>
+                  <p class="mt-2 text-rose-800/90">
+                    Al eliminar esta carpeta, <strong>perderás de forma permanente</strong> todos los archivos y
+                    <strong>todos los análisis de IA</strong> generados. Esta información puede ser irreemplazable —
+                    los documentos borrados no podrán recuperarse, y el tiempo invertido en su procesamiento
+                    se perderá para siempre.
+                  </p>
+                  <p class="mt-2 text-rose-800/90">
+                    Si simplemente deseas reorganizar o actualizar, considera subir un nuevo documento en lugar de eliminar.
+                  </p>
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    :disabled="deletingFolder"
+                    class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+                    @click="cancelDeleteFolder"
+                  >
+                    Cancelar, conservar carpeta
+                  </button>
+                  <button
+                    type="button"
+                    :disabled="deletingFolder"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-rose-700 disabled:opacity-50"
+                    @click="confirmDeleteFolder"
+                  >
+                    <svg v-if="deletingFolder" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    {{ deletingFolder ? 'Eliminando…' : 'Sí, eliminar carpeta' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- ── Edit Document Modal ──────────────────────────────────────────────── -->
+    <Teleport to="body">
+      <Transition name="app-modal">
+        <div v-if="editDocDialogOpen" class="app-modal-root">
+          <div class="app-modal-backdrop" aria-hidden="true" @click="cancelEditDoc" />
+          <div class="app-modal-scrim flex items-center justify-center p-4" @click.self="cancelEditDoc">
+            <div
+              class="pointer-events-auto relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+              @click.stop
+            >
+              <div class="h-1 w-full bg-gradient-to-r from-slate-400 to-slate-600" />
+
+              <div class="px-6 pt-6 pb-5">
+                <div class="mb-4 flex items-center gap-3">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100">
+                    <svg class="h-5 w-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </div>
+                  <h3 class="text-base font-semibold text-slate-900">Editar documento</h3>
+                </div>
+
+                <!-- Hidden image file input -->
+                <input
+                  ref="editDocFileInputRef"
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  @change="onEditDocImageSelected"
+                />
+
+                <div class="space-y-4">
+                  <!-- Filename field -->
+                  <div>
+                    <label for="edit-doc-filename" class="block text-sm font-medium text-slate-700 mb-1">
+                      Nombre del archivo
+                    </label>
+                    <input
+                      id="edit-doc-filename"
+                      v-model="editDocFilename"
+                      type="text"
+                      class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                      :disabled="savingDocEdit"
+                      placeholder="Nombre del archivo…"
+                      @keydown.enter="saveEditDoc"
+                      @keydown.escape="cancelEditDoc"
+                    />
+                  </div>
+
+                  <!-- Image picker -->
+                  <div>
+                    <p class="block text-sm font-medium text-slate-700 mb-2">Reemplazar con imagen</p>
+
+                    <!-- Preview when image is selected -->
+                    <div v-if="editDocImagePreview" class="relative mb-2 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                      <img
+                        :src="editDocImagePreview"
+                        alt="Vista previa de la imagen seleccionada"
+                        class="h-40 w-full object-cover"
+                      />
+                      <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <div class="absolute bottom-0 left-0 right-0 flex items-center justify-between px-3 py-2">
+                        <span class="truncate text-xs font-medium text-white drop-shadow">
+                          {{ editDocImageFile?.name }}
+                        </span>
+                        <button
+                          type="button"
+                          :disabled="savingDocEdit"
+                          class="ml-2 shrink-0 rounded-lg bg-white/20 px-2 py-1 text-[11px] font-medium text-white backdrop-blur-sm transition hover:bg-white/30 disabled:opacity-50"
+                          @click="clearEditDocImage"
+                        >
+                          Quitar
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Picker button -->
+                    <button
+                      type="button"
+                      :disabled="savingDocEdit"
+                      class="group flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-sm font-medium text-slate-600 transition-all hover:border-slate-300 hover:bg-white hover:text-slate-800 disabled:opacity-50"
+                      @click="triggerEditDocImageInput"
+                    >
+                      <svg class="h-5 w-5 shrink-0 text-slate-400 group-hover:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {{ editDocImageFile ? 'Cambiar imagen seleccionada' : 'Seleccionar imagen' }}
+                    </button>
+                    <p class="mt-1.5 text-[11px] text-slate-400">
+                      Formatos aceptados: PNG, JPG, JPEG, WebP, GIF · El archivo actual será reemplazado al guardar.
+                    </p>
+                  </div>
+
+                  <p v-if="editDocError" class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                    {{ editDocError }}
+                  </p>
+                </div>
+
+                <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    :disabled="savingDocEdit"
+                    class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+                    @click="cancelEditDoc"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    :disabled="savingDocEdit || !editDocFilename.trim()"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-800 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-slate-900 disabled:opacity-50"
+                    @click="saveEditDoc"
+                  >
+                    <svg v-if="savingDocEdit" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    {{ savingDocEdit ? 'Guardando…' : 'Guardar cambios' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
 
     <Teleport to="body">
       <Transition name="app-modal">
@@ -597,11 +833,14 @@ import { useAuthStore } from "@/core/login/presentation/store/authStore";
 import { useGetGenerativeModelGP } from "@/shared/service/useGetGenerativeModelGP";
 import { contentExtractor } from "@/services/contentExtractor";
 import {
+  deleteAiDocument,
   downloadDocumentFile,
   GEMINI_MODEL_NAME,
   getDocumentDownloadUrl,
   listAiDocuments,
+  replaceAiDocumentFile,
   saveFailedAiAnalysis,
+  updateAiDocumentMetadata,
 } from "@/services/aiDocumentsService";
 import type { AiDocumentUploadWithAnalysis } from "@/services/aiDocumentsService";
 import { renderClinicalMarkdown } from "./clinicalMarkdownCards";
@@ -935,6 +1174,121 @@ async function cargar() {
     error.value = e instanceof Error ? e.message : "Error al cargar documentos";
   } finally {
     cargando.value = false;
+  }
+}
+
+// ── Delete folder ─────────────────────────────────────────────────────────────
+const deleteFolderDialogOpen = ref(false);
+const folderPendingDelete = ref<GrupoPacienteDocumentos | null>(null);
+const deletingFolder = ref(false);
+
+function requestDeleteFolder(grupo: GrupoPacienteDocumentos) {
+  folderPendingDelete.value = grupo;
+  deleteFolderDialogOpen.value = true;
+}
+
+function cancelDeleteFolder() {
+  if (deletingFolder.value) return;
+  folderPendingDelete.value = null;
+  deleteFolderDialogOpen.value = false;
+}
+
+async function confirmDeleteFolder() {
+  if (!folderPendingDelete.value) return;
+  deletingFolder.value = true;
+  try {
+    for (const doc of folderPendingDelete.value.documentos) {
+      await deleteAiDocument(doc);
+    }
+    if (pacienteExpandidoKey.value === folderPendingDelete.value.key) {
+      pacienteExpandidoKey.value = null;
+    }
+    await cargar();
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : "Error al eliminar la carpeta";
+  } finally {
+    deletingFolder.value = false;
+    deleteFolderDialogOpen.value = false;
+    folderPendingDelete.value = null;
+  }
+}
+
+// ── Edit document ─────────────────────────────────────────────────────────────
+const editDocDialogOpen = ref(false);
+const docPendingEdit = ref<AiDocumentUploadWithAnalysis | null>(null);
+const editDocFilename = ref('');
+const editDocError = ref('');
+const savingDocEdit = ref(false);
+const editDocImageFile = ref<File | null>(null);
+const editDocImagePreview = ref<string | null>(null);
+const editDocFileInputRef = ref<HTMLInputElement | null>(null);
+
+function openEditDoc(doc: AiDocumentUploadWithAnalysis) {
+  docPendingEdit.value = doc;
+  editDocFilename.value = doc.original_filename;
+  editDocError.value = '';
+  editDocImageFile.value = null;
+  editDocImagePreview.value = null;
+  editDocDialogOpen.value = true;
+}
+
+function cancelEditDoc() {
+  if (savingDocEdit.value) return;
+  if (editDocImagePreview.value) URL.revokeObjectURL(editDocImagePreview.value);
+  docPendingEdit.value = null;
+  editDocFilename.value = '';
+  editDocError.value = '';
+  editDocImageFile.value = null;
+  editDocImagePreview.value = null;
+  editDocDialogOpen.value = false;
+}
+
+function triggerEditDocImageInput() {
+  editDocFileInputRef.value?.click();
+}
+
+function onEditDocImageSelected(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+  if (!file) return;
+  if (editDocImagePreview.value) URL.revokeObjectURL(editDocImagePreview.value);
+  editDocImageFile.value = file;
+  editDocImagePreview.value = URL.createObjectURL(file);
+  editDocFilename.value = file.name;
+  if (editDocFileInputRef.value) editDocFileInputRef.value.value = '';
+}
+
+function clearEditDocImage() {
+  if (editDocImagePreview.value) URL.revokeObjectURL(editDocImagePreview.value);
+  editDocImageFile.value = null;
+  editDocImagePreview.value = null;
+  if (docPendingEdit.value) editDocFilename.value = docPendingEdit.value.original_filename;
+}
+
+async function saveEditDoc() {
+  const filename = editDocFilename.value.trim();
+  if (!filename) { editDocError.value = 'El nombre del archivo no puede estar vacío.'; return; }
+  editDocError.value = '';
+  savingDocEdit.value = true;
+  try {
+    const local = documentos.value.find(d => d.id === docPendingEdit.value!.id);
+    if (editDocImageFile.value) {
+      const updated = await replaceAiDocumentFile(docPendingEdit.value!, editDocImageFile.value);
+      if (local) {
+        local.storage_object_path = updated.storage_object_path;
+        local.original_filename = updated.original_filename;
+        local.mime_type = updated.mime_type;
+        local.file_size_bytes = updated.file_size_bytes;
+        local.file_type = updated.file_type;
+      }
+    } else {
+      await updateAiDocumentMetadata(docPendingEdit.value!.id, { original_filename: filename });
+      if (local) local.original_filename = filename;
+    }
+    cancelEditDoc();
+  } catch (e) {
+    editDocError.value = e instanceof Error ? e.message : 'No se pudo guardar. Intenta de nuevo.';
+  } finally {
+    savingDocEdit.value = false;
   }
 }
 

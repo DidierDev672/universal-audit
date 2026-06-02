@@ -30,6 +30,7 @@ export interface NotePackageDraftItem {
   content: string;
   color: string;
   colorName: string;
+  createdAt: string;
 }
 
 export interface CreateNotePackagePayload {
@@ -60,4 +61,11 @@ export interface CreateNotePackageAnalysisLogPayload {
   note_count: number;
   model?: string | null;
   analyzed_at?: string;
+}
+
+export interface UpdateNotePackageItemPayload {
+  subject: string;
+  content: string;
+  color: string;
+  color_name: string;
 }

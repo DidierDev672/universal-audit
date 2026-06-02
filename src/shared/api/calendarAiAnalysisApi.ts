@@ -3,6 +3,7 @@ import type {
   CalendarAiAnalysisRecord,
   CreateCalendarAiAnalysisPayload,
   ListCalendarAiAnalysesQuery,
+  UpdateCalendarAiAnalysisPayload,
 } from "../types/calendarAiAnalysis";
 
 const CALENDAR_AI_ANALYSES_BASE =
@@ -42,6 +43,20 @@ export async function getCalendarAiAnalysisById(
 ): Promise<CalendarAiAnalysisRecord> {
   const { data } = await axios.get<CalendarAiAnalysisRecord>(
     `${CALENDAR_AI_ANALYSES_BASE}/${encodeURIComponent(id)}`,
+  );
+  return data;
+}
+
+/**
+ * Actualiza metadatos o contenido de un análisis guardado.
+ */
+export async function updateCalendarAiAnalysis(
+  id: string,
+  payload: UpdateCalendarAiAnalysisPayload,
+): Promise<CalendarAiAnalysisRecord> {
+  const { data } = await axios.patch<CalendarAiAnalysisRecord>(
+    `${CALENDAR_AI_ANALYSES_BASE}/${encodeURIComponent(id)}`,
+    payload,
   );
   return data;
 }

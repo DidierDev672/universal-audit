@@ -16,6 +16,13 @@ export interface CreateCalendarAnalysisNotePayload {
   created_at?: string;
 }
 
+export interface UpdateCalendarAnalysisNotePayload {
+  content: string;
+  color: string;
+  color_name: string;
+  created_at?: string;
+}
+
 export interface CreateCalendarAnalysisNoteAnalysisLogPayload {
   calendar_ai_analysis_id: string;
   analysis: string;

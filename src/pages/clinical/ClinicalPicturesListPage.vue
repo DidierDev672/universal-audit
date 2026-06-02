@@ -54,10 +54,6 @@ const viewDetail = (id: string) => {
   router.push(`/clinical-picture/${id}`);
 };
 
-// Crear nuevo cuadro clínico
-const createNew = () => {
-  router.push('/notebook');
-};
 
 // Eliminar cuadro clínico
 const deletePicture = async (id: string) => {
@@ -126,15 +122,6 @@ onMounted(() => {
               <p class="text-sm text-gray-500">Gestiona todos los cuadros clínicos de tus pacientes</p>
             </div>
           </div>
-          <button
-            @click="createNew"
-            class="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-medium transition-all shadow-lg hover:shadow-xl"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Nuevo Cuadro Clínico
-          </button>
         </div>
       </div>
     </div>
@@ -186,12 +173,6 @@ onMounted(() => {
         </div>
         <h3 class="text-lg font-medium text-gray-900 mb-2">No hay cuadros clínicos</h3>
         <p class="text-gray-500 mb-4">Comienza creando tu primer cuadro clínico</p>
-        <button
-          @click="createNew"
-          class="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-all"
-        >
-          Crear Cuadro Clínico
-        </button>
       </div>
 
       <div v-else class="grid gap-4">

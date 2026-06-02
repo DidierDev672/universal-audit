@@ -16,7 +16,50 @@
       <span class="pkg-note-node__meta" :style="{ color: theme.createdText }">
         {{ data.colorName }} · {{ formattedDate }}
       </span>
+      <div v-if="removable" class="pkg-note-node__actions">
+        <button
+          type="button"
+          class="pkg-note-node__view-btn"
+          title="Editar nota"
+          aria-label="Editar nota"
+          :style="{
+            color: theme.contentText,
+            borderColor: `${theme.createdText}40`,
+          }"
+          @click.stop="emit('edit')"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="pkg-note-node__view-btn pkg-note-node__view-btn--danger"
+          title="Eliminar nota"
+          aria-label="Eliminar nota del paquete"
+          :style="{
+            color: theme.contentText,
+            borderColor: `${theme.createdText}40`,
+          }"
+          @click.stop="emit('remove')"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+        </button>
+      </div>
       <button
+        v-else
         type="button"
         class="pkg-note-node__view-btn"
         title="Ver nota completa"
@@ -60,9 +103,12 @@ export interface NotePackageFlowNodeData {
   color?: string;
 }
 
-const props = defineProps<{ data: NotePackageFlowNodeData }>();
+const props = defineProps<{
+  data: NotePackageFlowNodeData;
+  removable?: boolean;
+}>();
 
-const emit = defineEmits<{ view: [] }>();
+const emit = defineEmits<{ view: []; remove: []; edit: [] }>();
 
 const theme = computed(() => {
   const fromColor = themeByBackground(props.data.color ?? "");
@@ -112,6 +158,17 @@ const formattedDate = computed(() =>
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+}
+
+.pkg-note-node__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.pkg-note-node__view-btn--danger:hover {
+  background: rgba(254, 226, 226, 0.85);
 }
 
 .pkg-note-node__meta {

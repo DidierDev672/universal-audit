@@ -347,6 +347,51 @@
               </svg>
               Ver y gestionar notas
             </button>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200/80 transition-colors hover:bg-slate-50 hover:ring-slate-300/80"
+                @click="openEditRecord(record)"
+              >
+                <svg
+                  class="h-4 w-4 shrink-0 text-violet-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+                Editar
+              </button>
+              <button
+                type="button"
+                class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white px-3 py-2.5 text-sm font-semibold text-rose-700 ring-1 ring-rose-200/70 transition-colors hover:bg-rose-50/70 hover:ring-rose-300/70"
+                @click="requestDeleteRecord(record)"
+              >
+                <svg
+                  class="h-4 w-4 shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+                Eliminar
+              </button>
+            </div>
           </div>
         </article>
       </div>
@@ -393,6 +438,217 @@
       @close="closeNoteAnalysisModal"
       @generated="onNoteAnalysisGenerated"
     />
+
+    <Teleport to="body">
+      <div
+        v-if="deleteDialogOpen && recordPendingDelete"
+        class="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4"
+        role="presentation"
+        @click.self="cancelDeleteRecord"
+      >
+        <div
+          class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200/80"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="delete-repo-record-title"
+          aria-describedby="delete-repo-record-desc"
+          @keydown.escape="cancelDeleteRecord"
+        >
+          <header
+            class="border-b border-amber-200/80 bg-linear-to-r from-amber-50 via-white to-rose-50 px-6 py-4"
+          >
+            <div class="flex items-start gap-3">
+              <span
+                class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700 ring-1 ring-amber-200/80"
+                aria-hidden="true"
+              >
+                <svg
+                  class="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </span>
+              <div class="min-w-0">
+                <h2
+                  id="delete-repo-record-title"
+                  class="text-base font-semibold text-slate-900"
+                >
+                  Eliminar {{ recordTypeArticle(recordPendingDelete) }}
+                </h2>
+                <p class="mt-1 text-sm font-medium text-slate-600">
+                  «{{ recordPendingDelete.eventTitle }}»
+                </p>
+              </div>
+            </div>
+          </header>
+
+          <div class="px-6 py-5">
+            <p
+              id="delete-repo-record-desc"
+              class="text-sm leading-relaxed text-slate-700"
+            >
+              Este registro forma parte del historial de
+              <strong class="font-semibold text-slate-900"
+                >investigación clínica y seguimiento de tareas</strong
+              >. Al eliminarlo se borrarán de forma permanente el informe IA
+              guardado, las notas vinculadas y cualquier análisis de notas
+              asociado.
+            </p>
+            <p class="mt-3 text-sm leading-relaxed text-slate-700">
+              Si el contenido no es exacto, le recomendamos
+              <strong class="font-semibold text-emerald-800"
+                >editar el registro</strong
+              >
+              en lugar de borrarlo: así conserva el hilo investigativo y la
+              trazabilidad del calendario.
+            </p>
+          </div>
+
+          <footer
+            class="flex flex-col gap-2 border-t border-slate-200 bg-slate-50/80 px-6 py-4 sm:flex-row sm:flex-wrap sm:justify-end"
+          >
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200/80 transition-all duration-200 hover:bg-white"
+              :disabled="deletingRecord"
+              @click="cancelDeleteRecord"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-700"
+              :disabled="deletingRecord"
+              @click="editRecordFromDeleteDialog"
+            >
+              <svg
+                class="h-4 w-4 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              Editar registro
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-rose-700 ring-1 ring-rose-200/80 transition-all duration-200 hover:bg-rose-50 disabled:opacity-50"
+              :disabled="deletingRecord"
+              @click="confirmDeleteRecord"
+            >
+              {{ deletingRecord ? "Eliminando…" : "Eliminar de todos modos" }}
+            </button>
+          </footer>
+        </div>
+      </div>
+
+      <div
+        v-if="editDialogOpen"
+        class="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4"
+        role="presentation"
+        @click.self="cancelEditRecord"
+      >
+        <div
+          class="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200/80"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-repo-record-title"
+          @keydown.escape="cancelEditRecord"
+        >
+          <header
+            class="border-b border-violet-100 bg-linear-to-r from-violet-50 via-white to-sky-50 px-6 py-4"
+          >
+            <h2
+              id="edit-repo-record-title"
+              class="text-base font-semibold text-slate-900"
+            >
+              Editar {{ editingRecord ? recordTypeLabel(editingRecord) : "registro" }}
+            </h2>
+            <p class="mt-1 text-sm text-slate-600">
+              Ajuste título, investigación o informe para mantener la coherencia
+              del repositorio.
+            </p>
+          </header>
+
+          <div class="flex-1 overflow-y-auto px-6 py-5">
+            <label class="block">
+              <span class="mb-1 block text-sm font-semibold text-slate-700"
+                >Título del evento</span
+              >
+              <input
+                v-model="editEventTitle"
+                type="text"
+                maxlength="255"
+                class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+              />
+            </label>
+            <label class="mt-4 block">
+              <span class="mb-1 block text-sm font-semibold text-slate-700"
+                >Investigación (opcional)</span
+              >
+              <input
+                v-model="editResearchName"
+                type="text"
+                maxlength="255"
+                class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+              />
+            </label>
+            <label class="mt-4 block">
+              <span class="mb-1 block text-sm font-semibold text-slate-700"
+                >Informe IA (markdown)</span
+              >
+              <textarea
+                v-model="editContent"
+                rows="8"
+                class="w-full resize-y rounded-xl border border-slate-200 px-3 py-2.5 font-mono text-sm leading-relaxed focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+              />
+            </label>
+            <p
+              v-if="editRecordError"
+              class="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
+              {{ editRecordError }}
+            </p>
+          </div>
+
+          <footer
+            class="flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-slate-50/80 px-6 py-4"
+          >
+            <button
+              type="button"
+              class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200/80 hover:bg-white"
+              :disabled="savingRecordEdit"
+              @click="cancelEditRecord"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
+              :disabled="savingRecordEdit"
+              @click="saveEditRecord"
+            >
+              {{ savingRecordEdit ? "Guardando…" : "Guardar cambios" }}
+            </button>
+          </footer>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -405,7 +661,11 @@ import CalendarEventTypeIcon from "../../components/calendar/CalendarEventTypeIc
 import RepositoryRecordActionsMenu, {
   type RepositoryMenuItem,
 } from "../../components/calendar/RepositoryRecordActionsMenu.vue";
-import { getCalendarAiAnalyses } from "../../shared/api/calendarAiAnalysisApi";
+import {
+  deleteCalendarAiAnalysis,
+  getCalendarAiAnalyses,
+  updateCalendarAiAnalysis,
+} from "../../shared/api/calendarAiAnalysisApi";
 import { getCalendarAnalysisNoteAnalysisLogs } from "../../shared/api/calendarAnalysisNoteApi";
 import type {
   CalendarAiAnalysisRecord,
@@ -437,6 +697,18 @@ const noteAnalysisAutoGenerate = ref(false);
 const noteAnalysisForceGenerate = ref(false);
 /** IDs de documentos con al menos un análisis de notas guardado. */
 const noteAnalysisIds = ref<Set<string>>(new Set());
+
+const deleteDialogOpen = ref(false);
+const recordPendingDelete = ref<CalendarAiAnalysisRecord | null>(null);
+const deletingRecord = ref(false);
+
+const editDialogOpen = ref(false);
+const editingRecord = ref<CalendarAiAnalysisRecord | null>(null);
+const editEventTitle = ref("");
+const editResearchName = ref("");
+const editContent = ref("");
+const editRecordError = ref<string | null>(null);
+const savingRecordEdit = ref(false);
 
 const filteredAnalyses = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
@@ -546,6 +818,123 @@ function formatRecordDate(record: CalendarAiAnalysisRecord): string {
     record.eventDate,
     record.eventEndDate ?? record.eventDate,
   );
+}
+
+function recordTypeLabel(record: CalendarAiAnalysisRecord): string {
+  return record.eventType === "task" ? "tarea" : "investigación";
+}
+
+function recordTypeArticle(record: CalendarAiAnalysisRecord): string {
+  return record.eventType === "task" ? "esta tarea" : "esta investigación";
+}
+
+function openEditRecord(record: CalendarAiAnalysisRecord): void {
+  editingRecord.value = record;
+  editEventTitle.value = record.eventTitle;
+  editResearchName.value = record.researchName ?? "";
+  editContent.value = record.content ?? "";
+  editRecordError.value = null;
+  editDialogOpen.value = true;
+  deleteDialogOpen.value = false;
+  recordPendingDelete.value = null;
+}
+
+function cancelEditRecord(): void {
+  editDialogOpen.value = false;
+  editingRecord.value = null;
+  editEventTitle.value = "";
+  editResearchName.value = "";
+  editContent.value = "";
+  editRecordError.value = null;
+}
+
+async function saveEditRecord(): Promise<void> {
+  editRecordError.value = null;
+  const title = editEventTitle.value.trim();
+  const content = editContent.value.trim();
+  if (!title) {
+    editRecordError.value = "El título del evento es obligatorio.";
+    return;
+  }
+  if (content.length < 10) {
+    editRecordError.value = "El informe debe tener al menos 10 caracteres.";
+    return;
+  }
+  if (!editingRecord.value) return;
+
+  savingRecordEdit.value = true;
+  try {
+    const updated = await updateCalendarAiAnalysis(editingRecord.value.id, {
+      eventTitle: title,
+      researchName: editResearchName.value.trim() || null,
+      content,
+    });
+    const index = analyses.value.findIndex((r) => r.id === editingRecord.value!.id);
+    if (index !== -1) {
+      analyses.value[index] = {
+        ...analyses.value[index]!,
+        ...updated,
+        eventEndDate: analyses.value[index]!.eventEndDate,
+        analysisType: analyses.value[index]!.analysisType,
+        assignmentProposal: analyses.value[index]!.assignmentProposal,
+      };
+    }
+    if (selectedRecord.value?.id === editingRecord.value.id) {
+      selectedRecord.value = analyses.value[index] ?? selectedRecord.value;
+    }
+    cancelEditRecord();
+  } catch (err) {
+    editRecordError.value =
+      err instanceof Error ? err.message : "No se pudo guardar el registro.";
+  } finally {
+    savingRecordEdit.value = false;
+  }
+}
+
+function requestDeleteRecord(record: CalendarAiAnalysisRecord): void {
+  recordPendingDelete.value = record;
+  deleteDialogOpen.value = true;
+}
+
+function cancelDeleteRecord(): void {
+  deleteDialogOpen.value = false;
+  recordPendingDelete.value = null;
+}
+
+function editRecordFromDeleteDialog(): void {
+  if (!recordPendingDelete.value) return;
+  openEditRecord(recordPendingDelete.value);
+}
+
+function closePanelsForRecord(recordId: string): void {
+  if (selectedRecord.value?.id === recordId) closeDetail();
+  if (notesRecord.value?.id === recordId) closeNotesModal();
+  if (noteAnalysisRecord.value?.id === recordId) closeNoteAnalysisModal();
+}
+
+async function confirmDeleteRecord(): Promise<void> {
+  if (!recordPendingDelete.value) return;
+  deletingRecord.value = true;
+  error.value = null;
+  const recordId = recordPendingDelete.value.id;
+  try {
+    await deleteCalendarAiAnalysis(recordId);
+    analyses.value = analyses.value.filter((r) => r.id !== recordId);
+    if (noteAnalysisIds.value.has(recordId)) {
+      const next = new Set(noteAnalysisIds.value);
+      next.delete(recordId);
+      noteAnalysisIds.value = next;
+    }
+    closePanelsForRecord(recordId);
+    cancelDeleteRecord();
+  } catch (err) {
+    error.value =
+      err instanceof Error
+        ? err.message
+        : "No se pudo eliminar el registro del repositorio.";
+  } finally {
+    deletingRecord.value = false;
+  }
 }
 
 function openDetail(record: CalendarAiAnalysisRecord): void {

@@ -53,6 +53,14 @@ export interface CalendarAiAnalysisRecord {
   createdAt: string;
 }
 
+/** PATCH /api/v1/calendar-ai-analyses/:id */
+export interface UpdateCalendarAiAnalysisPayload {
+  eventTitle?: string;
+  researchName?: string | null;
+  content?: string;
+  eventDate?: string;
+}
+
 /** GET /api/v1/calendar-ai-analyses?… */
 export interface ListCalendarAiAnalysesQuery {
   calendarEventId?: string;

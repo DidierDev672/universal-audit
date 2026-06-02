@@ -267,76 +267,9 @@
           </div>
 
           <div ref="menuListRef" class="space-y-1">
-            <!-- 1. Crear Investigación Auditiva - ACCIÓN PRINCIPAL -->
-            <RouterLink
-              to="/research-form"
-              :class="[
-                'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
-                activeItem === 'crear-investigacion-auditiva'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
-                  : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700',
-              ]"
-            >
-              <div
-                :class="[
-                  'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
-                  activeItem === 'crear-investigacion-auditiva'
-                    ? 'bg-white/20 backdrop-blur-sm'
-                    : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200',
-                ]"
-              >
-                <svg
-                  :class="[
-                    'w-6 h-6 transition-transform',
-                    activeItem === 'crear-investigacion-auditiva'
-                      ? 'text-white scale-110'
-                      : 'text-emerald-600',
-                  ]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                  />
-                </svg>
-              </div>
-              <div class="flex-1 text-left">
-                <span class="font-semibold text-sm">Crear Investigación</span>
-                <p
-                  :class="[
-                    'text-xs mt-0.5',
-                    activeItem === 'crear-investigacion-auditiva'
-                      ? 'text-white/80'
-                      : 'text-gray-500',
-                  ]"
-                >
-                  Nueva investigación auditiva
-                </p>
-              </div>
-              <svg
-                v-if="activeItem === 'crear-investigacion-auditiva'"
-                class="w-5 h-5 text-white animate-pulse"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </RouterLink>
-
-            <!-- 2. Calendario de Investigaciones -->
+            <!-- 1. Calendario de Investigaciones -->
             <RouterLink
               to="/calendar"
-              @click="activeItem = 'calendario'"
               :class="[
                 'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
                 activeItem === 'calendario'
@@ -404,7 +337,6 @@
 
             <RouterLink
               to="/calendar-ai-repository"
-              @click="activeItem = 'calendario-ai-repositorio'"
               :class="[
                 'w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200 group ml-2',
                 activeItem === 'calendario-ai-repositorio'
@@ -523,7 +455,6 @@
             <!-- Asignar Cuestionarios de Tinnitus -->
             <RouterLink
               to="/tinnitus-assignment"
-              @click="activeItem = 'asignar-cuestionarios-tinnitus'"
               :class="[
                 'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
                 activeItem === 'asignar-cuestionarios-tinnitus'
@@ -592,7 +523,6 @@
             <!-- 4. Ver Respuestas de Tinnitus - SEGUNDA LÍNEA DE Z -->
             <RouterLink
               to="/tinnitus-responses"
-              @click="activeItem = 'ver-respuestas-tinnitus'"
               :class="[
                 'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
                 activeItem === 'ver-respuestas-tinnitus'
@@ -791,7 +721,6 @@
             </RouterLink>
             <RouterLink
               to="/audio-mixer"
-              @click="activeItem = 'audio-mixer'"
               :class="[
                 'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
                 activeItem === 'audio-mixer'
@@ -858,78 +787,9 @@
                 />
               </svg>
             </RouterLink>
-            <RouterLink
-              to="/notebook"
-              @click="activeItem = 'notebook'"
-              :class="[
-                'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
-                activeItem === 'notebook'
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-105'
-                  : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-700',
-              ]"
-            >
-              <div
-                :class="[
-                  'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-all',
-                  activeItem === 'notebook'
-                    ? 'bg-white/20 backdrop-blur-sm'
-                    : 'bg-gradient-to-br from-emerald-100 to-teal-100 group-hover:from-emerald-200 group-hover:to-teal-200',
-                ]"
-              >
-                <svg
-                  :class="[
-                    'w-6 h-6 transition-transform',
-                    activeItem === 'notebook'
-                      ? 'text-white scale-110'
-                      : 'text-emerald-600',
-                  ]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-              </div>
-
-              <div class="flex-1 text-left">
-                <span class="font-semibold text-sm">Cuaderno clínico</span>
-                <p
-                  :class="[
-                    'text-xs mt-0.5',
-                    activeItem === 'notebook'
-                      ? 'text-white/80'
-                      : 'text-gray-500',
-                  ]"
-                >
-                  Nuevo paciente
-                </p>
-              </div>
-
-              <svg
-                v-if="activeItem === 'notebook'"
-                class="w-5 h-5 text-white animate-pulse"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </RouterLink>
-
             <!-- Ver Cuadros Clínicos -->
             <RouterLink
               to="/clinical-pictures"
-              @click="activeItem = 'clinical-pictures'"
               :class="[
                 'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
                 activeItem === 'clinical-pictures'
@@ -1198,7 +1058,6 @@
             <!-- Ver Respuestas de Tamizaje -->
             <RouterLink
               to="/screening-responses"
-              @click="activeItem = 'screening-responses'"
               :class="[
                 'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
                 activeItem === 'screening-responses'
@@ -1404,7 +1263,6 @@
             <!-- Perfil de Usuario -->
             <RouterLink
               to="/patient-profile"
-              @click="activeItem = 'perfil-usuario'"
               :class="[
                 'w-full flex items-center gap-4 px-4 py-4 rounded-2xl transition-all duration-200 group',
                 activeItem === 'perfil-usuario'

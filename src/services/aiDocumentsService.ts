@@ -420,4 +420,82 @@ export async function saveFailedAiAnalysis(
     .eq("id", documentUploadId);
 }
 
+/**
+ * Reemplaza el archivo de un documento en Storage y actualiza los metadatos en BD.
+ * Elimina el archivo anterior, sube el nuevo y actualiza el registro.
+ */
+export async function replaceAiDocumentFile(
+  doc: Pick<AiDocumentUploadRow, "id" | "storage_bucket" | "storage_object_path">,
+  newFile: File,
+): Promise<Pick<AiDocumentUploadRow, "storage_object_path" | "original_filename" | "mime_type" | "file_size_bytes" | "file_type">> {
+  const fileType = inferDocumentFileType(newFile) ?? "image";
+  const safeName = sanitizeFilename(newFile.name);
+  const newPath = `${doc.id}/${safeName}`;
+  const mime = newFile.type || "application/octet-stream";
+
+  await supabase.storage.from(doc.storage_bucket).remove([doc.storage_object_path]);
+
+  const { error: uploadError } = await supabase.storage
+    .from(doc.storage_bucket)
+    .upload(newPath, newFile, { cacheControl: "3600", upsert: true, contentType: mime });
+
+  if (uploadError) {
+    console.error("[ai-documents] replace file upload:", uploadError);
+    throw new Error(uploadError.message);
+  }
+
+  const { error } = await supabase
+    .from("ai_document_uploads")
+    .update({
+      storage_object_path: newPath,
+      original_filename: newFile.name,
+      mime_type: mime,
+      file_size_bytes: newFile.size,
+      file_type: fileType,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", doc.id);
+
+  if (error) {
+    console.error("[ai-documents] replace file update db:", error);
+    throw new Error(error.message);
+  }
+
+  return {
+    storage_object_path: newPath,
+    original_filename: newFile.name,
+    mime_type: mime,
+    file_size_bytes: newFile.size,
+    file_type: fileType,
+  };
+}
+
+/** Elimina un documento: análisis vinculados → archivo en Storage → registro en BD */
+export async function deleteAiDocument(
+  doc: Pick<AiDocumentUploadRow, "id" | "storage_bucket" | "storage_object_path">,
+): Promise<void> {
+  await supabase.from("ai_document_analysis").delete().eq("document_upload_id", doc.id);
+  await supabase.storage.from(doc.storage_bucket).remove([doc.storage_object_path]);
+  const { error } = await supabase.from("ai_document_uploads").delete().eq("id", doc.id);
+  if (error) {
+    console.error("[ai-documents] delete document:", error);
+    throw new Error(error.message);
+  }
+}
+
+/** Actualiza los metadatos editables de un documento (nombre de archivo mostrado) */
+export async function updateAiDocumentMetadata(
+  docId: string,
+  fields: { original_filename?: string },
+): Promise<void> {
+  const { error } = await supabase
+    .from("ai_document_uploads")
+    .update({ ...fields, updated_at: new Date().toISOString() })
+    .eq("id", docId);
+  if (error) {
+    console.error("[ai-documents] update metadata:", error);
+    throw new Error(error.message);
+  }
+}
+
 export { BUCKET as AI_DOCUMENTS_BUCKET, GEMINI_MODEL_NAME };

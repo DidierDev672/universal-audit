@@ -465,50 +465,79 @@
           <li
             v-for="event in filteredSummaryMonthEvents"
             :key="event.id"
-            class="group flex flex-col rounded-2xl border-2 border-gray-100 bg-white hover:border-blue-200 hover:shadow-md transition-all duration-200 overflow-hidden"
+            class="group flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md"
           >
-            <div
-              :class="[
-                'h-1.5 shrink-0',
-                event.type === 'task'
-                  ? 'bg-linear-to-r from-purple-500 to-violet-500'
-                  : 'bg-linear-to-r from-blue-500 to-cyan-500',
-              ]"
-              aria-hidden="true"
-            />
-
             <div class="flex flex-col flex-1 p-4 sm:p-5 gap-3">
               <div class="flex items-start justify-between gap-2">
                 <span
-                  :class="[
-                    'shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold',
-                    event.type === 'task'
-                      ? 'bg-purple-100 text-purple-700'
-                      : 'bg-blue-100 text-blue-700',
-                  ]"
+                  :class="getEventTypeBadgeClass(event.type)"
                 >
-                  {{ event.type === "task" ? "Tarea" : "Investigación" }}
+                  <svg
+                    v-if="event.type === 'task'"
+                    class="w-3 h-3 shrink-0 opacity-90"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                    />
+                  </svg>
+                  <svg
+                    v-else
+                    class="w-3 h-3 shrink-0 opacity-90"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                    />
+                  </svg>
+                  {{ event.type === "task" ? "Protocolo" : "Estudio clínico" }}
                 </span>
                 <time
-                  class="text-xs font-medium text-gray-500 text-right leading-snug"
+                  :class="getEventDateBadgeClass(event.startDate, event.endDate)"
                   :datetime="`${event.startDate}/${event.endDate}`"
                 >
+                  <svg
+                    class="w-3.5 h-3.5 shrink-0 opacity-70"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
                   {{ formatDateRange(event.startDate, event.endDate) }}
                 </time>
               </div>
 
               <h4
-                class="text-base font-bold text-gray-900 leading-snug line-clamp-2 group-hover:text-blue-800 transition-colors"
+                class="text-base font-semibold text-slate-900 leading-snug line-clamp-2 transition-colors group-hover:text-slate-800"
               >
                 {{ event.title }}
               </h4>
 
               <div
                 v-if="event.type === 'task' && event.researchName"
-                class="flex items-start gap-2 text-sm text-gray-600"
+                class="flex items-start gap-2.5 text-sm text-slate-600 rounded-lg bg-slate-50 border border-slate-100 px-3 py-2.5"
               >
                 <svg
-                  class="w-4 h-4 text-gray-400 shrink-0 mt-0.5"
+                  class="w-4 h-4 text-slate-400 shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -518,26 +547,32 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
                   />
                 </svg>
-                <span class="line-clamp-2">
-                  <span class="text-gray-400">Investigación:</span>
-                  {{ event.researchName }}
+                <span class="line-clamp-2 leading-relaxed">
+                  <span
+                    class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+                  >
+                    Estudio vinculado
+                  </span>
+                  <span class="block mt-0.5 font-medium text-slate-700">
+                    {{ event.researchName }}
+                  </span>
                 </span>
               </div>
               <p
                 v-else-if="event.type === 'task'"
-                class="text-xs text-gray-400 italic"
+                class="text-xs text-slate-400 italic px-1"
               >
-                Sin investigación asociada
+                Sin estudio clínico asociado
               </p>
 
-              <div class="mt-auto pt-2 border-t border-gray-100">
+              <div class="mt-auto pt-3 border-t border-slate-100 space-y-2">
                 <button
                   type="button"
                   :disabled="aiAnalyzingId === event.id"
-                  class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl bg-linear-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-700 hover:to-violet-700 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm transition-all"
+                  class="group/ai w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-linear-to-r from-blue-600 via-teal-500 to-emerald-500 text-white shadow-sm ring-1 ring-blue-500/20 hover:from-blue-700 hover:via-teal-600 hover:to-emerald-600 hover:shadow-md hover:shadow-teal-200/50 hover:ring-teal-400/30 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-sm disabled:active:scale-100 transition-all duration-300 ease-out"
                   title="Analizar con inteligencia artificial"
                   @click="analyzeEventWithAI(event)"
                 >
@@ -566,19 +601,164 @@
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                      d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
                     />
                   </svg>
                   {{
-                    aiAnalyzingId === event.id ? "Analizando…" : "Analizar IA"
+                    aiAnalyzingId === event.id
+                      ? "Analizando…"
+                      : "Análisis clínico IA"
                   }}
                 </button>
+
+                <div class="flex gap-2">
+                  <button
+                    type="button"
+                    :class="`${CLINICAL_BTN_EDIT} flex-1`"
+                    title="Editar este evento"
+                    @click="editSummaryEvent(event)"
+                  >
+                    <svg
+                      class="w-3.5 h-3.5 shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    :class="`${CLINICAL_BTN_DELETE} flex-1`"
+                    title="Eliminar este evento"
+                    @click="requestDeleteSummaryEvent(event)"
+                  >
+                    <svg
+                      class="w-3.5 h-3.5 shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                    Eliminar
+                  </button>
+                </div>
               </div>
             </div>
           </li>
         </ul>
       </div>
     </div>
+
+    <!-- Delete Summary Event Dialog -->
+    <Teleport to="body">
+      <Transition name="app-modal-fade">
+        <div
+          v-if="summaryDeleteDialogOpen && summaryEventPendingDelete"
+          class="fixed inset-0 z-[95] flex items-center justify-center bg-black/40 p-4"
+          role="presentation"
+          @click.self="cancelDeleteSummaryEvent"
+        >
+          <div
+            class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200/80"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-summary-dialog-title"
+            aria-describedby="delete-summary-dialog-desc"
+            @keydown.escape="cancelDeleteSummaryEvent"
+          >
+            <header class="border-b border-sky-200/80 bg-linear-to-r from-sky-50 via-white to-emerald-50 px-6 py-4">
+              <div class="flex items-start gap-3">
+                <span
+                  class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-700 ring-1 ring-sky-200/80"
+                  aria-hidden="true"
+                >
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </span>
+                <div class="min-w-0">
+                  <h2
+                    id="delete-summary-dialog-title"
+                    class="text-base font-semibold text-slate-900"
+                  >
+                    ¿Eliminar este
+                    {{ summaryEventPendingDelete.type === "task" ? "protocolo" : "estudio clínico" }}?
+                  </h2>
+                  <p class="mt-1 text-sm font-medium text-slate-500 truncate">
+                    «{{ summaryEventPendingDelete.title }}»
+                  </p>
+                </div>
+              </div>
+            </header>
+
+            <div class="px-6 py-5">
+              <p
+                id="delete-summary-dialog-desc"
+                class="text-sm leading-relaxed text-slate-700"
+              >
+                Este
+                {{ summaryEventPendingDelete.type === "task" ? "protocolo clínico" : "estudio de investigación" }}
+                forma parte del
+                <strong class="font-semibold text-slate-900">registro histórico del mes</strong>.
+                Su eliminación borrará el seguimiento de fechas, vínculos con análisis de IA y
+                cualquier dato asociado acumulado hasta hoy — información que
+                <strong class="font-semibold text-rose-700">no podrá recuperarse</strong>.
+              </p>
+              <p class="mt-3 text-sm leading-relaxed text-slate-700">
+                Si algo no es correcto, te recomendamos
+                <strong class="font-semibold text-emerald-800">editar el evento</strong>
+                en lugar de eliminarlo: así conservas el hilo de la investigación,
+                los análisis generados y la trazabilidad clínica del período.
+              </p>
+            </div>
+
+            <footer class="flex flex-col gap-2 border-t border-slate-200 bg-slate-50/80 px-6 py-4 sm:flex-row sm:flex-wrap sm:justify-end">
+              <button
+                type="button"
+                class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200/80 transition-all duration-200 hover:bg-white"
+                @click="cancelDeleteSummaryEvent"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-700"
+                @click="editSummaryEventFromDeleteDialog"
+              >
+                <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Editar en cambio
+              </button>
+              <button
+                type="button"
+                class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-rose-700 ring-1 ring-rose-200/80 transition-all duration-200 hover:bg-rose-50 disabled:opacity-50"
+                @click="confirmDeleteSummaryEvent"
+              >
+                Eliminar de todos modos
+              </button>
+            </footer>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
 
     <!-- Task Modal (patrón Z + expandir) -->
     <Teleport to="body">
@@ -1304,30 +1484,34 @@
                 </div>
 
                 <section
-                  class="pt-4 mt-2 border-t border-gray-100"
+                  class="pt-5 mt-2 border-t border-slate-100"
                   aria-labelledby="research-ai-section-title"
                 >
                   <h4
                     id="research-ai-section-title"
-                    class="text-sm font-bold text-gray-800 flex items-center gap-2"
+                    class="text-sm font-semibold text-slate-800 flex items-center gap-2"
                   >
-                    <svg
-                      class="w-5 h-5 text-blue-600 shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                    <span
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-50 to-teal-50 ring-1 ring-blue-100/80 shadow-sm"
                       aria-hidden="true"
                     >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                      />
-                    </svg>
+                      <svg
+                        class="w-4 h-4 text-blue-600 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                        />
+                      </svg>
+                    </span>
                     Asignar a la Inteligencia Artificial
                   </h4>
-                  <p class="text-xs text-gray-500 mt-1 mb-3 leading-relaxed">
+                  <p class="text-xs text-slate-500 mt-2 mb-4 leading-relaxed">
                     Complete título, fechas y horario. Puede generar el análisis
                     ahora o programarlo para todo el rango; los hallazgos
                     programados aparecerán en notificaciones.
@@ -1335,7 +1519,7 @@
 
                   <div
                     v-if="researchAiFormError"
-                    class="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800"
+                    class="mb-4 p-3 bg-amber-50/80 border border-amber-200/70 rounded-xl text-sm text-amber-800"
                   >
                     {{ researchAiFormError }}
                   </div>
@@ -1348,7 +1532,7 @@
                         researchAiFormLoading ||
                         submittingResearchPost
                       "
-                      class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-linear-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all text-sm"
+                      :class="`${CLINICAL_BTN_GENERATE_INSTANT} w-full`"
                       @click="runResearchInstantAIFromForm"
                     >
                       <svg
@@ -1357,6 +1541,7 @@
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           stroke-linecap="round"
@@ -1371,6 +1556,7 @@
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           stroke-linecap="round"
@@ -1392,14 +1578,15 @@
                         researchAiFormLoading ||
                         submittingResearchPost
                       "
-                      class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-blue-800 bg-blue-50 border-2 border-blue-200 hover:bg-blue-100 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm"
+                      :class="`${CLINICAL_BTN_GENERATE_RANGE} w-full`"
                       @click="registerScheduledResearchAIFromForm"
                     >
                       <svg
-                        class="w-4 h-4 shrink-0"
+                        class="w-4 h-4 shrink-0 text-blue-600/80"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
+                        aria-hidden="true"
                       >
                         <path
                           stroke-linecap="round"
@@ -1593,12 +1780,21 @@
                 </p>
 
                 <div class="space-y-3">
-                  <div class="flex items-center gap-3 text-sm text-gray-600">
+                  <time
+                    :class="
+                      getEventDateBadgeClass(
+                        selectedEvent.startDate,
+                        selectedEvent.endDate,
+                      )
+                    "
+                    :datetime="`${selectedEvent.startDate}/${selectedEvent.endDate}`"
+                  >
                     <svg
-                      class="w-5 h-5 text-gray-400"
+                      class="w-3.5 h-3.5 shrink-0 opacity-70"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <path
                         stroke-linecap="round"
@@ -1607,13 +1803,13 @@
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
-                    <span>{{
+                    {{
                       formatDateRange(
                         selectedEvent.startDate,
                         selectedEvent.endDate,
                       )
-                    }}</span>
-                  </div>
+                    }}
+                  </time>
 
                   <div
                     v-if="selectedEvent.startTime"
@@ -1661,25 +1857,19 @@
 
                 <section
                   v-if="selectedEvent.type === 'research'"
-                  class="mt-6 pt-4 border-t border-gray-100"
+                  class="mt-6 pt-5 border-t border-slate-100"
                   aria-labelledby="event-detail-research-ai-title"
                 >
                   <h4
                     id="event-detail-research-ai-title"
-                    class="text-sm font-bold text-gray-800 mb-3"
+                    class="text-sm font-semibold text-slate-800 mb-4 flex items-center gap-2"
                   >
-                    Asignar a la Inteligencia Artificial
-                  </h4>
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      :disabled="researchAiFormLoading"
-                      class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white bg-linear-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 disabled:opacity-60 shadow-sm text-sm"
-                      @click="runResearchInstantAIFromEvent(selectedEvent)"
+                    <span
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-blue-50 to-teal-50 ring-1 ring-blue-100/80 shadow-sm"
+                      aria-hidden="true"
                     >
                       <svg
-                        v-if="researchAiFormLoading"
-                        class="w-4 h-4 animate-spin shrink-0"
+                        class="w-4 h-4 text-blue-600 shrink-0"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -1688,7 +1878,47 @@
                           stroke-linecap="round"
                           stroke-linejoin="round"
                           stroke-width="2"
+                          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                        />
+                      </svg>
+                    </span>
+                    Asignar a la Inteligencia Artificial
+                  </h4>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      :disabled="researchAiFormLoading"
+                      :class="`${CLINICAL_BTN_GENERATE_INSTANT} w-full`"
+                      @click="runResearchInstantAIFromEvent(selectedEvent)"
+                    >
+                      <svg
+                        v-if="researchAiFormLoading"
+                        class="w-4 h-4 animate-spin shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
                           d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
+                      </svg>
+                      <svg
+                        v-else
+                        class="w-4 h-4 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
                         />
                       </svg>
                       {{
@@ -1700,9 +1930,23 @@
                     <button
                       type="button"
                       :disabled="researchAiFormLoading"
-                      class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-blue-800 bg-blue-50 border-2 border-blue-200 hover:bg-blue-100 text-sm"
+                      :class="`${CLINICAL_BTN_GENERATE_RANGE} w-full`"
                       @click="registerScheduledResearchAI(selectedEvent)"
                     >
+                      <svg
+                        class="w-4 h-4 shrink-0 text-blue-600/80"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
                       Generar de acuerdo al rango de fecha
                     </button>
                   </div>
@@ -1710,21 +1954,23 @@
 
                 <div
                   :class="[
-                    'flex gap-3 mt-6 pt-4 border-t border-gray-100',
+                    'flex gap-3 mt-6 pt-5 border-t border-slate-100',
                     eventDetailModalExpanded
                       ? 'flex-row flex-wrap items-center justify-between'
                       : 'flex-col sm:flex-row flex-wrap',
                   ]"
                 >
                   <button
+                    type="button"
+                    :class="CLINICAL_BTN_EDIT"
                     @click="editEvent(selectedEvent)"
-                    class="flex-1 min-w-[7rem] px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl font-medium text-gray-700 transition-all flex items-center justify-center gap-2"
                   >
                     <svg
-                      class="w-4 h-4"
+                      class="w-4 h-4 shrink-0 text-slate-500"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <path
                         stroke-linecap="round"
@@ -1739,7 +1985,7 @@
                     v-if="selectedEvent.type === 'task'"
                     type="button"
                     :disabled="taskAssignAiPanelLoading"
-                    class="flex-1 min-w-[10rem] px-4 py-3 rounded-xl font-semibold text-white bg-linear-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+                    :class="`${CLINICAL_BTN_GENERATE_INSTANT} flex-1 min-w-40`"
                     title="Asignar tarea con inteligencia artificial"
                     @click="assignTaskFromDetailWithAI"
                   >
@@ -1749,6 +1995,7 @@
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <path
                         stroke-linecap="round"
@@ -1763,6 +2010,7 @@
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <path
                         stroke-linecap="round"
@@ -1780,14 +2028,16 @@
                     }}</span>
                   </button>
                   <button
+                    type="button"
+                    :class="CLINICAL_BTN_DELETE"
                     @click="deleteEvent(selectedEvent)"
-                    class="flex-1 min-w-[7rem] px-4 py-3 bg-red-100 hover:bg-red-200 rounded-xl font-medium text-red-700 transition-all flex items-center justify-center gap-2"
                   >
                     <svg
-                      class="w-4 h-4"
+                      class="w-4 h-4 shrink-0 text-rose-500/80"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
+                      aria-hidden="true"
                     >
                       <path
                         stroke-linecap="round"
@@ -2035,21 +2285,28 @@ const summaryMonthError = ref<string | null>(null);
 const summaryMonthSearchQuery = ref("");
 const summaryMonthTypeFilter = ref<"all" | "task" | "research">("all");
 
+/** Delete confirmation dialog for summary cards. */
+const summaryDeleteDialogOpen = ref(false);
+const summaryEventPendingDelete = ref<CalendarSummaryTableRow | null>(null);
+
 const summaryMonthTypeFilterOptions = [
   {
     value: "all" as const,
     label: "Todas",
-    activeClass: "border-gray-700 bg-gray-800 text-white",
+    activeClass:
+      "border-slate-300 bg-linear-to-r from-white via-slate-50 to-slate-100/90 text-slate-700 ring-1 ring-slate-200/80 shadow-sm",
   },
   {
     value: "task" as const,
     label: "Tareas",
-    activeClass: "border-purple-500 bg-purple-600 text-white",
+    activeClass:
+      "border-blue-200 bg-linear-to-r from-blue-50 via-sky-50 to-blue-100/90 text-blue-800 ring-1 ring-blue-200/70 shadow-sm",
   },
   {
     value: "research" as const,
     label: "Investigaciones",
-    activeClass: "border-blue-500 bg-blue-600 text-white",
+    activeClass:
+      "border-sky-200 bg-linear-to-r from-sky-50 via-cyan-50 to-blue-100/80 text-blue-900 ring-1 ring-sky-200/70 shadow-sm",
   },
 ];
 
@@ -2711,6 +2968,54 @@ function formatDateRange(startDate: string, endDate: string): string {
   return `${formatDate(start)} – ${formatDate(end)}`;
 }
 
+const DATE_BADGE_BASE_CLASS =
+  "inline-flex items-center gap-1.5 shrink-0 rounded-lg text-xs font-semibold tabular-nums leading-snug shadow-sm ring-1 ring-inset";
+
+/** Botones clínicos — sección «Asignar a la Inteligencia Artificial». */
+const CLINICAL_ACTION_BTN_BASE =
+  "inline-flex items-center justify-center gap-2 h-11 px-5 rounded-xl text-sm font-semibold transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 active:scale-[0.98]";
+
+const CLINICAL_BTN_GENERATE_INSTANT = `${CLINICAL_ACTION_BTN_BASE} text-white bg-linear-to-r from-blue-600 via-teal-500 to-emerald-500 shadow-sm ring-1 ring-blue-500/15 hover:from-blue-700 hover:via-teal-600 hover:to-emerald-600 hover:shadow-md hover:shadow-teal-200/40 focus-visible:ring-teal-400/60`;
+
+const CLINICAL_BTN_GENERATE_RANGE = `${CLINICAL_ACTION_BTN_BASE} text-blue-900 bg-linear-to-b from-white to-blue-50/70 shadow-sm ring-1 ring-blue-200/60 hover:bg-blue-50/90 hover:ring-blue-300/70 hover:shadow-md hover:shadow-blue-100/50 focus-visible:ring-blue-300/60`;
+
+const CLINICAL_BTN_EDIT = `${CLINICAL_ACTION_BTN_BASE} flex-1 min-w-28 text-slate-700 bg-white shadow-sm ring-1 ring-slate-200/80 hover:bg-slate-50 hover:ring-slate-300/80 hover:shadow-md focus-visible:ring-slate-400/50`;
+
+const CLINICAL_BTN_DELETE = `${CLINICAL_ACTION_BTN_BASE} flex-1 min-w-28 text-rose-700 bg-white shadow-sm ring-1 ring-rose-200/70 hover:bg-rose-50/70 hover:ring-rose-300/70 hover:shadow-md hover:shadow-rose-100/40 focus-visible:ring-rose-400/50`;
+
+function isDateRange(startDate: string, endDate: string): boolean {
+  const { start, end } =
+    startDate <= endDate
+      ? { start: startDate, end: endDate }
+      : { start: endDate, end: startDate };
+  return start !== end;
+}
+
+function getEventTypeBadgeClass(type: "task" | "research"): string {
+  const base =
+    "shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-sm ring-1 ring-inset";
+  if (type === "task") {
+    return `${base} bg-linear-to-r from-blue-50 via-sky-50 to-blue-100/90 text-blue-800 ring-blue-200/60`;
+  }
+  return `${base} bg-linear-to-r from-sky-50 via-cyan-50 to-blue-100/80 text-blue-900 ring-sky-200/60`;
+}
+
+function getDateBadgeClass(isRange: boolean): string {
+  const tint = isRange
+    ? "text-slate-700 ring-blue-100/90 bg-linear-to-r from-white via-blue-50/70 to-sky-100/50"
+    : "text-slate-700 ring-blue-100/80 bg-linear-to-b from-white to-blue-50/40";
+  return `${DATE_BADGE_BASE_CLASS} ${tint}`;
+}
+
+function getEventDateBadgeClass(
+  startDate: string,
+  endDate: string,
+): string {
+  const range = isDateRange(startDate, endDate);
+  const density = range ? "px-3 py-1" : "px-2.5 py-1";
+  return `${getDateBadgeClass(range)} ${density}`;
+}
+
 function isToday(date: Date): boolean {
   const today = new Date();
   return (
@@ -2894,6 +3199,38 @@ function deleteEvent(event: CalendarEvent) {
     syncSummaryFromEvents();
     selectedEvent.value = null;
   }
+}
+
+// Summary card actions
+function editSummaryEvent(row: CalendarSummaryTableRow) {
+  const event = events.value.find((e) => e.id === row.id);
+  if (event) editEvent(event);
+}
+
+function requestDeleteSummaryEvent(row: CalendarSummaryTableRow) {
+  summaryEventPendingDelete.value = row;
+  summaryDeleteDialogOpen.value = true;
+}
+
+function cancelDeleteSummaryEvent() {
+  summaryEventPendingDelete.value = null;
+  summaryDeleteDialogOpen.value = false;
+}
+
+function confirmDeleteSummaryEvent() {
+  if (!summaryEventPendingDelete.value) return;
+  const id = summaryEventPendingDelete.value.id;
+  events.value = events.value.filter((e) => e.id !== id);
+  syncSummaryFromEvents();
+  summaryDeleteDialogOpen.value = false;
+  summaryEventPendingDelete.value = null;
+}
+
+function editSummaryEventFromDeleteDialog() {
+  const row = summaryEventPendingDelete.value;
+  summaryDeleteDialogOpen.value = false;
+  summaryEventPendingDelete.value = null;
+  if (row) editSummaryEvent(row);
 }
 
 // Save functions

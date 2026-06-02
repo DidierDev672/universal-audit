@@ -14,10 +14,16 @@ import NotePackageFlowNode, {
 } from "@/components/notes/NotePackageFlowNode.vue";
 import {
   createNotePackageAnalysisLog,
+  deleteNotePackageItem,
   getNotePackageAnalysisLogs,
   getNotePackageById,
+  updateNotePackageItem,
 } from "@/shared/api/notePackageApi";
 import { runNotePackageAnalysis } from "@/shared/service/notePackageAnalysisAi";
+import {
+  NOTE_COLOR_THEMES,
+  themeById,
+} from "@/shared/constants/noteColorThemes";
 import type {
   NotePackageAnalysisLogRecord,
   NotePackageItemRecord,
@@ -37,8 +43,23 @@ const notes = ref<NotePackageItemRecord[]>([]);
 const logs = ref<NotePackageAnalysisLogRecord[]>([]);
 const draftAnalysis = ref<string | null>(null);
 const showAnalysisModal = ref(false);
+const savedAnalysisVisible = ref(true);
 const noteDetailOpen = ref(false);
 const selectedNoteDetail = ref<NotePackageFlowNodeData | null>(null);
+
+const deleteNoteDialogOpen = ref(false);
+const notePendingDelete = ref<NotePackageItemRecord | null>(null);
+const deletingNote = ref(false);
+
+const editNoteDialogOpen = ref(false);
+const editingNoteId = ref<string | null>(null);
+const editSubject = ref("");
+const editContent = ref("");
+const editThemeId = ref(NOTE_COLOR_THEMES[0]!.id);
+const editNoteError = ref<string | null>(null);
+const savingNoteEdit = ref(false);
+
+const editTheme = computed(() => themeById(editThemeId.value));
 
 const flowNodes = ref<Node[]>([]);
 const flowEdges = ref<Edge[]>([]);
@@ -135,6 +156,7 @@ async function saveAnalysis() {
     });
     logs.value = [saved, ...logs.value];
     showAnalysisModal.value = false;
+    savedAnalysisVisible.value = true;
   } catch (e) {
     errorMessage.value =
       e instanceof Error ? e.message : "No se pudo guardar el análisis.";
@@ -160,19 +182,143 @@ function closeNoteDetail(): void {
   selectedNoteDetail.value = null;
 }
 
+function toggleSavedAnalysis(): void {
+  savedAnalysisVisible.value = !savedAnalysisVisible.value;
+}
+
+function findNote(noteId: string): NotePackageItemRecord | undefined {
+  return notes.value.find((n) => n.id === noteId);
+}
+
+function requestRemoveNote(noteId: string): void {
+  const note = findNote(noteId);
+  if (!note) return;
+  notePendingDelete.value = note;
+  deleteNoteDialogOpen.value = true;
+}
+
+function cancelRemoveNote(): void {
+  deleteNoteDialogOpen.value = false;
+  notePendingDelete.value = null;
+}
+
+async function confirmRemoveNote(): Promise<void> {
+  if (!notePendingDelete.value || !pkg.value) return;
+  deletingNote.value = true;
+  errorMessage.value = null;
+  const noteId = notePendingDelete.value.id;
+  try {
+    await deleteNotePackageItem(packageId.value, noteId);
+    notes.value = notes.value.filter((n) => n.id !== noteId);
+    pkg.value = { ...pkg.value, noteCount: notes.value.length };
+    if (selectedNoteDetail.value?.subject === notePendingDelete.value.subject) {
+      closeNoteDetail();
+    }
+    cancelRemoveNote();
+  } catch (e) {
+    errorMessage.value =
+      e instanceof Error ? e.message : "No se pudo eliminar la nota.";
+  } finally {
+    deletingNote.value = false;
+  }
+}
+
+function openEditNote(noteId: string): void {
+  const note = findNote(noteId);
+  if (!note) return;
+
+  editingNoteId.value = noteId;
+  editSubject.value = note.subject;
+  editContent.value = note.content;
+  editThemeId.value =
+    NOTE_COLOR_THEMES.find((t) => t.background === note.color)?.id ??
+    NOTE_COLOR_THEMES.find((t) => t.name === note.colorName)?.id ??
+    NOTE_COLOR_THEMES[0]!.id;
+  editNoteError.value = null;
+  editNoteDialogOpen.value = true;
+  deleteNoteDialogOpen.value = false;
+  notePendingDelete.value = null;
+}
+
+function cancelEditNote(): void {
+  editNoteDialogOpen.value = false;
+  editingNoteId.value = null;
+  editSubject.value = "";
+  editContent.value = "";
+  editNoteError.value = null;
+}
+
+async function saveEditNote(): Promise<void> {
+  editNoteError.value = null;
+  if (!editSubject.value.trim() || !editContent.value.trim()) {
+    editNoteError.value = "Completa asunto y contenido para guardar los cambios.";
+    return;
+  }
+  if (!editingNoteId.value) return;
+
+  savingNoteEdit.value = true;
+  errorMessage.value = null;
+  const theme = editTheme.value;
+  try {
+    const updated = await updateNotePackageItem(
+      packageId.value,
+      editingNoteId.value,
+      {
+        subject: editSubject.value.trim(),
+        content: editContent.value.trim(),
+        color: theme.background,
+        color_name: theme.name,
+      },
+    );
+    const index = notes.value.findIndex((n) => n.id === editingNoteId.value);
+    if (index !== -1) {
+      notes.value[index] = updated;
+    }
+    cancelEditNote();
+  } catch (e) {
+    editNoteError.value =
+      e instanceof Error ? e.message : "No se pudo guardar la nota.";
+  } finally {
+    savingNoteEdit.value = false;
+  }
+}
+
+function editNoteFromDeleteDialog(): void {
+  if (!notePendingDelete.value) return;
+  openEditNote(notePendingDelete.value.id);
+}
+
 watch(notes, rebuildFlowGraph, { deep: true });
 
 onMounted(loadDetail);
 </script>
 
 <template>
-  <div class="mx-auto max-w-6xl px-4 py-8 bg-white/100 rounded-2xl">
+  <div class="mx-auto max-w-7xl px-4 py-8 bg-white/100 rounded-2xl">
     <button
       type="button"
-      class="mb-4 text-sm font-semibold text-violet-600 hover:underline"
+      class="back-to-packages group mb-4 inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition-all duration-300 ease-out hover:bg-linear-to-r hover:from-white hover:via-sky-50/90 hover:to-emerald-50/80 hover:text-blue-900 hover:shadow-sm hover:ring-1 hover:ring-blue-100/80 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 focus-visible:ring-offset-2"
       @click="router.push({ name: 'note-packages' })"
     >
-      ← Volver a paquetes
+      <svg
+        class="h-4 w-4 shrink-0 transition-transform duration-300 ease-out group-hover:-translate-x-0.5 group-hover:text-blue-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"
+        />
+      </svg>
+      <span
+        class="rounded-md px-1 transition-colors duration-300 group-hover:bg-white/60"
+      >
+        Volver a paquetes
+      </span>
     </button>
 
     <div v-if="loading" class="flex justify-center py-16">
@@ -223,18 +369,55 @@ onMounted(loadDetail);
       <section
         v-if="latestSavedAnalysis"
         class="mb-8 rounded-2xl border border-emerald-200 bg-emerald-50/50 p-6"
+        aria-labelledby="saved-analysis-heading"
       >
-        <h2 class="text-base font-medium leading-relaxed text-emerald-900">
-          Último análisis guardado
-        </h2>
-        <p class="mt-1 text-xs text-emerald-700">
-          {{ formatDate(latestSavedAnalysis.analyzedAt) }} ·
-          {{ latestSavedAnalysis.noteCount }} notas
-        </p>
-        <div
-          class="note-analysis-prose mt-4 text-base font-medium leading-relaxed text-slate-800"
-          v-html="renderedSavedAnalysis"
-        />
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <h2
+              id="saved-analysis-heading"
+              class="text-base font-medium leading-relaxed text-emerald-900"
+            >
+              Último análisis guardado
+            </h2>
+            <p class="mt-1 text-xs text-emerald-700">
+              {{ formatDate(latestSavedAnalysis.analyzedAt) }} ·
+              {{ latestSavedAnalysis.noteCount }} notas
+            </p>
+          </div>
+          <button
+            type="button"
+            class="analysis-toggle group inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition-all duration-300 ease-out hover:bg-linear-to-r hover:from-white hover:via-sky-50/90 hover:to-emerald-50/80 hover:text-blue-900 hover:shadow-sm hover:ring-1 hover:ring-blue-100/80 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300/60 focus-visible:ring-offset-2"
+            :aria-expanded="savedAnalysisVisible"
+            aria-controls="saved-analysis-content"
+            @click="toggleSavedAnalysis"
+          >
+            <svg
+              class="h-4 w-4 shrink-0 text-emerald-600 transition-transform duration-300 ease-out"
+              :class="savedAnalysisVisible ? 'rotate-180' : 'rotate-0'"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+            {{ savedAnalysisVisible ? "Ocultar análisis" : "Mostrar análisis" }}
+          </button>
+        </div>
+
+        <Transition name="saved-analysis-reveal">
+          <div
+            v-show="savedAnalysisVisible"
+            id="saved-analysis-content"
+            class="note-analysis-prose mt-4 text-base font-medium leading-relaxed text-slate-800"
+            v-html="renderedSavedAnalysis"
+          />
+        </Transition>
       </section>
 
       <section>
@@ -275,8 +458,14 @@ onMounted(loadDetail);
             <Background pattern-color="#CBD5E1" :gap="20" />
             <MiniMap />
             <Controls />
-            <template #node-package-note="{ data }">
-              <NotePackageFlowNode :data="data" @view="openNoteDetail(data)" />
+            <template #node-package-note="nodeProps">
+              <NotePackageFlowNode
+                :data="nodeProps.data"
+                removable
+                @view="openNoteDetail(nodeProps.data)"
+                @edit="openEditNote(nodeProps.id)"
+                @remove="requestRemoveNote(nodeProps.id)"
+              />
             </template>
           </VueFlow>
         </div>
@@ -379,11 +568,271 @@ onMounted(loadDetail);
           </footer>
         </div>
       </div>
+
+      <div
+        v-if="deleteNoteDialogOpen && notePendingDelete"
+        class="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4"
+        role="presentation"
+        @click.self="cancelRemoveNote"
+      >
+        <div
+          class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200/80"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="delete-pkg-note-dialog-title"
+          aria-describedby="delete-pkg-note-dialog-desc"
+          @keydown.escape="cancelRemoveNote"
+        >
+          <header
+            class="border-b border-sky-200/80 bg-linear-to-r from-sky-50 via-white to-emerald-50 px-6 py-4"
+          >
+            <div class="flex items-start gap-3">
+              <span
+                class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-700 ring-1 ring-sky-200/80"
+                aria-hidden="true"
+              >
+                <svg
+                  class="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </span>
+              <div class="min-w-0">
+                <h2
+                  id="delete-pkg-note-dialog-title"
+                  class="text-base font-semibold text-slate-900"
+                >
+                  ¿Eliminar esta nota?
+                </h2>
+                <p class="mt-1 text-sm font-medium text-slate-600">
+                  «{{ notePendingDelete.subject }}»
+                </p>
+              </div>
+            </div>
+          </header>
+
+          <div class="px-6 py-5">
+            <p
+              id="delete-pkg-note-dialog-desc"
+              class="text-sm leading-relaxed text-slate-700"
+            >
+              Cada nota aporta contexto al
+              <strong class="font-semibold text-slate-900"
+                >análisis clínico e investigación</strong
+              >. Si la elimina, esa información dejará de considerarse y el
+              resultado posterior puede perder relevancia o completitud.
+            </p>
+            <p class="mt-3 text-sm leading-relaxed text-slate-700">
+              Si el contenido no es exacto, le recomendamos
+              <strong class="font-semibold text-emerald-800"
+                >editar la nota</strong
+              >
+              en lugar de borrarla: así conserva el hilo investigativo y mejora
+              la calidad del análisis con IA.
+            </p>
+          </div>
+
+          <footer
+            class="flex flex-col gap-2 border-t border-slate-200 bg-slate-50/80 px-6 py-4 sm:flex-row sm:flex-wrap sm:justify-end"
+          >
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200/80 transition-all duration-200 hover:bg-white"
+              :disabled="deletingNote"
+              @click="cancelRemoveNote"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-700"
+              :disabled="deletingNote"
+              @click="editNoteFromDeleteDialog"
+            >
+              <svg
+                class="h-4 w-4 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              Editar nota
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-rose-700 ring-1 ring-rose-200/80 transition-all duration-200 hover:bg-rose-50 disabled:opacity-50"
+              :disabled="deletingNote"
+              @click="confirmRemoveNote"
+            >
+              {{ deletingNote ? "Eliminando…" : "Eliminar de todos modos" }}
+            </button>
+          </footer>
+        </div>
+      </div>
+
+      <div
+        v-if="editNoteDialogOpen"
+        class="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 p-4"
+        role="presentation"
+        @click.self="cancelEditNote"
+      >
+        <div
+          class="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200/80"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="edit-pkg-note-dialog-title"
+          @keydown.escape="cancelEditNote"
+        >
+          <header
+            class="border-b border-violet-100 bg-linear-to-r from-violet-50 via-white to-sky-50 px-6 py-4"
+          >
+            <h2
+              id="edit-pkg-note-dialog-title"
+              class="text-base font-semibold text-slate-900"
+            >
+              Editar nota del paquete
+            </h2>
+            <p class="mt-1 text-sm text-slate-600">
+              Ajuste el contenido para mantener la coherencia del análisis.
+            </p>
+          </header>
+
+          <div class="flex-1 overflow-y-auto px-6 py-5">
+            <label class="block">
+              <span class="mb-1 block text-sm font-semibold text-slate-700"
+                >Asunto</span
+              >
+              <input
+                v-model="editSubject"
+                type="text"
+                maxlength="120"
+                class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+              />
+            </label>
+            <label class="mt-4 block">
+              <span class="mb-1 block text-sm font-semibold text-slate-700"
+                >Contenido</span
+              >
+              <textarea
+                v-model="editContent"
+                rows="5"
+                class="w-full resize-y rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium leading-relaxed focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+              />
+            </label>
+            <div class="mt-4">
+              <span
+                class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
+              >
+                Color
+              </span>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="theme in NOTE_COLOR_THEMES"
+                  :key="theme.id"
+                  type="button"
+                  class="rounded-xl border-2 px-3 py-1.5 text-xs font-semibold transition-all"
+                  :style="{
+                    backgroundColor: theme.background,
+                    color: theme.contentText,
+                    borderColor: theme.contentText,
+                    boxShadow:
+                      editThemeId === theme.id
+                        ? `0 0 0 2px rgba(255,255,255,0.85), 0 0 0 4px ${theme.contentText}`
+                        : undefined,
+                  }"
+                  @click="editThemeId = theme.id"
+                >
+                  {{ theme.name }}
+                </button>
+              </div>
+            </div>
+            <p
+              v-if="editNoteError"
+              class="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
+              {{ editNoteError }}
+            </p>
+          </div>
+
+          <footer
+            class="flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-slate-50/80 px-6 py-4"
+          >
+            <button
+              type="button"
+              class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200/80 hover:bg-white"
+              :disabled="savingNoteEdit"
+              @click="cancelEditNote"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
+              :disabled="savingNoteEdit"
+              @click="saveEditNote"
+            >
+              {{ savingNoteEdit ? "Guardando…" : "Guardar cambios" }}
+            </button>
+          </footer>
+        </div>
+      </div>
     </Teleport>
   </div>
 </template>
 
 <style scoped>
+.back-to-packages:hover {
+  box-shadow:
+    0 1px 2px rgba(37, 99, 235, 0.06),
+    0 4px 16px rgba(13, 148, 136, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.analysis-toggle:hover {
+  box-shadow:
+    0 1px 2px rgba(37, 99, 235, 0.06),
+    0 4px 16px rgba(13, 148, 136, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.saved-analysis-reveal-enter-active,
+.saved-analysis-reveal-leave-active {
+  overflow: hidden;
+  transition:
+    opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    max-height 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    margin-top 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.saved-analysis-reveal-enter-from,
+.saved-analysis-reveal-leave-to {
+  opacity: 0;
+  max-height: 0;
+  margin-top: 0;
+}
+
+.saved-analysis-reveal-enter-to,
+.saved-analysis-reveal-leave-from {
+  opacity: 1;
+  max-height: 4000px;
+  margin-top: 1rem;
+}
+
 .pkg-notes-flow {
   background: #f8fafc;
   height: 100%;

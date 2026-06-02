@@ -1,15 +1,11 @@
 import { createMemoryHistory, createRouter } from "vue-router";
 
 import LoginForm from "../core/login/presentation/components/LoginForm.vue";
-import DashBoardResearch from "../pages/Research/DashBoardResearch.vue";
 import TinnitusDashboard from "../pages/questionnaire/TinnitusDashboard.vue";
 import HearingDashboard from "../pages/Hearing/ScreeningDashboard.vue";
 import Tinnitusquestionnairebuilder from "../pages/questionnaire/Tinnitusquestionnairebuilder.vue";
 import Tinnitusquestionnaire from "../pages/questionnaire/Tinnitusquestionnaire.vue";
 import DetailQuestionnaire from "../pages/questionnaire/DetailQuestionnaire.vue";
-import Researchform from "../pages/Research/Researchform.vue";
-import Research from "../pages/Research/Research.vue";
-import DetailtResearch from "../pages/Research/DetailtResearch.vue";
 import HearingScreeningForm from "../pages/Hearing/HearingScreeningForm.vue";
 import PatientRegistrationForm from "../pages/Patient/PatientRegistrationForm.vue";
 import PatientProfilePage from "../pages/Patient/PatientProfilePage.vue";
@@ -21,7 +17,6 @@ import AudioLibraryPage from "../pages/sound/AudioLibraryPage.vue";
 import AudioMixerPage from "../pages/AudioMixer/AudioMixerPage.vue";
 
 import CreateScreeningPage from "../presentation/pages/screening/CreateScreeningPage.vue";
-import ResourceNoteBookPage from "../pages/notebook/ResourceNoteBookPage.vue";
 import ScreeningResponsesListPage from "../pages/screening/ScreeningResponsesListPage.vue";
 
 import ClinicalPicturesListPage from "../pages/clinical/ClinicalPicturesListPage.vue";
@@ -52,9 +47,8 @@ const routes = [
     path: "/home",
     name: "layout",
     component: Layout,
-    redirect: "/research",
+    redirect: "/calendar",
     children: [
-      { path: "/research", name: "home", component: DashBoardResearch },
       {
         path: "/questionnaire",
         name: "questionnaire",
@@ -77,19 +71,6 @@ const routes = [
         path: "/detail-tinnitus-questionnaire/:id",
         name: "detail-tinnitus-questionnaire",
         component: DetailQuestionnaire,
-      },
-
-      // ? Research Form
-      {
-        path: "/research-form",
-        name: "research-form",
-        component: Researchform,
-      },
-      { path: "/research-list", name: "research list", component: Research },
-      {
-        path: "/research-detail/:id",
-        name: "research-detail",
-        component: DetailtResearch,
       },
 
       // ? Hearing Screening Form
@@ -119,7 +100,6 @@ const routes = [
         name: "create-screening",
         component: CreateScreeningPage,
       },
-      { path: "/notebook", name: "note book", component: ResourceNoteBookPage },
 
       // ? Clinical Pictures Management
       {

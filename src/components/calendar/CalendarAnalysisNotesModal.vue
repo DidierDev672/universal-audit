@@ -168,7 +168,10 @@
                     <template #node-cal-note="nodeProps">
                       <CalendarAnalysisNoteFlowNode
                         :data="nodeProps.data"
+                        removable
                         @view="openNoteDetail(nodeProps.data)"
+                        @edit="openEditNote(nodeProps.id)"
+                        @remove="requestRemoveNote(nodeProps.id)"
                       />
                     </template>
                   </VueFlow>
@@ -282,6 +285,233 @@
       :note="selectedNoteDetail"
       @close="closeNoteDetail"
     />
+
+    <div
+      v-if="deleteNoteDialogOpen && notePendingDelete"
+      class="fixed inset-0 z-[95] flex items-center justify-center bg-black/40 p-4"
+      role="presentation"
+      @click.self="cancelRemoveNote"
+    >
+      <div
+        class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200/80"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="delete-cal-note-dialog-title"
+        aria-describedby="delete-cal-note-dialog-desc"
+        @keydown.escape="cancelRemoveNote"
+      >
+        <header
+          class="border-b border-sky-200/80 bg-linear-to-r from-sky-50 via-white to-emerald-50 px-6 py-4"
+        >
+          <div class="flex items-start gap-3">
+            <span
+              class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-700 ring-1 ring-sky-200/80"
+              aria-hidden="true"
+            >
+              <svg
+                class="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </span>
+            <div class="min-w-0">
+              <h2
+                id="delete-cal-note-dialog-title"
+                class="text-base font-semibold text-slate-900"
+              >
+                ¿Eliminar esta nota?
+              </h2>
+              <p class="mt-1 text-sm font-medium text-slate-600">
+                «{{ notePendingDelete.colorName }}»
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <div class="px-6 py-5">
+          <p
+            id="delete-cal-note-dialog-desc"
+            class="text-sm leading-relaxed text-slate-700"
+          >
+            Cada nota aporta contexto al
+            <strong class="font-semibold text-slate-900"
+              >análisis clínico e investigación</strong
+            >
+            de este documento. Si la elimina, esa información dejará de
+            considerarse y el análisis posterior puede perder relevancia o
+            completitud.
+          </p>
+          <p class="mt-3 text-sm leading-relaxed text-slate-700">
+            Si el contenido no es exacto, le recomendamos
+            <strong class="font-semibold text-emerald-800">editar la nota</strong>
+            en lugar de borrarla: así conserva el hilo investigativo y mejora
+            la calidad del análisis con IA.
+          </p>
+        </div>
+
+        <footer
+          class="flex flex-col gap-2 border-t border-slate-200 bg-slate-50/80 px-6 py-4 sm:flex-row sm:flex-wrap sm:justify-end"
+        >
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200/80 transition-all duration-200 hover:bg-white"
+            :disabled="deletingNote"
+            @click="cancelRemoveNote"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-700"
+            :disabled="deletingNote"
+            @click="editNoteFromDeleteDialog"
+          >
+            <svg
+              class="h-4 w-4 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+            Editar nota
+          </button>
+          <button
+            type="button"
+            class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-rose-700 ring-1 ring-rose-200/80 transition-all duration-200 hover:bg-rose-50 disabled:opacity-50"
+            :disabled="deletingNote"
+            @click="confirmRemoveNote"
+          >
+            {{ deletingNote ? "Eliminando…" : "Eliminar de todos modos" }}
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <div
+      v-if="editNoteDialogOpen"
+      class="fixed inset-0 z-[95] flex items-center justify-center bg-black/40 p-4"
+      role="presentation"
+      @click.self="cancelEditNote"
+    >
+      <div
+        class="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200/80"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-cal-note-dialog-title"
+        @keydown.escape="cancelEditNote"
+      >
+        <header
+          class="border-b border-violet-100 bg-linear-to-r from-violet-50 via-white to-sky-50 px-6 py-4"
+        >
+          <h2
+            id="edit-cal-note-dialog-title"
+            class="text-base font-semibold text-slate-900"
+          >
+            Editar nota del documento
+          </h2>
+          <p class="mt-1 text-sm text-slate-600">
+            Ajuste el contenido para mantener la coherencia del análisis.
+          </p>
+        </header>
+
+        <div class="flex-1 overflow-y-auto px-6 py-5">
+          <label class="block">
+            <span class="mb-1 block text-sm font-semibold text-slate-700"
+              >Asunto</span
+            >
+            <input
+              v-model="editSubject"
+              type="text"
+              maxlength="120"
+              class="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+            />
+          </label>
+          <label class="mt-4 block">
+            <span class="mb-1 block text-sm font-semibold text-slate-700"
+              >Contenido</span
+            >
+            <textarea
+              v-model="editContent"
+              rows="5"
+              class="w-full resize-y rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium leading-relaxed focus:border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-100"
+              :style="{
+                color: editTheme.contentText,
+                backgroundColor: `${editTheme.background}59`,
+              }"
+            />
+          </label>
+          <div class="mt-4">
+            <span
+              class="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500"
+            >
+              Color
+            </span>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="theme in NOTE_COLOR_THEMES"
+                :key="theme.id"
+                type="button"
+                class="rounded-xl border-2 px-3 py-1.5 text-xs font-semibold transition-all"
+                :style="{
+                  backgroundColor: theme.background,
+                  color: theme.contentText,
+                  borderColor: theme.contentText,
+                  boxShadow:
+                    editThemeId === theme.id
+                      ? `0 0 0 2px rgba(255,255,255,0.85), 0 0 0 4px ${theme.contentText}`
+                      : undefined,
+                }"
+                @click="editThemeId = theme.id"
+              >
+                {{ theme.name }}
+              </button>
+            </div>
+          </div>
+          <p
+            v-if="editNoteError"
+            class="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+          >
+            {{ editNoteError }}
+          </p>
+        </div>
+
+        <footer
+          class="flex flex-wrap justify-end gap-2 border-t border-slate-200 bg-slate-50/80 px-6 py-4"
+        >
+          <button
+            type="button"
+            class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200/80 hover:bg-white"
+            :disabled="savingNoteEdit"
+            @click="cancelEditNote"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50"
+            :disabled="savingNoteEdit"
+            @click="saveEditNote"
+          >
+            {{ savingNoteEdit ? "Guardando…" : "Guardar cambios" }}
+          </button>
+        </footer>
+      </div>
+    </div>
   </Teleport>
 </template>
 
@@ -302,11 +532,17 @@ import CalendarAnalysisNoteFlowNode from "./CalendarAnalysisNoteFlowNode.vue";
 import CreateCalendarAnalysisNoteModal from "./CreateCalendarAnalysisNoteModal.vue";
 import {
   createCalendarAnalysisNoteAnalysisLog,
+  deleteCalendarAnalysisNote,
   getCalendarAnalysisNoteAnalysisLogs,
   getCalendarAnalysisNotesByAnalysisId,
+  updateCalendarAnalysisNote,
 } from "../../shared/api/calendarAnalysisNoteApi";
 import type { CalendarAnalysisNoteRecord } from "../../shared/types/calendarAnalysisNote";
 import type { CalendarEventType } from "../../shared/types/calendarAiAnalysis";
+import {
+  NOTE_COLOR_THEMES,
+  themeById,
+} from "../../shared/constants/noteColorThemes";
 import { useGetGenerativeModelGP } from "../../shared/service/useGetGenerativeModelGP";
 
 const props = defineProps<{
@@ -336,6 +572,20 @@ const saveSuccess = ref(false);
 const loadingSavedAnalysis = ref(false);
 const flowNodes = ref<Node[]>([]);
 const flowEdges = ref<Edge[]>([]);
+
+const deleteNoteDialogOpen = ref(false);
+const notePendingDelete = ref<CalendarAnalysisNoteRecord | null>(null);
+const deletingNote = ref(false);
+
+const editNoteDialogOpen = ref(false);
+const editingNoteId = ref<string | null>(null);
+const editSubject = ref("");
+const editContent = ref("");
+const editThemeId = ref(NOTE_COLOR_THEMES[0]!.id);
+const editNoteError = ref<string | null>(null);
+const savingNoteEdit = ref(false);
+
+const editTheme = computed(() => themeById(editThemeId.value));
 
 function rebuildFlowGraph(): void {
   const sorted = [...notes.value].sort(
@@ -514,9 +764,107 @@ function closeNoteDetail(): void {
   selectedNoteDetail.value = null;
 }
 
+function findNote(noteId: string): CalendarAnalysisNoteRecord | undefined {
+  return notes.value.find((n) => n.id === noteId);
+}
+
+function requestRemoveNote(noteId: string): void {
+  const note = findNote(noteId);
+  if (!note) return;
+  notePendingDelete.value = note;
+  deleteNoteDialogOpen.value = true;
+}
+
+function cancelRemoveNote(): void {
+  deleteNoteDialogOpen.value = false;
+  notePendingDelete.value = null;
+}
+
+async function confirmRemoveNote(): Promise<void> {
+  if (!notePendingDelete.value) return;
+  deletingNote.value = true;
+  const noteId = notePendingDelete.value.id;
+  try {
+    await deleteCalendarAnalysisNote(noteId);
+    notes.value = notes.value.filter((n) => n.id !== noteId);
+    if (
+      selectedNoteDetail.value?.title === notePendingDelete.value.colorName
+    ) {
+      closeNoteDetail();
+    }
+    cancelRemoveNote();
+  } catch (err) {
+    console.error("[CalendarAnalysisNotesModal] delete", err);
+    error.value = "No se pudo eliminar la nota.";
+  } finally {
+    deletingNote.value = false;
+  }
+}
+
+function openEditNote(noteId: string): void {
+  const note = findNote(noteId);
+  if (!note) return;
+
+  editingNoteId.value = noteId;
+  editSubject.value = note.colorName;
+  editContent.value = note.content;
+  editThemeId.value =
+    NOTE_COLOR_THEMES.find((t) => t.background === note.color)?.id ??
+    NOTE_COLOR_THEMES.find((t) => t.name === note.colorName)?.id ??
+    NOTE_COLOR_THEMES[0]!.id;
+  editNoteError.value = null;
+  editNoteDialogOpen.value = true;
+  deleteNoteDialogOpen.value = false;
+  notePendingDelete.value = null;
+}
+
+function cancelEditNote(): void {
+  editNoteDialogOpen.value = false;
+  editingNoteId.value = null;
+  editSubject.value = "";
+  editContent.value = "";
+  editNoteError.value = null;
+}
+
+async function saveEditNote(): Promise<void> {
+  editNoteError.value = null;
+  if (!editSubject.value.trim() || !editContent.value.trim()) {
+    editNoteError.value = "Completa asunto y contenido para guardar los cambios.";
+    return;
+  }
+  if (!editingNoteId.value) return;
+
+  savingNoteEdit.value = true;
+  const theme = editTheme.value;
+  try {
+    const updated = await updateCalendarAnalysisNote(editingNoteId.value, {
+      content: editContent.value.trim(),
+      color: theme.background,
+      color_name: editSubject.value.trim(),
+    });
+    const index = notes.value.findIndex((n) => n.id === editingNoteId.value);
+    if (index !== -1) {
+      notes.value[index] = updated;
+    }
+    cancelEditNote();
+  } catch (err) {
+    editNoteError.value =
+      err instanceof Error ? err.message : "No se pudo guardar la nota.";
+  } finally {
+    savingNoteEdit.value = false;
+  }
+}
+
+function editNoteFromDeleteDialog(): void {
+  if (!notePendingDelete.value) return;
+  openEditNote(notePendingDelete.value.id);
+}
+
 async function onNoteCreated(): Promise<void> {
   await fetchNotes();
 }
+
+watch(notes, rebuildFlowGraph, { deep: true });
 
 watch(
   () => props.isOpen,
