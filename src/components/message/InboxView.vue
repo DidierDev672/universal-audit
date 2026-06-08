@@ -409,6 +409,7 @@ const navItems: {
 const tabs: { id: ListTab; label: string }[] = [
   { id: "all", label: "Todos" },
   { id: "unread", label: "No leídos" },
+  { id: "ai_research", label: "IA Calendario" },
   { id: "urgent", label: "Urgentes" },
   { id: "appointment", label: "Citas" },
 ];

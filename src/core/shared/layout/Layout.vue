@@ -112,26 +112,6 @@
               class="flex flex-wrap items-center justify-center gap-1 px-3 py-2"
             >
               <RouterLink
-                to="/questionnaire"
-                class="flex items-center gap-2 px-3 py-2 text-sm text-gray-500 rounded-lg hover:text-purple-600 hover:bg-purple-50 transition-all"
-              >
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                <span>Cuestionarios</span>
-              </RouterLink>
-
-              <RouterLink
                 to="/hearing"
                 class="flex items-center gap-2 px-3 py-2 text-sm text-gray-500 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition-all"
               >
@@ -272,6 +252,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
+import { useCalendarTaskAiScheduler } from "../../../composables/useCalendarTaskAiScheduler";
+import { useNotifications } from "../../../composables/useNotificaciones";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import Sidebar from "../sidebar/Sidebar.vue";
@@ -325,6 +307,8 @@ const props = withDefaults(defineProps<Props>(), {
 const route = useRoute();
 const router = useRouter();
 const { notReading, loadMessages } = useInbox();
+useCalendarTaskAiScheduler();
+useNotifications();
 const isSidebarOpen = ref(false);
 const showInbox = ref(false);
 
@@ -371,23 +355,21 @@ const activeItem = computed(() => {
 
   // ── Questionnaires ────────────────────────────────────────────────────────
   if (path === "/tinnitus-questionnaire") return "crear-cuestionarios-tinnitus";
-  if (path === "/list-tinnitus-questionnaire") return "crear-cuestionarios-tinnitus";
-  if (path.startsWith("/detail-tinnitus-questionnaire")) return "crear-cuestionarios-tinnitus";
+  if (path === "/list-tinnitus-questionnaire")
+    return "crear-cuestionarios-tinnitus";
+  if (path.startsWith("/detail-tinnitus-questionnaire"))
+    return "crear-cuestionarios-tinnitus";
   if (path === "/questionnaire") return "crear-cuestionarios-tinnitus";
   if (path === "/tinnitus-assignment") return "asignar-cuestionarios-tinnitus";
   if (path === "/tinnitus-responses") return "ver-respuestas-tinnitus";
 
   // ── Screening ─────────────────────────────────────────────────────────────
-  if (path === "/hearing-screening-form" || path === "/create-screening") return "crear-tamizaje";
+  if (path === "/hearing-screening-form" || path === "/create-screening")
+    return "crear-tamizaje";
   if (path === "/screening-responses") return "screening-responses";
 
   // ── Audio ─────────────────────────────────────────────────────────────────
   if (path === "/add-sound") return "add-sound";
-  if (path === "/audio-mixer") return "audio-mixer";
-
-  // ── Clinical ──────────────────────────────────────────────────────────────
-  if (path === "/clinical-pictures") return "clinical-pictures";
-  if (path === "/anatomia-3d") return "anatomia-3d";
 
   // ── Notes ─────────────────────────────────────────────────────────────────
   if (path === "/note-packages/compose") return "note-packages-compose";

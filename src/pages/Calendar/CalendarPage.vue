@@ -2110,7 +2110,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import { push } from "notivue";
 import CalendarAIResearchPanel from "../../components/calendar/CalendarAIResearchPanel.vue";
@@ -2132,8 +2132,9 @@ import type {
   CalendarResearchDraftSnapshot,
   TaskAssignmentExecutionMode,
 } from "../../shared/types/calendarTaskAiSchedule";
-import type { CalendarTaskAiScheduleJob } from "../../shared/types/calendarTaskAiSchedule";
 import { useGetGenerativeModelGP } from "../../shared/service/useGetGenerativeModelGP";
+import { deliverAiFindingToInbox } from "../../shared/service/calendarAiInboxDelivery";
+import { runScheduledCalendarAiJob } from "../../shared/service/calendarTaskAiScheduleRunner";
 
 /** Base URL recurso calendar-events (GET con query, POST cuerpo plano). */
 const CALENDAR_EVENTS_API = "http://localhost:3000/api/v1/calendar-events";
@@ -2274,7 +2275,6 @@ const taskAssignModeDialogEvent = ref<CalendarEvent | null>(null);
 
 const calendarTaskAiScheduleStore = useCalendarTaskAiScheduleStore();
 const notificationsStore = useNotificationsStore();
-let taskAiScheduleIntervalId: ReturnType<typeof setInterval> | null = null;
 const eventDetailModalExpanded = ref(false);
 const researchModalExpanded = ref(false);
 
@@ -3508,6 +3508,7 @@ function mapFindingToNotificationType(
 function publishTaskAssignmentFindings(
   findings: TaskAssignmentFinding[],
   eventTitle: string,
+  calendarEventId?: string,
 ) {
   if (!findings.length) return;
 
@@ -3523,6 +3524,15 @@ function publishTaskAssignmentFindings(
       scheduledFor: new Date().toISOString(),
     });
     push[type]({ title, message });
+
+    if (calendarEventId) {
+      deliverAiFindingToInbox({
+        eventTitle,
+        eventType: "task",
+        calendarEventId,
+        finding,
+      });
+    }
   }
 }
 
@@ -3593,7 +3603,7 @@ function onTaskAssignModeSelected(mode: TaskAssignmentExecutionMode) {
 async function registerScheduledTaskAssignment(event: CalendarEvent) {
   const { start, end } = getEventRangeBounds(event);
 
-  calendarTaskAiScheduleStore.upsertJob({
+  const job = calendarTaskAiScheduleStore.upsertJob({
     calendarEventId: event.id,
     eventTitle: event.title,
     startDate: start,
@@ -3601,11 +3611,21 @@ async function registerScheduledTaskAssignment(event: CalendarEvent) {
     researchName: event.researchName ?? null,
     eventType: "task",
     researchDraft: null,
+    taskDraft: {
+      title: event.title,
+      description: event.description || "",
+      startDate: start,
+      endDate: end,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      researchName: event.researchName ?? null,
+      researchId: event.researchId ?? null,
+    },
   });
 
   const rangeLabel = formatDateRange(start, end);
   const title = "Asignación IA programada";
-  const message = `Seguimiento activo de «${event.title}» del ${rangeLabel}. Los hallazgos aparecerán en notificaciones.`;
+  const message = `Seguimiento activo de «${event.title}» del ${rangeLabel}. Los resultados llegarán a la bandeja y a notificaciones.`;
 
   notificationsStore.add({
     title,
@@ -3617,7 +3637,7 @@ async function registerScheduledTaskAssignment(event: CalendarEvent) {
 
   const today = formatDateKey(new Date());
   if (today >= start && today <= end) {
-    await runScheduledTaskAiCheckForEvent(event.id);
+    await runScheduledCalendarAiJob(job);
   }
 }
 
@@ -3727,6 +3747,7 @@ async function fetchResearchMonitoringEnvelope(
 function publishResearchFindings(
   findings: TaskAssignmentFinding[],
   eventTitle: string,
+  calendarEventId?: string,
 ) {
   if (!findings.length) return;
 
@@ -3741,6 +3762,15 @@ function publishResearchFindings(
       scheduledFor: new Date().toISOString(),
     });
     push[type]({ title, message });
+
+    if (calendarEventId) {
+      deliverAiFindingToInbox({
+        eventTitle,
+        eventType: "research",
+        calendarEventId,
+        finding,
+      });
+    }
   }
 }
 
@@ -3824,7 +3854,7 @@ async function registerScheduledResearchAI(event: CalendarEvent) {
 
   const rangeLabel = formatDateRange(start, end);
   const title = "Investigación IA programada";
-  const message = `Seguimiento de «${event.title}» del ${rangeLabel}. Los hallazgos se publicarán en notificaciones.`;
+  const message = `Seguimiento de «${event.title}» del ${rangeLabel}. Los resultados llegarán a la bandeja y a notificaciones.`;
 
   notificationsStore.add({
     title,
@@ -3839,7 +3869,7 @@ async function registerScheduledResearchAI(event: CalendarEvent) {
     const job = calendarTaskAiScheduleStore.jobs.find(
       (j) => j.calendarEventId === event.id,
     );
-    if (job) await runScheduledCalendarAiCheckForJob(job);
+    if (job) await runScheduledCalendarAiJob(job);
   }
 }
 
@@ -3865,7 +3895,7 @@ async function registerScheduledResearchAIFromForm() {
 
   const rangeLabel = formatDateRange(draft.startDate, draft.endDate);
   const title = "Investigación IA programada";
-  const message = `Seguimiento de «${draft.title}» del ${rangeLabel}. Los hallazgos se publicarán en notificaciones.`;
+  const message = `Seguimiento de «${draft.title}» del ${rangeLabel}. Los resultados llegarán a la bandeja y a notificaciones.`;
 
   notificationsStore.add({
     title,
@@ -3880,140 +3910,7 @@ async function registerScheduledResearchAIFromForm() {
     const job = calendarTaskAiScheduleStore.jobs.find(
       (j) => j.calendarEventId === row.id,
     );
-    if (job) await runScheduledCalendarAiCheckForJob(job);
-  }
-}
-
-function resolveCalendarEventFromJob(
-  job: CalendarTaskAiScheduleJob,
-): CalendarEvent | null {
-  const fromList = events.value.find((e) => e.id === job.calendarEventId);
-  if (fromList) return fromList;
-  if (selectedEvent.value?.id === job.calendarEventId) {
-    return selectedEvent.value;
-  }
-  if (job.eventType === "research" && job.researchDraft) {
-    const d = job.researchDraft;
-    return {
-      id: job.calendarEventId,
-      type: "research",
-      title: d.title,
-      description: d.description,
-      date: d.startDate,
-      startDate: d.startDate,
-      endDate: d.endDate,
-      startTime: d.startTime,
-      endTime: d.endTime,
-    };
-  }
-  return null;
-}
-
-async function runScheduledCalendarAiCheckForJob(
-  job: CalendarTaskAiScheduleJob,
-) {
-  const today = formatDateKey(new Date());
-  if (today < job.startDate || today > job.endDate) return;
-  if (job.lastRunDate === today) return;
-
-  const eventType = job.eventType ?? "task";
-  const event = resolveCalendarEventFromJob(job);
-  if (!event) return;
-
-  try {
-    if (eventType === "research") {
-      const row = buildSummaryRowFromCalendarEvent(event);
-      const envelope = await fetchResearchMonitoringEnvelope(row, {
-        description: event.description,
-        startTime: event.startTime,
-        endTime: event.endTime,
-      });
-      calendarTaskAiScheduleStore.markRunToday(job.id, today);
-      publishResearchFindings(envelope.findings, event.title);
-
-      if (envelope.findings.length > 0) {
-        const payload: CreateCalendarAiAnalysisPayload = {
-          calendarEventId: event.id,
-          researchId: null,
-          eventTitle: event.title,
-          eventType: "research",
-          eventDate: row.startDate,
-          eventEndDate: row.endDate,
-          researchName: null,
-          content: envelope.reportMarkdown,
-          generatedAt: new Date().toISOString(),
-          analysisType: "task_assignment",
-          assignmentProposal: null,
-          findings: envelope.findings,
-        };
-        await postCalendarAiAnalysis(payload).catch((err) =>
-          console.warn("[scheduledResearchAi save]", err),
-        );
-      }
-      return;
-    }
-
-    if (event.type !== "task") return;
-
-    const envelope = await fetchTaskAssignmentEnvelope(event);
-    calendarTaskAiScheduleStore.markRunToday(job.id, today);
-    publishTaskAssignmentFindings(envelope.findings, event.title);
-
-    if (envelope.findings.length > 0) {
-      await postCalendarAiAnalysis(
-        buildTaskAssignmentAnalysisPayload(event, envelope, new Date()),
-      ).catch((err) => console.warn("[scheduledTaskAi save]", err));
-    }
-  } catch (err) {
-    console.error("[runScheduledCalendarAiCheckForJob]", err);
-    const errTitle =
-      eventType === "research"
-        ? "Error en seguimiento IA de investigación"
-        : "Error en seguimiento IA programado";
-    const errMsg =
-      readAxiosErrorMessage(err) ||
-      `No se pudo analizar «${job.eventTitle}» hoy.`;
-    notificationsStore.add({
-      title: errTitle,
-      message: errMsg,
-      type: "error",
-      scheduledFor: new Date().toISOString(),
-    });
-    push.error({ title: errTitle, message: errMsg });
-  }
-}
-
-async function runScheduledTaskAiCheckForEvent(calendarEventId: string) {
-  const job = calendarTaskAiScheduleStore.jobs.find(
-    (j) => j.calendarEventId === calendarEventId,
-  );
-  if (!job) return;
-  await runScheduledCalendarAiCheckForJob(job);
-}
-
-async function processScheduledTaskAiJobs() {
-  const today = formatDateKey(new Date());
-  calendarTaskAiScheduleStore.pruneExpired(today);
-
-  for (const job of [...calendarTaskAiScheduleStore.jobs]) {
-    if (today < job.startDate || today > job.endDate) continue;
-    if (job.lastRunDate === today) continue;
-    await runScheduledCalendarAiCheckForJob(job);
-  }
-}
-
-function startTaskAiSchedulePolling() {
-  if (taskAiScheduleIntervalId) return;
-  void processScheduledTaskAiJobs();
-  taskAiScheduleIntervalId = setInterval(() => {
-    void processScheduledTaskAiJobs();
-  }, 60_000);
-}
-
-function stopTaskAiSchedulePolling() {
-  if (taskAiScheduleIntervalId) {
-    clearInterval(taskAiScheduleIntervalId);
-    taskAiScheduleIntervalId = null;
+    if (job) await runScheduledCalendarAiJob(job);
   }
 }
 
@@ -4065,7 +3962,11 @@ async function runTaskAssignmentAI(event: CalendarEvent) {
     taskAssignAiGeneratedAt.value = new Date();
 
     if (envelope.findings.length > 0) {
-      publishTaskAssignmentFindings(envelope.findings, event.title);
+      publishTaskAssignmentFindings(
+        envelope.findings,
+        event.title,
+        event.id,
+      );
     }
   } catch (err) {
     console.error("[runTaskAssignmentAI]", err);
@@ -4304,11 +4205,6 @@ watch(currentDate, () => {
 onMounted(async () => {
   await fetchResearch();
   await fetchCalendarSummaryForMonth();
-  startTaskAiSchedulePolling();
-});
-
-onUnmounted(() => {
-  stopTaskAiSchedulePolling();
 });
 </script>
 

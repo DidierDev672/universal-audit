@@ -14,13 +14,10 @@ import CalendarAIRepositoryPage from "../pages/Calendar/CalendarAIRepositoryPage
 
 import AddSoundForm from "../pages/sound/AddSoundForm.vue";
 import AudioLibraryPage from "../pages/sound/AudioLibraryPage.vue";
-import AudioMixerPage from "../pages/AudioMixer/AudioMixerPage.vue";
 
 import CreateScreeningPage from "../presentation/pages/screening/CreateScreeningPage.vue";
 import ScreeningResponsesListPage from "../pages/screening/ScreeningResponsesListPage.vue";
 
-import ClinicalPicturesListPage from "../pages/clinical/ClinicalPicturesListPage.vue";
-import ClinicalPictureDetailPage from "../pages/clinical/ClinicalPictureDetailPage.vue";
 import PatientScreeningAssignmentPage from "../pages/patientScreening/PatientScreeningAssignmentPage.vue";
 import UserRegistrationPage from "../pages/User/UserRegistrationPage.vue";
 
@@ -34,7 +31,6 @@ import AiImageBatchAnalyzer from "../components/AI/AiImageBatchAnalyzer.vue";
 import AiImageAnalysesViewer from "../components/AI/AiImageAnalysesViewer.vue";
 import AiDocumentList from "../components/AI/AiDocumentList.vue";
 import AiDocumentAnalysisList from "../components/AI/AiDocumentAnalysisList.vue";
-import HumanAnatomyPage from "../pages/anatomy/HumanAnatomyPage.vue";
 import GenerativeModelConfigPage from "../pages/AI/GenerativeModelConfigPage.vue";
 import NotePackageComposer from "../components/notes/NotePackageComposer.vue";
 import NotePackagesViewer from "../components/notes/NotePackagesViewer.vue";
@@ -101,27 +97,12 @@ const routes = [
         component: CreateScreeningPage,
       },
 
-      // ? Clinical Pictures Management
-      {
-        path: "/clinical-pictures",
-        name: "clinical-pictures",
-        component: ClinicalPicturesListPage,
-      },
-      {
-        path: "/clinical-picture/:id",
-        name: "clinical-picture-detail",
-        component: ClinicalPictureDetailPage,
-      },
-
       // ? Patient Screening Assignment
       {
         path: "/patient-screening-assignment",
         name: "patient-screening-assignment",
         component: PatientScreeningAssignmentPage,
       },
-
-      // ? Audio Mixer
-      { path: "/audio-mixer", name: "audio-mixer", component: AudioMixerPage },
 
       // ? User Registration
       {
@@ -191,11 +172,6 @@ const routes = [
         path: "/ai-model-config",
         name: "ai-model-config",
         component: GenerativeModelConfigPage,
-      },
-      {
-        path: "/anatomia-3d",
-        name: "anatomia-3d",
-        component: HumanAnatomyPage,
       },
       {
         path: "/note-packages",

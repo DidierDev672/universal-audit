@@ -26,6 +26,7 @@ export const useCalendarTaskAiScheduleStore = defineStore(
         existing.researchName = payload.researchName;
         existing.eventType = payload.eventType;
         existing.researchDraft = payload.researchDraft ?? null;
+        existing.taskDraft = payload.taskDraft ?? null;
         return existing;
       }
 
